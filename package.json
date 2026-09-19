@@ -1,0 +1,17 @@
+{
+  "name": "shanheyipin_codex_bootstrap_v2",
+  "version": "1.0.0",
+  "description": "本仓库是山禾颐品唯一正式代码仓库的启动包。",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
