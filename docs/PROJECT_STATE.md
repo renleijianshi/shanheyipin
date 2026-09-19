@@ -4,10 +4,10 @@
 
 ## 当前阶段
 
-- Phase A：进行中。
+- Phase A：本地接管完成，GitHub 同步因 secondary rate limit 延后。
 - 正式目录：`C:\Users\19993\Desktop\山禾颐品\daima`。
-- Git：已初始化 `main`，等待首次提交与 GitHub 远端。
-- 当前任务：M01 项目骨架。
+- Git：`main` 已有首次提交；M01 在 `feature/M01-project-bootstrap` 完成本地验证。
+- 当前任务：M01 项目骨架已完成；下一任务 M02 数据库基础。
 
 ## 已确认约束
 
@@ -22,12 +22,10 @@
 
 ## 下一步
 
-1. 完成首次提交并推送 `main`。
-2. 在 `feature/M01-project-bootstrap` 完成 workspace、miniapp、admin、api、质量门禁与 CI。
-3. Review 后合并，再进入 M02。
+1. 本地 Review 并合并 M01。
+2. 进入 M02 数据库基础。
+3. GitHub 限流解除后，只做一次仓库创建/确认与推送，不重复扫描远端。
 
 ## 阻塞
 
-- GitHub 命令行未安装；需通过已登录浏览器或用户首次授权创建/确认私有仓库。
-- Git 提交者身份尚未从 GitHub 账户确认。
-
+- GitHub secondary rate limit：暂停全部远程访问，本地开发不受影响。

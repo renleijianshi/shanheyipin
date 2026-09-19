@@ -1,0 +1,9 @@
+{
+  "name": "@shanheyipin/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@shanheyipin/shared-types": "0.1.0"
+  }
+}
