@@ -7,7 +7,7 @@
 - Phase A：本地接管完成，GitHub 同步因 secondary rate limit 延后。
 - 正式目录：`C:\Users\19993\Desktop\山禾颐品\daima`。
 - Git：`main` 已有首次提交；M01 在 `feature/M01-project-bootstrap` 完成本地验证。
-- 当前任务：M01 项目骨架已完成；下一任务 M02 数据库基础。
+- 当前任务：M02 数据库基础已完成；下一任务 M03 管理后台 RBAC。
 
 ## 已确认约束
 
@@ -22,8 +22,8 @@
 
 ## 下一步
 
-1. 本地 Review 并合并 M01。
-2. 进入 M02 数据库基础。
+1. 本地 Review 并合并 M02。
+2. 进入 M03 管理后台 RBAC。
 3. GitHub 限流解除后，只做一次仓库创建/确认与推送，不重复扫描远端。
 
 ## 阻塞
