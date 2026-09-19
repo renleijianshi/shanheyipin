@@ -10,3 +10,5 @@
 - M01 本地验证通过：lint、typecheck、4 tests、build、production audit。
 - 完成 M02：Prisma 6/MySQL 数据源、生成客户端、数据库 URL 校验、空基线 migration 和安全迁移运行手册。
 - M02 本地验证通过：Prisma validate、lint、typecheck、7 tests、build。
+- 完成 M03：管理员、角色、六类权限、关联表、唯一约束与纯领域鉴权函数。
+- M03 本地验证通过：Prisma generate/validate、lint、typecheck、11 tests、build、0 audit vulnerabilities。

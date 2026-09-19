@@ -7,5 +7,78 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Business models are added by their owning modules. M02 establishes only
-// the MySQL datasource, generated client, and migration conventions.
+enum AdminUserStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum PermissionScope {
+  MENU
+  ACTION
+  API
+  DATA
+  SENSITIVE_FIELD
+  EXPORT
+}
+
+model AdminUser {
+  id           BigInt          @id @default(autoincrement())
+  username     String          @unique @db.VarChar(64)
+  passwordHash String          @map("password_hash") @db.VarChar(255)
+  displayName  String          @map("display_name") @db.VarChar(100)
+  status       AdminUserStatus @default(ACTIVE)
+  roles        AdminUserRole[]
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  @@map("admin_users")
+}
+
+model Role {
+  id          BigInt           @id @default(autoincrement())
+  code        String           @unique @db.VarChar(64)
+  name        String           @db.VarChar(100)
+  isSystem    Boolean          @default(false) @map("is_system")
+  users       AdminUserRole[]
+  permissions RolePermission[]
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  @@map("roles")
+}
+
+model Permission {
+  id        BigInt           @id @default(autoincrement())
+  code      String           @unique @db.VarChar(128)
+  name      String           @db.VarChar(100)
+  scope     PermissionScope
+  roles     RolePermission[]
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  @@map("permissions")
+}
+
+model AdminUserRole {
+  adminUserId BigInt    @map("admin_user_id")
+  roleId      BigInt    @map("role_id")
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  role        Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@id([adminUserId, roleId])
+  @@index([roleId])
+  @@map("admin_user_roles")
+}
+
+model RolePermission {
+  roleId       BigInt     @map("role_id")
+  permissionId BigInt     @map("permission_id")
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
