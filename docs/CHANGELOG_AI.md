@@ -17,3 +17,5 @@
 - M04 本地验证通过：Prisma validate、lint、typecheck、17 tests、build；npm audit 因官方服务 503 未重复请求。
 - 完成 M05：最小公开用户资料、昵称规范化、OSS 头像对象键校验与 Prisma 仓储。
 - M05 本地验证通过：Prisma generate、lint、typecheck、20 tests、build。
+- 完成 M06：地址 CRUD、用户归属校验、默认地址事务切换、删除后默认回补和订单地址快照。
+- M06 本地验证通过：Prisma generate/validate、lint、typecheck、23 tests、build。
