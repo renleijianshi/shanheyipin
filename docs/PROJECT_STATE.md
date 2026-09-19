@@ -6,8 +6,8 @@
 
 - Phase A：本地接管完成，GitHub 同步因 secondary rate limit 延后。
 - 正式目录：`C:\Users\19993\Desktop\山禾颐品\daima`。
-- Git：本地 `main` 已合并 M01-M03；M04 在 `feature/M04-wechat-login` 完成本地验证。
-- 当前任务：M04 微信登录已完成；下一任务 M05 用户中心。
+- Git：本地 `main` 已合并 M01-M04；M05 在 `feature/M05-user-center` 完成本地验证。
+- 当前任务：M05 用户中心已完成；下一任务 M06 地址。
 
 ## 已确认约束
 
@@ -22,8 +22,8 @@
 
 ## 下一步
 
-1. 本地 Review 并合并 M04。
-2. 进入 M05 用户中心。
+1. 本地 Review 并合并 M05。
+2. 进入 M06 地址。
 3. GitHub 限流解除后，只做一次仓库创建/确认与推送，不重复扫描远端。
 
 ## 阻塞
