@@ -1,0 +1,2 @@
+-- M02 baseline: intentionally no business tables.
+-- Prisma records this migration so future module migrations have one origin.

@@ -1,0 +1,11 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Business models are added by their owning modules. M02 establishes only
+// the MySQL datasource, generated client, and migration conventions.
