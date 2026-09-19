@@ -16,3 +16,4 @@
 - D012：真实微信支付与支付宝均 Deferred；先实现支付抽象、支付单、状态机、幂等和 Mock/Disabled Provider。
 - D013：生产采用 Caddy + systemd + production build + 现有 MySQL + 轻量 Redis，媒体放 OSS；不得触碰旧 `/opt/shanhe-yipin`。
 - D014：模块使用短分支和原子提交推进，核心模块合并前独立 Review。
+- D015：小程序登录采用 7 天不透明随机会话令牌；数据库只存 SHA-256 哈希，微信 `openid` 不作为公开业务 ID。

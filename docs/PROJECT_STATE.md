@@ -1,13 +1,13 @@
 # PROJECT_STATE
 
-更新时间：2026-09-19
+更新时间：2026-09-20
 
 ## 当前阶段
 
 - Phase A：本地接管完成，GitHub 同步因 secondary rate limit 延后。
 - 正式目录：`C:\Users\19993\Desktop\山禾颐品\daima`。
-- Git：`main` 已有首次提交；M01 在 `feature/M01-project-bootstrap` 完成本地验证。
-- 当前任务：M03 管理后台 RBAC 已完成；下一任务 M04 微信登录（仅登录，不涉及微信支付）。
+- Git：本地 `main` 已合并 M01-M03；M04 在 `feature/M04-wechat-login` 完成本地验证。
+- 当前任务：M04 微信登录已完成；下一任务 M05 用户中心。
 
 ## 已确认约束
 
@@ -22,10 +22,11 @@
 
 ## 下一步
 
-1. 本地 Review 并合并 M03。
-2. 进入 M04 微信登录。
+1. 本地 Review 并合并 M04。
+2. 进入 M05 用户中心。
 3. GitHub 限流解除后，只做一次仓库创建/确认与推送，不重复扫描远端。
 
 ## 阻塞
 
 - GitHub secondary rate limit：暂停全部远程访问，本地开发不受影响。
+- npm audit 服务于 2026-09-20 返回 503；本模块未新增依赖，上一次锁文件审计为 0 漏洞。

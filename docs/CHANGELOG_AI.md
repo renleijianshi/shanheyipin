@@ -12,3 +12,6 @@
 - M02 本地验证通过：Prisma validate、lint、typecheck、7 tests、build。
 - 完成 M03：管理员、角色、六类权限、关联表、唯一约束与纯领域鉴权函数。
 - M03 本地验证通过：Prisma generate/validate、lint、typecheck、11 tests、build、0 audit vulnerabilities。
+- 完成 M04：微信 code 交换适配器、用户自动创建/绑定、随机会话令牌、Prisma 用户/微信身份/会话模型。
+- 修正 Prisma `migration_lock.toml` 到 CLI 要求的 `migrations/` 目录。
+- M04 本地验证通过：Prisma validate、lint、typecheck、17 tests、build；npm audit 因官方服务 503 未重复请求。
