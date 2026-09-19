@@ -15,3 +15,5 @@
 - 完成 M04：微信 code 交换适配器、用户自动创建/绑定、随机会话令牌、Prisma 用户/微信身份/会话模型。
 - 修正 Prisma `migration_lock.toml` 到 CLI 要求的 `migrations/` 目录。
 - M04 本地验证通过：Prisma validate、lint、typecheck、17 tests、build；npm audit 因官方服务 503 未重复请求。
+- 完成 M05：最小公开用户资料、昵称规范化、OSS 头像对象键校验与 Prisma 仓储。
+- M05 本地验证通过：Prisma generate、lint、typecheck、20 tests、build。

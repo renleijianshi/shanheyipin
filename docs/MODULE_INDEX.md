@@ -6,7 +6,8 @@
 | M02 数据库基础 | 已完成 | `apps/api/prisma/`, `apps/api/src/infrastructure/database/` | `docs/05_数据库_ER与表设计.md` |
 | M03 管理后台 RBAC | 已完成 | `apps/api/src/modules/admin/`, `apps/api/prisma/` | `docs/03_角色权限与业务流程.md` |
 | M04 微信登录 | 已完成 | `apps/api/src/modules/auth/`, `apps/api/prisma/` | `docs/01_产品需求_PRD.md`, `docs/06_API设计规范.md` |
-| M05-M06 用户与地址 | 待开始 | `apps/api/src/modules/users/` | `docs/01_产品需求_PRD.md`, `docs/05_数据库_ER与表设计.md` |
+| M05 用户中心 | 已完成 | `apps/api/src/modules/users/`, `apps/api/prisma/` | `docs/01_产品需求_PRD.md`, `docs/05_数据库_ER与表设计.md` |
+| M06 地址 | 待开始 | `apps/api/src/modules/addresses/` | `docs/01_产品需求_PRD.md`, `docs/05_数据库_ER与表设计.md` |
 | M07-M12 商品与结算 | 待开始 | 同上 | `docs/01_产品需求_PRD.md`, `docs/05_数据库_ER与表设计.md`, `docs/06_API设计规范.md` |
 | M13-M16 订单/支付抽象/物流 | 待开始 | `apps/api/src/orders`, `payments`, `shipping` | `docs/08_订单支付退款售后设计.md` |
 | M17-M29 供应链与库存 | 待开始 | `apps/api/src/procurement`, `inventory`, `processing` | `docs/07_商品采购仓储库存设计.md` |
