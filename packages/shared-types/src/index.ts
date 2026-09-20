@@ -44,3 +44,28 @@ export interface PublicProductListResult {
   readonly items: readonly PublicProductSummary[];
   readonly total: number;
 }
+
+export type CartItemInvalidReason =
+  | 'SKU_OFF_SALE'
+  | 'PRODUCT_OFF_SALE'
+  | 'CATEGORY_UNAVAILABLE';
+
+export interface CartItem {
+  readonly id: string;
+  readonly skuId: string;
+  readonly quantity: number;
+  readonly skuName: string;
+  readonly productName: string;
+  readonly coverObjectKey: string | null;
+  readonly salePriceCent: number;
+  readonly specs: readonly { readonly name: string; readonly value: string }[];
+  readonly isValid: boolean;
+  readonly invalidReason: CartItemInvalidReason | null;
+}
+
+export interface Cart {
+  readonly items: readonly CartItem[];
+  readonly validItemCount: number;
+  readonly totalQuantity: number;
+  readonly subtotalCent: number;
+}
