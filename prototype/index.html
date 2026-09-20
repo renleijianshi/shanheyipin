@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="山禾颐品微信小程序与运营后台交互原型">
+  <title>山禾颐品 · 产品功能预览</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="preview-bar">
+    <a class="brand" href="#" data-action="home" aria-label="返回预览首页">
+      <span class="brand-mark" aria-hidden="true">山</span>
+      <span><strong>山禾颐品</strong><small>产品功能预览</small></span>
+    </a>
+    <nav class="mode-switch" aria-label="预览类型">
+      <button class="mode-button is-active" data-mode="miniapp" aria-pressed="true">微信小程序</button>
+      <button class="mode-button" data-mode="admin" aria-pressed="false">运营后台</button>
+    </nav>
+    <div class="preview-meta"><span class="live-dot"></span>交互原型 · 演示数据</div>
+  </header>
+
+  <main>
+    <section id="miniapp-preview" class="preview-stage is-active" aria-label="微信小程序预览">
+      <div class="phone-shell">
+        <div class="phone-status"><span>9:41</span><span>● ● ▰</span></div>
+        <div class="phone-screen">
+          <section class="mini-page is-active" data-page="home">
+            <header class="mini-header">
+              <div><small>来自甘肃舟曲</small><h1>山禾颐品</h1></div>
+              <button class="icon-button" data-action="search" aria-label="搜索">⌕</button>
+            </header>
+            <div class="hero-card">
+              <div class="hero-copy"><span class="eyebrow">霜降后的自然甜</span><h2>舟曲吊柿<br>秋日新作</h2><p>慢晒 28 天，柔糯流心</p><button data-open-product>查看本季鲜柿</button></div>
+              <div class="persimmon-art" aria-label="柿饼礼盒插画"><span></span><span></span><span></span></div>
+            </div>
+            <div class="quick-grid" aria-label="快捷入口">
+              <button data-nav="category"><span>礼</span>送礼精选</button>
+              <button data-action="trace"><span>溯</span>扫码溯源</button>
+              <button data-nav="story"><span>野</span>山野志</button>
+              <button data-action="enterprise"><span>企</span>企业团购</button>
+            </div>
+            <section class="mini-section">
+              <div class="section-heading"><div><small>SEASONAL PICKS</small><h2>本季推荐</h2></div><button data-nav="category">查看全部</button></div>
+              <div class="product-row">
+                <button class="product-card" data-open-product><span class="product-photo gift"><i></i></span><strong>双层臻选礼盒</strong><small>16 枚 · 商务赠礼</small><b>¥168</b></button>
+                <button class="product-card" data-open-product><span class="product-photo pouch"><i></i></span><strong>原味分享装</strong><small>400g · 自然无添加</small><b>¥59.8</b></button>
+              </div>
+            </section>
+            <article class="story-banner" data-nav="story" tabindex="0"><div><small>山野志 · 01</small><h2>一枚柿饼的<br>二十八天</h2><p>从白龙江畔到你的餐桌</p></div><span aria-hidden="true">→</span></article>
+          </section>
+
+          <section class="mini-page" data-page="category">
+            <header class="simple-header"><h1>选购好物</h1><button class="icon-button" data-action="search" aria-label="搜索">⌕</button></header>
+            <div class="search-faux" data-action="search">搜索柿饼、礼盒、当季好物</div>
+            <div class="category-tabs"><button class="is-active">全部</button><button>柿饼</button><button>礼盒</button><button>山野好物</button></div>
+            <div class="filter-row"><button>综合排序⌄</button><button>礼盒</button><button>预售</button><button>筛选</button></div>
+            <div class="product-grid">
+              <button class="product-card" data-open-product><span class="product-photo gift"><i></i></span><strong>双层臻选礼盒</strong><small>霜降吊柿 · 16 枚</small><b>¥168</b></button>
+              <button class="product-card" data-open-product><span class="product-photo pouch"><i></i></span><strong>原味分享装</strong><small>自然晾晒 · 400g</small><b>¥59.8</b></button>
+              <button class="product-card" data-open-product><span class="product-photo single"><i></i></span><strong>轻享试吃装</strong><small>独立包装 · 6 枚</small><b>¥29.9</b></button>
+              <button class="product-card" data-open-product><span class="product-photo premium"><i></i></span><strong>山河典藏礼盒</strong><small>企业定制 · 24 枚</small><b>¥268</b></button>
+            </div>
+          </section>
+
+          <section class="mini-page" data-page="story">
+            <header class="simple-header"><div><small>FROM THE LAND</small><h1>山野志</h1></div></header>
+            <article class="feature-story"><div class="mountain-art"></div><small>本期专题</small><h2>白龙江畔，等一场霜</h2><p>跟着果农马师傅，走进舟曲的秋收与晾晒季。</p><button>阅读故事 →</button></article>
+            <div class="story-list"><article><span>产地</span><div><h3>北纬 33° 的甜</h3><p>昼夜温差，成就自然糖霜</p></div></article><article><span>工艺</span><div><h3>二十八天慢晒</h3><p>十二道手作工序</p></div></article><article><span>人物</span><div><h3>守柿人马师傅</h3><p>一家三代的手艺</p></div></article></div>
+          </section>
+
+          <section class="mini-page" data-page="cart">
+            <header class="simple-header"><h1>购物车 <small>2</small></h1><button class="text-button">管理</button></header>
+            <div class="cart-list"><article><input type="checkbox" checked aria-label="选择双层臻选礼盒"><span class="cart-thumb gift"></span><div><strong>双层臻选礼盒</strong><small>16 枚 · 双层礼盒</small><b>¥168</b></div><div class="stepper"><button aria-label="减少">−</button><span>1</span><button aria-label="增加">+</button></div></article><article><input type="checkbox" checked aria-label="选择原味分享装"><span class="cart-thumb pouch"></span><div><strong>原味分享装</strong><small>400g · 袋装</small><b>¥59.8</b></div><div class="stepper"><button aria-label="减少">−</button><span>2</span><button aria-label="增加">+</button></div></article></div>
+            <aside class="cart-tip">再购 ¥20.2 可享全场包邮 <button data-nav="category">去凑单</button></aside>
+            <div class="cart-total"><label><input type="checkbox" checked> 全选</label><div><small>合计</small><strong>¥287.60</strong><button data-action="checkout">去结算</button></div></div>
+          </section>
+
+          <section class="mini-page" data-page="profile">
+            <div class="profile-hero"><div class="avatar">禾</div><div><h1>晚上好，山友</h1><p>青禾会员 · 还差 260 成长值升级</p></div><button aria-label="设置">⚙</button></div>
+            <section class="member-card"><small>SHANHE MEMBER</small><strong>青禾会员</strong><div><span><b>860</b>积分</span><span><b>3</b>优惠券</span><span><b>6</b>收藏</span></div></section>
+            <section class="order-panel"><div class="section-heading"><h2>我的订单</h2><button>全部订单 →</button></div><div class="order-shortcuts"><button><span>待</span>待付款</button><button><span>包</span>待发货</button><button><span>运</span>待收货</button><button><span>评</span>待评价</button><button><span>售</span>售后</button></div></section>
+            <div class="profile-menu"><button>优惠券 <span>3 张可用 ›</span></button><button>我的积分 <span>860 ›</span></button><button>收货地址 <span>›</span></button><button data-action="enterprise">企业询价 <span>›</span></button><button>客服与反馈 <span>›</span></button><button>关于山禾颐品 <span>›</span></button></div>
+          </section>
+
+          <section class="mini-page product-detail" data-page="product">
+            <button class="floating-back" data-action="back" aria-label="返回">‹</button>
+            <div class="detail-visual"><div class="detail-box"><i></i><strong>山禾颐品</strong><small>舟曲吊柿</small></div><span>1 / 5</span></div>
+            <div class="detail-body"><div class="detail-price"><strong>¥168</strong><del>¥198</del><span>本季新品</span></div><h1>舟曲吊柿 · 双层臻选礼盒</h1><p>霜降鲜柿，古法慢晒。每一枚都有独立托位，适合节日赠礼与家庭分享。</p><div class="service-line">48 小时内发货　·　破损包赔　·　产地溯源</div><section class="sku-picker"><h2>选择规格</h2><div><button class="is-active">16 枚双层礼盒</button><button>24 枚典藏礼盒</button><button>400g 分享装</button></div></section><section class="origin-note"><small>ORIGIN STORY</small><h2>来自白龙江畔的秋日甜意</h2><p>海拔 1,300 米，自然挂晒 28 天。扫码可查看本盒的批次、质检与装盒信息。</p><button data-action="trace">查看溯源示例 →</button></section></div>
+            <div class="detail-actions"><button aria-label="客服">客服</button><button data-nav="cart">购物车</button><button class="secondary" data-action="add-cart">加入购物车</button><button class="primary" data-action="checkout">立即购买</button></div>
+          </section>
+
+          <nav class="tab-bar" aria-label="小程序主导航">
+            <button class="is-active" data-nav="home"><span>⌂</span>首页</button><button data-nav="category"><span>▦</span>分类</button><button data-nav="story"><span>山</span>山野志</button><button data-nav="cart"><span>袋</span>购物车</button><button data-nav="profile"><span>人</span>我的</button>
+          </nav>
+        </div>
+      </div>
+      <aside class="feature-guide">
+        <span class="eyebrow">MINI PROGRAM</span><h1>消费者小程序</h1><p>以“产地信任 + 送礼体验”为主线，串起内容、商品、交易、会员和溯源。</p>
+        <div class="guide-actions"><button class="primary-button" data-action="feature-map">查看完整功能地图</button><button class="outline-button" data-open-product>打开商品详情</button></div>
+        <dl><div><dt>当前阶段</dt><dd>M01–M09 已完成底层能力，M10 商品详情开发中</dd></div><div><dt>支付状态</dt><dd>界面仅为演示；真实微信支付与支付宝暂缓</dd></div><div><dt>推荐体验</dt><dd>点击底部导航、商品卡、扫码溯源与企业团购</dd></div></dl>
+      </aside>
+    </section>
+
+    <section id="admin-preview" class="preview-stage admin-stage" aria-label="运营后台预览">
+      <div class="admin-app">
+        <aside class="admin-sidebar"><div class="admin-logo"><span>山</span><div><strong>山禾颐品</strong><small>运营管理中心</small></div></div><nav id="admin-nav" aria-label="后台主导航"></nav><div class="admin-user"><span>任</span><div><strong>运营管理员</strong><small>管理员账号</small></div><button aria-label="账号菜单">⋯</button></div></aside>
+        <section class="admin-main"><header class="admin-header"><div><button class="sidebar-toggle" aria-label="折叠菜单">☰</button><span>工作台 / <b id="admin-breadcrumb">经营概览</b></span></div><div><label class="admin-search">⌕ <input type="search" placeholder="搜索订单、商品、会员"></label><button class="notice-button" aria-label="通知">♢<i>6</i></button><span class="admin-date">2026年9月21日</span></div></header><div id="admin-content" class="admin-content"></div></section>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="feature-dialog" class="feature-dialog"><form method="dialog"><header><div><small>FUNCTION MAP</small><h2 id="dialog-title">小程序功能地图</h2></div><button aria-label="关闭">×</button></header><div id="dialog-content"></div></form></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
