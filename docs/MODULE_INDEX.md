@@ -11,7 +11,8 @@
 | M07 商品分类 | 已完成 | `apps/api/src/modules/catalog/`, `apps/api/prisma/` | `tasks/M07_商品分类.md`, `docs/01_产品需求_PRD.md`, `docs/05_数据库_ER与表设计.md`, `docs/06_API设计规范.md` |
 | M08 SPU | 已完成 | `apps/api/src/modules/catalog/`, `apps/api/prisma/` | `tasks/M08_SPU.md`, `docs/01_产品需求_PRD.md`, `docs/05_数据库_ER与表设计.md` |
 | M09 SKU | 已完成 | `apps/api/src/modules/catalog/`, `apps/api/prisma/` | `tasks/M09_SKU.md`, `docs/01_产品需求_PRD.md`, `docs/05_数据库_ER与表设计.md` |
-| M10-M12 商品详情、购物车与结算 | 待开始 | `apps/api/src/modules/catalog/`, `cart`, `checkout` | `docs/01_产品需求_PRD.md`, `docs/05_数据库_ER与表设计.md`, `docs/06_API设计规范.md` |
+| M10 商品详情 | 已完成 | `apps/api/src/modules/catalog/`, `apps/miniapp/src/`, `prototype/` | `tasks/M10_商品详情.md`, `docs/02_功能清单与页面地图.md`, `docs/06_API设计规范.md` |
+| M11-M12 购物车与结算 | 待开始 | `apps/api/src/modules/cart`, `checkout` | `docs/01_产品需求_PRD.md`, `docs/05_数据库_ER与表设计.md`, `docs/06_API设计规范.md` |
 | M13-M16 订单/支付抽象/物流 | 待开始 | `apps/api/src/orders`, `payments`, `shipping` | `docs/08_订单支付退款售后设计.md` |
 | M17-M29 供应链与库存 | 待开始 | `apps/api/src/procurement`, `inventory`, `processing` | `docs/07_商品采购仓储库存设计.md` |
 | M30-M32 售后 | 待开始 | `apps/api/src/aftersales`, `refunds` | `docs/08_订单支付退款售后设计.md` |
