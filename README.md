@@ -28,7 +28,7 @@ Node.js 要求 22 或更高版本。日常任务先读 `AGENTS.md`、`docs/PROJE
 ## 第一条指令
 
 ```text
-执行 tasks/M07_商品分类.md。
+执行 tasks/M08_SPU.md。
 严格遵守 AGENTS.md。
 不要读取无关文档，完成后只输出摘要和测试结果。
 ```
