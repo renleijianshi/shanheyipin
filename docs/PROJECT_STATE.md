@@ -7,8 +7,8 @@
 - Phase A：本地接管与 GitHub Private 仓库同步均已完成。
 - 正式目录：`C:\Users\19993\Desktop\山禾颐品\daima`。
 - GitHub：`renleijianshi/shanheyipin`，Private，默认分支 `main`。
-- Git：本地 `main` 已合并并推送 M01-M06，跟踪 `origin/main`。
-- 当前任务：M08 SPU 已完成；下一任务 M09 SKU。
+- Git：本地 `main` 已合并 M01-M08；按用户要求暂不访问 GitHub，远程同步后置。
+- 当前任务：M09 SKU 已完成；下一任务 M10 商品详情。
 
 ## 已确认约束
 
@@ -23,9 +23,9 @@
 
 ## 下一步
 
-1. 进入 M09 SKU。
-2. 网络恢复后一次性推送本地完成结果。
-3. 在 GitHub 补建本地已完成模块的 PR/Review 记录。
+1. 进入 M10 商品详情。
+2. 继续仅基于本地仓库推进，暂不访问 GitHub。
+3. 用户恢复 GitHub 工作后再一次性核对并同步远程。
 
 ## 阻塞
 
