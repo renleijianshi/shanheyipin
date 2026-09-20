@@ -8,7 +8,7 @@
 - 正式目录：`C:\Users\19993\Desktop\山禾颐品\daima`。
 - GitHub：`renleijianshi/shanheyipin`，Private，默认分支 `main`。
 - Git：本地 `main` 已合并并推送 M01-M06，跟踪 `origin/main`。
-- 当前任务：M07 商品分类已完成；下一任务 M08 SPU。
+- 当前任务：M08 SPU 已完成；下一任务 M09 SKU。
 
 ## 已确认约束
 
@@ -23,9 +23,9 @@
 
 ## 下一步
 
-1. 进入 M08 SPU。
+1. 进入 M09 SKU。
 2. 网络恢复后一次性推送本地完成结果。
-3. 在 GitHub 补建 M07 PR/Review 记录。
+3. 在 GitHub 补建本地已完成模块的 PR/Review 记录。
 
 ## 阻塞
 

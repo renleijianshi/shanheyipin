@@ -32,6 +32,22 @@ enum CategoryStatus {
   DISABLED
 }
 
+enum ProductStatus {
+  DRAFT
+  ON_SALE
+  OFF_SALE
+}
+
+enum ProductType {
+  STANDARD
+  BUNDLE
+}
+
+enum ProductMediaType {
+  IMAGE
+  VIDEO
+}
+
 model User {
   id              BigInt              @id @default(autoincrement())
   publicId        String              @unique @default(uuid()) @map("public_id") @db.VarChar(36)
@@ -100,11 +116,62 @@ model Category {
   status    CategoryStatus @default(DISABLED)
   parent    Category?      @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
   children  Category[]     @relation("CategoryTree")
+  products  Product[]
   createdAt DateTime       @default(now()) @map("created_at")
   updatedAt DateTime       @updatedAt @map("updated_at")
 
   @@index([parentId, status, sortOrder])
   @@map("categories")
+}
+
+model Product {
+  id          BigInt        @id @default(autoincrement())
+  publicId    String        @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  categoryId  BigInt        @map("category_id")
+  name        String        @db.VarChar(100)
+  subtitle    String?       @db.VarChar(200)
+  productType ProductType   @default(STANDARD) @map("product_type")
+  content     String        @db.Text
+  origin      String?       @db.VarChar(100)
+  sortOrder   Int           @default(0) @map("sort_order") @db.UnsignedInt
+  status      ProductStatus @default(DRAFT)
+  category    Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  media       ProductMedia[]
+  tags        ProductTag[]
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@index([categoryId, status, sortOrder])
+  @@index([status, sortOrder])
+  @@map("products")
+}
+
+model ProductMedia {
+  id        BigInt           @id @default(autoincrement())
+  productId BigInt           @map("product_id")
+  type      ProductMediaType
+  objectKey String           @map("object_key") @db.VarChar(255)
+  altText   String?          @map("alt_text") @db.VarChar(100)
+  sortOrder Int              @default(0) @map("sort_order") @db.UnsignedInt
+  product   Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  @@unique([productId, objectKey])
+  @@index([productId, sortOrder])
+  @@map("product_media")
+}
+
+model ProductTag {
+  id        BigInt   @id @default(autoincrement())
+  productId BigInt   @map("product_id")
+  name      String   @db.VarChar(30)
+  sortOrder Int      @default(0) @map("sort_order") @db.UnsignedInt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([productId, name])
+  @@index([productId, sortOrder])
+  @@map("product_tags")
 }
 
 model AdminUser {
