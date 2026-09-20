@@ -48,6 +48,16 @@ enum ProductMediaType {
   VIDEO
 }
 
+enum SkuSaleStatus {
+  DRAFT
+  ON_SALE
+  OFF_SALE
+}
+
+enum SkuStockMode {
+  BATCH
+}
+
 model User {
   id              BigInt              @id @default(autoincrement())
   publicId        String              @unique @default(uuid()) @map("public_id") @db.VarChar(36)
@@ -125,25 +135,90 @@ model Category {
 }
 
 model Product {
-  id          BigInt        @id @default(autoincrement())
-  publicId    String        @unique @default(uuid()) @map("public_id") @db.VarChar(36)
-  categoryId  BigInt        @map("category_id")
-  name        String        @db.VarChar(100)
-  subtitle    String?       @db.VarChar(200)
-  productType ProductType   @default(STANDARD) @map("product_type")
-  content     String        @db.Text
-  origin      String?       @db.VarChar(100)
-  sortOrder   Int           @default(0) @map("sort_order") @db.UnsignedInt
-  status      ProductStatus @default(DRAFT)
-  category    Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  id          BigInt         @id @default(autoincrement())
+  publicId    String         @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  categoryId  BigInt         @map("category_id")
+  name        String         @db.VarChar(100)
+  subtitle    String?        @db.VarChar(200)
+  productType ProductType    @default(STANDARD) @map("product_type")
+  content     String         @db.Text
+  origin      String?        @db.VarChar(100)
+  sortOrder   Int            @default(0) @map("sort_order") @db.UnsignedInt
+  status      ProductStatus  @default(DRAFT)
+  category    Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   media       ProductMedia[]
   tags        ProductTag[]
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
+  skus        ProductSku[]
+  specs       ProductSpec[]
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
 
   @@index([categoryId, status, sortOrder])
   @@index([status, sortOrder])
   @@map("products")
+}
+
+model ProductSku {
+  id                  BigInt            @id @default(autoincrement())
+  publicId            String            @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  productId           BigInt            @map("product_id")
+  skuCode             String            @unique @map("sku_code") @db.VarChar(64)
+  skuName             String            @map("sku_name") @db.VarChar(100)
+  salePriceCent       Int               @map("sale_price_cent") @db.UnsignedInt
+  marketPriceCent     Int?              @map("market_price_cent") @db.UnsignedInt
+  weightGram          Int               @map("weight_gram") @db.UnsignedInt
+  barcode             String?           @unique @db.VarChar(18)
+  saleStatus          SkuSaleStatus     @default(DRAFT) @map("sale_status")
+  stockMode           SkuStockMode      @default(BATCH) @map("stock_mode")
+  presaleEnabled      Boolean           @default(false) @map("presale_enabled")
+  specSignature       String            @map("spec_signature") @db.Char(64)
+  product             Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  specificationValues SkuSpecRelation[]
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+
+  @@unique([productId, specSignature])
+  @@index([productId, saleStatus])
+  @@map("product_skus")
+}
+
+model ProductSpec {
+  id        BigInt             @id @default(autoincrement())
+  productId BigInt             @map("product_id")
+  name      String             @db.VarChar(30)
+  sortOrder Int                @default(0) @map("sort_order") @db.UnsignedInt
+  product   Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  values    ProductSpecValue[]
+  createdAt DateTime           @default(now()) @map("created_at")
+
+  @@unique([productId, name])
+  @@index([productId, sortOrder])
+  @@map("product_specs")
+}
+
+model ProductSpecValue {
+  id        BigInt            @id @default(autoincrement())
+  specId    BigInt            @map("spec_id")
+  value     String            @db.VarChar(50)
+  sortOrder Int               @default(0) @map("sort_order") @db.UnsignedInt
+  spec      ProductSpec       @relation(fields: [specId], references: [id], onDelete: Cascade)
+  skus      SkuSpecRelation[]
+  createdAt DateTime          @default(now()) @map("created_at")
+
+  @@unique([specId, value])
+  @@index([specId, sortOrder])
+  @@map("product_spec_values")
+}
+
+model SkuSpecRelation {
+  skuId       BigInt           @map("sku_id")
+  specValueId BigInt           @map("spec_value_id")
+  sku         ProductSku       @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  specValue   ProductSpecValue @relation(fields: [specValueId], references: [id], onDelete: Restrict)
+
+  @@id([skuId, specValueId])
+  @@index([specValueId])
+  @@map("sku_spec_relations")
 }
 
 model ProductMedia {
