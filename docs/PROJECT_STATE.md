@@ -4,10 +4,11 @@
 
 ## 当前阶段
 
-- Phase A：本地接管完成，GitHub 同步因 secondary rate limit 延后。
+- Phase A：本地接管与 GitHub Private 仓库同步均已完成。
 - 正式目录：`C:\Users\19993\Desktop\山禾颐品\daima`。
-- Git：本地 `main` 已合并 M01-M05；M06 在 `feature/M06-addresses` 完成本地验证。
-- 当前任务：M06 地址已完成；下一任务 M07 商品分类。
+- GitHub：`renleijianshi/shanheyipin`，Private，默认分支 `main`。
+- Git：本地 `main` 已合并并推送 M01-M06，跟踪 `origin/main`。
+- 当前任务：M07 商品分类在 `feature/M07-product-categories` 开发中。
 
 ## 已确认约束
 
@@ -22,11 +23,10 @@
 
 ## 下一步
 
-1. 本地 Review 并合并 M06。
-2. 进入 M07 商品分类。
-3. GitHub 限流解除后，只做一次仓库创建/确认与推送，不重复扫描远端。
+1. 完成 M07 商品分类测试、Review、提交与合并。
+2. 推送完成的功能分支并建立 PR 记录。
+3. 进入 M08 SPU。
 
 ## 阻塞
 
-- GitHub secondary rate limit：暂停全部远程访问，本地开发不受影响。
 - npm audit 服务于 2026-09-20 返回 503；本模块未新增依赖，上一次锁文件审计为 0 漏洞。

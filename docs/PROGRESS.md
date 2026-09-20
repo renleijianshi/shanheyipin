@@ -4,7 +4,7 @@
 
 | 模块 | 状态 | 备注 |
 |---|---|---|
-| Phase A 正式仓库接管 | 🔄 | 本地完成；GitHub 因限流延后一次性同步 |
+| Phase A 正式仓库接管 | ✅ | Private 仓库已确认，`main` 已推送并跟踪 `origin/main` |
 | M01 项目骨架 | ✅ | workspace、应用入口、质量门禁与 CI 已完成 |
 | M02 数据库基础 | ✅ | Prisma/MySQL、空基线 migration、连接配置与运行手册 |
 | M03 管理后台 RBAC | ✅ | 管理员/角色/权限模型与鉴权核心 |
