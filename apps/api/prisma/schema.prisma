@@ -27,6 +27,11 @@ enum UserStatus {
   CANCELLED
 }
 
+enum CategoryStatus {
+  ENABLED
+  DISABLED
+}
+
 model User {
   id              BigInt              @id @default(autoincrement())
   publicId        String              @unique @default(uuid()) @map("public_id") @db.VarChar(36)
@@ -84,6 +89,22 @@ model UserSession {
 
   @@index([userId, expiresAt])
   @@map("user_sessions")
+}
+
+model Category {
+  id        BigInt         @id @default(autoincrement())
+  parentId  BigInt?        @map("parent_id")
+  code      String         @unique @db.VarChar(64)
+  name      String         @db.VarChar(50)
+  sortOrder Int            @default(0) @map("sort_order") @db.UnsignedInt
+  status    CategoryStatus @default(DISABLED)
+  parent    Category?      @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children  Category[]     @relation("CategoryTree")
+  createdAt DateTime       @default(now()) @map("created_at")
+  updatedAt DateTime       @updatedAt @map("updated_at")
+
+  @@index([parentId, status, sortOrder])
+  @@map("categories")
 }
 
 model AdminUser {
