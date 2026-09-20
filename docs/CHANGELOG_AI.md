@@ -21,3 +21,4 @@
 - M06 本地验证通过：Prisma generate/validate、lint、typecheck、23 tests、build。
 - 完成 GitHub Private 仓库确认、本地 `origin` 绑定与 M01-M06 `main` 首次同步。
 - 完成 M07：分类树模型、后台 CRUD 契约、小程序启用树、层级防循环与安全删除。
+- 完成 M08：SPU 主数据、媒体、标签、上下架校验、分页管理与 Prisma 事务仓储。
