@@ -26,3 +26,5 @@
 - 完成 M10：公开商品列表、搜索、详情查询，分类祖先可见性过滤、小程序展示模型，以及可点击的小程序/运营后台 HTML 原型。
 - 完成 M11：单用户购物车、SKU 合并加购、数量与条目上限、用户归属校验、并发串行写入、商品可售性复核和失效项保留展示；购物车不占库存。
 - M11 本地验证通过：Prisma generate/validate、lint、typecheck、54 tests、build。
+- 完成 M12：结算条目选择、地址归属、服务端商品计价、优惠明细占位、固定运费与满额包邮报价器，以及 Disabled 运费配置保护。
+- M12 本地验证通过：Prisma validate、lint、typecheck、59 tests、build。

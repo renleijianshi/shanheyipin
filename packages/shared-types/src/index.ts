@@ -69,3 +69,47 @@ export interface Cart {
   readonly totalQuantity: number;
   readonly subtotalCent: number;
 }
+
+export interface CheckoutAddress {
+  readonly id: string;
+  readonly recipientName: string;
+  readonly phone: string;
+  readonly province: string;
+  readonly city: string;
+  readonly district: string;
+  readonly detail: string;
+}
+
+export interface CheckoutItem {
+  readonly cartItemId: string;
+  readonly skuId: string;
+  readonly productName: string;
+  readonly skuName: string;
+  readonly coverObjectKey: string | null;
+  readonly specs: readonly { readonly name: string; readonly value: string }[];
+  readonly quantity: number;
+  readonly unitPriceCent: number;
+  readonly lineAmountCent: number;
+}
+
+export interface CheckoutDiscount {
+  readonly type: string;
+  readonly description: string;
+  readonly amountCent: number;
+}
+
+export interface ShippingQuote {
+  readonly method: string;
+  readonly feeCent: number;
+  readonly description: string;
+}
+
+export interface CheckoutPreview {
+  readonly address: CheckoutAddress;
+  readonly items: readonly CheckoutItem[];
+  readonly merchandiseAmountCent: number;
+  readonly discounts: readonly CheckoutDiscount[];
+  readonly discountAmountCent: number;
+  readonly shipping: ShippingQuote;
+  readonly payableAmountCent: number;
+}
