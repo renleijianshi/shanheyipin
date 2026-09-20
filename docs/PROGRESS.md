@@ -13,19 +13,5 @@
 | M06 地址 | ✅ | CRUD、默认地址事务与订单快照 |
 | M07 商品分类 | ✅ | 分类树、后台 CRUD、小程序启用树与防循环写入 |
 | M08 SPU | ✅ | 主数据、媒体、标签、上下架校验与分页管理 |
-| M08 SPU | 🔄 | 开发中，断点分支 `feature/M08-spu` |
 
 状态：⏳未开始 / 🔄进行中 / ✅完成 / ⛔阻塞
-
-## GitHub 同步状态（2026-09-20）
-
-- ✅ 仓库已创建/确认：`renleijianshi/shanheyipin`（Private）
-- ✅ origin 已绑定：`https://github.com/renleijianshi/shanheyipin.git`
-- ✅ main 已推送：`d8deb4a`
-- ✅ feature/M08-spu 已推送：`d8deb4a`
-
-当前开发断点：`feature/M08-spu`
-
-当前任务：M08 SPU
-
-下一步：继续完成 M08，不重新扫描整个项目。
