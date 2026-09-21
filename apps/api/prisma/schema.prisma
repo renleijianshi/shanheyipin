@@ -126,6 +126,10 @@ enum PaymentOrderStatus {
   UNKNOWN
 }
 
+enum PaymentTransactionStatus {
+  SUCCEEDED
+}
+
 model User {
   id              BigInt              @id @default(autoincrement())
   publicId        String              @unique @default(uuid()) @map("public_id") @db.VarChar(36)
@@ -468,12 +472,32 @@ model PaymentOrder {
   user              User               @relation(fields: [userId], references: [id], onDelete: Restrict)
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
+  transactions      PaymentTransaction[]
 
   @@unique([userId, idempotencyKey])
   @@unique([provider, providerPaymentId])
   @@index([orderId, createdAt])
   @@index([status, createdAt])
   @@map("payment_orders")
+}
+
+model PaymentTransaction {
+  id                BigInt                   @id @default(autoincrement())
+  publicId          String                   @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  paymentOrderId    BigInt                   @map("payment_order_id")
+  provider          PaymentProviderType
+  eventId           String                   @map("event_id") @db.VarChar(128)
+  providerPaymentId String                   @map("provider_payment_id") @db.VarChar(128)
+  status            PaymentTransactionStatus
+  amountCent        Int                      @map("amount_cent") @db.UnsignedInt
+  occurredAt        DateTime                 @map("occurred_at")
+  paymentOrder      PaymentOrder             @relation(fields: [paymentOrderId], references: [id], onDelete: Restrict)
+  createdAt         DateTime                 @default(now()) @map("created_at")
+
+  @@unique([provider, eventId])
+  @@unique([provider, providerPaymentId])
+  @@index([paymentOrderId, createdAt])
+  @@map("payment_transactions")
 }
 
 model AdminUser {
