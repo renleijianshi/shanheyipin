@@ -7,7 +7,7 @@
 - Phase A：本地接管与 GitHub Private 仓库同步均已完成。
 - 正式目录：`C:\Users\19993\Desktop\山禾颐品\daima`。
 - GitHub：`renleijianshi/shanheyipin`，Private，默认分支 `main`。
-- Git：本地 `main` 已合并 M01-M12；M13 已完成并等待本地合并；按用户要求暂不访问 GitHub，远程同步后置。
+- Git：本地 `main` 已合并 M01-M13；按用户要求暂不访问 GitHub，远程同步后置。
 - 当前任务：M13 订单已完成；下一任务 M14 支付抽象（真实微信支付继续 Deferred）。
 
 ## 已确认约束
@@ -23,7 +23,7 @@
 
 ## 下一步
 
-1. 完成本地 Review 并合并 M13，进入 M14 支付抽象。
+1. 进入 M14 支付抽象。
 2. 继续仅基于本地仓库推进，暂不访问 GitHub。
 3. 用户恢复 GitHub 工作后再一次性核对并同步远程。
 
