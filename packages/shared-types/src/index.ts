@@ -147,3 +147,23 @@ export interface OrderItemSnapshot {
 }
 
 export type OrderAddressSnapshot = Omit<CheckoutAddress, 'id'>;
+
+export type ShipmentStatus = 'SHIPPED' | 'IN_TRANSIT' | 'DELIVERED' | 'EXCEPTION';
+
+export interface ShipmentItem {
+  readonly orderItemId: string;
+  readonly quantity: number;
+}
+
+export interface Shipment {
+  readonly id: string;
+  readonly shipmentNo: string;
+  readonly orderId: string;
+  readonly status: ShipmentStatus;
+  readonly carrierCode: string;
+  readonly carrierName: string;
+  readonly trackingNo: string;
+  readonly items: readonly ShipmentItem[];
+  readonly shippedAt: string;
+  readonly deliveredAt: string | null;
+}

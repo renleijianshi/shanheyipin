@@ -17,7 +17,7 @@
 | M13 订单 | 已完成 | `apps/api/src/modules/orders/`, `apps/api/prisma/` | `tasks/M13_订单.md`, `docs/08_订单支付退款售后设计.md` |
 | M14 支付抽象 | 已完成 | `apps/api/src/modules/payments/`, `apps/api/prisma/` | `tasks/M14_微信支付.md`, `docs/08_订单支付退款售后设计.md`, `docs/11_安全合规部署运维.md` |
 | M15 支付回调抽象 | 已完成 | `apps/api/src/modules/payments/`, `apps/api/prisma/` | `tasks/M15_支付回调.md`, `docs/08_订单支付退款售后设计.md`, `docs/11_安全合规部署运维.md` |
-| M16 发货物流 | 待开始 | `apps/api/src/modules/shipping/` | `tasks/M16_发货物流.md`, `docs/08_订单支付退款售后设计.md` |
+| M16 发货物流 | 已完成 | `apps/api/src/modules/shipping/`, `apps/api/prisma/` | `tasks/M16_发货物流.md`, `docs/08_订单支付退款售后设计.md` |
 | M17-M29 供应链与库存 | 待开始 | `apps/api/src/procurement`, `inventory`, `processing` | `docs/07_商品采购仓储库存设计.md` |
 | M30-M32 售后 | 待开始 | `apps/api/src/aftersales`, `refunds` | `docs/08_订单支付退款售后设计.md` |
 | M33-M42 增长/内容/溯源/B2B | 待开始 | 对应业务模块 | `docs/09_会员营销内容溯源企业团购.md` |
