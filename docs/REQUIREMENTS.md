@@ -36,6 +36,8 @@
 - 先实现 `PaymentProvider`、`PaymentOrder`、状态机、幂等、回调接口、配置占位、`MockPaymentProvider`、`DisabledPaymentProvider`、单元测试和集成测试。
 - 不做真实支付、真实退款、正式商户回调联调。
 - 使用 Mock/Disabled Provider 跑通订单、库存、售后链路。
+- 支付意图必须先持久化再调用 Provider；同一用户幂等键绑定订单与 Provider 请求哈希，并由数据库唯一约束处理并发竞争。
+- Provider 超时或不确定异常记为 `UNKNOWN`，禁止盲目重试；Disabled 明确失败，Mock 只返回本地确认动作，不使用或模拟任何真实商户密钥。
 
 ## 运行与部署约束
 

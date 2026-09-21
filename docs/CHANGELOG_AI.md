@@ -31,3 +31,5 @@
 - 完成 M13：订单主表、商品/地址快照、金额明细、状态日志、用户级幂等键与请求哈希、事务内二次校验、购物车清理、列表详情和未支付取消。
 - 修复订单重试先重新读取已清空购物车的问题：现先回放幂等结果，仅新请求进入结算。
 - M13 本地验证通过：Prisma generate/validate、lint、typecheck、63 tests、build；库存预占明确待 M23。
+- 完成 M14：独立支付单、PaymentProvider 契约、Mock/Disabled Provider、支付发起幂等、并发抢占、订单金额复核和未知结果保护。
+- M14 本地验证通过：Prisma generate/validate、lint、typecheck、68 tests、build；未创建真实微信或支付宝适配器，未使用商户资料。
