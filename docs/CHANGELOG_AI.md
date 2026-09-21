@@ -28,3 +28,6 @@
 - M11 本地验证通过：Prisma generate/validate、lint、typecheck、54 tests、build。
 - 完成 M12：结算条目选择、地址归属、服务端商品计价、优惠明细占位、固定运费与满额包邮报价器，以及 Disabled 运费配置保护。
 - M12 本地验证通过：Prisma validate、lint、typecheck、59 tests、build。
+- 完成 M13：订单主表、商品/地址快照、金额明细、状态日志、用户级幂等键与请求哈希、事务内二次校验、购物车清理、列表详情和未支付取消。
+- 修复订单重试先重新读取已清空购物车的问题：现先回放幂等结果，仅新请求进入结算。
+- M13 本地验证通过：Prisma generate/validate、lint、typecheck、63 tests、build；库存预占明确待 M23。

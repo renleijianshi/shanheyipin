@@ -58,6 +58,58 @@ enum SkuStockMode {
   BATCH
 }
 
+enum OrderType {
+  STANDARD
+}
+
+enum OrderStatus {
+  CREATED
+  PAID
+  ALLOCATING
+  WAIT_SHIP
+  SHIPPED
+  RECEIVED
+  COMPLETED
+  CANCELLED
+  AFTERSALE
+  REFUNDED
+}
+
+enum OrderPaymentStatus {
+  UNPAID
+  PAYING
+  PAID
+  PAY_FAILED
+  PART_REFUNDED
+  REFUNDED
+  CLOSED
+}
+
+enum OrderFulfillmentStatus {
+  UNFULFILLED
+  ALLOCATING
+  WAIT_SHIP
+  SHIPPED
+  RECEIVED
+}
+
+enum OrderAftersaleStatus {
+  NONE
+  PROCESSING
+  COMPLETED
+}
+
+enum OrderPriceType {
+  GOODS
+  PROMOTION
+  COUPON
+  MEMBER
+  POINTS
+  FREIGHT
+  ADJUSTMENT
+  PAYABLE
+}
+
 model User {
   id              BigInt              @id @default(autoincrement())
   publicId        String              @unique @default(uuid()) @map("public_id") @db.VarChar(36)
@@ -68,6 +120,7 @@ model User {
   sessions        UserSession[]
   addresses       UserAddress[]
   cart            Cart?
+  orders          Order[]
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
 
@@ -151,6 +204,7 @@ model Product {
   tags        ProductTag[]
   skus        ProductSku[]
   specs       ProductSpec[]
+  orderItems  OrderItem[]
   createdAt   DateTime       @default(now()) @map("created_at")
   updatedAt   DateTime       @updatedAt @map("updated_at")
 
@@ -176,6 +230,7 @@ model ProductSku {
   product             Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
   specificationValues SkuSpecRelation[]
   cartItems            CartItem[]
+  orderItems           OrderItem[]
   createdAt           DateTime          @default(now()) @map("created_at")
   updatedAt           DateTime          @updatedAt @map("updated_at")
 
@@ -277,6 +332,104 @@ model CartItem {
   @@unique([cartId, skuId])
   @@index([skuId])
   @@map("cart_items")
+}
+
+model Order {
+  id                BigInt                 @id @default(autoincrement())
+  publicId          String                 @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  orderNo           String                 @unique @map("order_no") @db.VarChar(34)
+  userId            BigInt                 @map("user_id")
+  idempotencyKey    String                 @map("idempotency_key") @db.VarChar(128)
+  requestHash       String                 @map("request_hash") @db.Char(64)
+  orderType         OrderType              @default(STANDARD) @map("order_type")
+  orderStatus       OrderStatus            @default(CREATED) @map("order_status")
+  paymentStatus     OrderPaymentStatus     @default(UNPAID) @map("payment_status")
+  fulfillmentStatus OrderFulfillmentStatus @default(UNFULFILLED) @map("fulfillment_status")
+  aftersaleStatus   OrderAftersaleStatus   @default(NONE) @map("aftersale_status")
+  goodsAmountCent   Int                    @map("goods_amount_cent") @db.UnsignedInt
+  discountAmountCent Int                   @default(0) @map("discount_amount_cent") @db.UnsignedInt
+  freightAmountCent Int                    @map("freight_amount_cent") @db.UnsignedInt
+  payableAmountCent Int                    @map("payable_amount_cent") @db.UnsignedInt
+  paidAmountCent    Int                    @default(0) @map("paid_amount_cent") @db.UnsignedInt
+  paidAt            DateTime?              @map("paid_at")
+  shippedAt         DateTime?              @map("shipped_at")
+  completedAt       DateTime?              @map("completed_at")
+  cancelledAt       DateTime?              @map("cancelled_at")
+  user              User                   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  items             OrderItem[]
+  address           OrderAddress?
+  priceDetails      OrderPriceDetail[]
+  statusLogs        OrderStatusLog[]
+  createdAt         DateTime               @default(now()) @map("created_at")
+  updatedAt         DateTime               @updatedAt @map("updated_at")
+
+  @@unique([userId, idempotencyKey])
+  @@index([userId, createdAt])
+  @@index([orderStatus, createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id                  BigInt     @id @default(autoincrement())
+  orderId             BigInt     @map("order_id")
+  productId           BigInt     @map("product_id")
+  skuId               BigInt     @map("sku_id")
+  productNameSnapshot String     @map("product_name_snapshot") @db.VarChar(100)
+  skuNameSnapshot     String     @map("sku_name_snapshot") @db.VarChar(100)
+  imageSnapshot       String?    @map("image_snapshot") @db.VarChar(255)
+  specsSnapshot       Json       @map("specs_snapshot")
+  unitPriceCent       Int        @map("unit_price_cent") @db.UnsignedInt
+  quantity            Int        @db.UnsignedTinyInt
+  discountCent        Int        @default(0) @map("discount_cent") @db.UnsignedInt
+  finalAmountCent     Int        @map("final_amount_cent") @db.UnsignedInt
+  order               Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product             Product    @relation(fields: [productId], references: [id], onDelete: Restrict)
+  sku                 ProductSku @relation(fields: [skuId], references: [id], onDelete: Restrict)
+  createdAt           DateTime   @default(now()) @map("created_at")
+
+  @@index([orderId])
+  @@index([skuId])
+  @@map("order_items")
+}
+
+model OrderAddress {
+  id            BigInt @id @default(autoincrement())
+  orderId       BigInt @unique @map("order_id")
+  recipientName String @map("recipient_name") @db.VarChar(50)
+  phone         String @db.VarChar(20)
+  province      String @db.VarChar(50)
+  city          String @db.VarChar(50)
+  district      String @db.VarChar(50)
+  detail        String @db.VarChar(255)
+  order         Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_addresses")
+}
+
+model OrderPriceDetail {
+  id          BigInt         @id @default(autoincrement())
+  orderId     BigInt         @map("order_id")
+  type        OrderPriceType
+  description String         @db.VarChar(100)
+  amountCent  Int            @map("amount_cent") @db.UnsignedInt
+  order       Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  @@index([orderId])
+  @@map("order_price_details")
+}
+
+model OrderStatusLog {
+  id         BigInt       @id @default(autoincrement())
+  orderId    BigInt       @map("order_id")
+  fromStatus OrderStatus? @map("from_status")
+  toStatus   OrderStatus  @map("to_status")
+  reason     String       @db.VarChar(200)
+  order      Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt  DateTime     @default(now()) @map("created_at")
+
+  @@index([orderId, createdAt])
+  @@map("order_status_logs")
 }
 
 model AdminUser {

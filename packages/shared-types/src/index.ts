@@ -113,3 +113,37 @@ export interface CheckoutPreview {
   readonly shipping: ShippingQuote;
   readonly payableAmountCent: number;
 }
+
+export type OrderStatus =
+  | 'CREATED' | 'PAID' | 'ALLOCATING' | 'WAIT_SHIP' | 'SHIPPED'
+  | 'RECEIVED' | 'COMPLETED' | 'CANCELLED' | 'AFTERSALE' | 'REFUNDED';
+export type OrderPaymentStatus =
+  | 'UNPAID' | 'PAYING' | 'PAID' | 'PAY_FAILED' | 'PART_REFUNDED' | 'REFUNDED' | 'CLOSED';
+export type OrderFulfillmentStatus = 'UNFULFILLED' | 'ALLOCATING' | 'WAIT_SHIP' | 'SHIPPED' | 'RECEIVED';
+export type OrderAftersaleStatus = 'NONE' | 'PROCESSING' | 'COMPLETED';
+
+export interface OrderPriceDetail {
+  readonly type: 'GOODS' | 'PROMOTION' | 'COUPON' | 'MEMBER' | 'POINTS' | 'FREIGHT' | 'ADJUSTMENT' | 'PAYABLE';
+  readonly description: string;
+  readonly amountCent: number;
+}
+
+export interface OrderStatusLog {
+  readonly fromStatus: OrderStatus | null;
+  readonly toStatus: OrderStatus;
+  readonly reason: string;
+  readonly createdAt: string;
+}
+
+export interface OrderItemSnapshot {
+  readonly skuId: string;
+  readonly productName: string;
+  readonly skuName: string;
+  readonly coverObjectKey: string | null;
+  readonly specs: readonly { readonly name: string; readonly value: string }[];
+  readonly quantity: number;
+  readonly unitPriceCent: number;
+  readonly lineAmountCent: number;
+}
+
+export type OrderAddressSnapshot = Omit<CheckoutAddress, 'id'>;
