@@ -144,6 +144,55 @@ enum ShipmentSyncStatus {
   UNKNOWN
 }
 
+enum InventoryMovementType {
+  PURCHASE_IN
+  PURCHASE_RETURN_OUT
+  PROCESS_MATERIAL_OUT
+  PROCESS_FINISHED_IN
+  SALES_RESERVE
+  SALES_RELEASE
+  SALES_OUT
+  RETURN_IN
+  TRANSFER_OUT
+  TRANSFER_IN
+  STOCKTAKE_GAIN
+  STOCKTAKE_LOSS
+  DAMAGE_LOSS
+  MANUAL_ADJUST
+  RESHIP_OUT
+}
+
+enum AftersaleType {
+  REFUND_ONLY
+  RETURN_REFUND
+  RESHIP
+  COMPENSATION
+}
+
+enum AftersaleStatus {
+  APPLIED
+  APPROVED
+  REJECTED
+  RETURN_PENDING
+  RETURN_RECEIVED
+  RESOLVED
+  CANCELLED
+}
+
+enum RefundStatus {
+  CREATED
+  PENDING
+  SUCCEEDED
+  FAILED
+  UNKNOWN
+}
+
+enum ReshipStatus {
+  WAIT_SHIP
+  SHIPPED
+  CANCELLED
+}
+
 model User {
   id              BigInt              @id @default(autoincrement())
   publicId        String              @unique @default(uuid()) @map("public_id") @db.VarChar(36)
@@ -156,6 +205,7 @@ model User {
   cart            Cart?
   orders          Order[]
   paymentOrders   PaymentOrder[]
+  aftersales      Aftersale[]
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
 
@@ -266,6 +316,9 @@ model ProductSku {
   specificationValues SkuSpecRelation[]
   cartItems            CartItem[]
   orderItems           OrderItem[]
+  inventoryBatches     InventoryBatch[]
+  inventoryBalances    InventoryBalance[]
+  inventoryMovements   InventoryMovement[]
   createdAt           DateTime          @default(now()) @map("created_at")
   updatedAt           DateTime          @updatedAt @map("updated_at")
 
@@ -397,6 +450,8 @@ model Order {
   statusLogs        OrderStatusLog[]
   paymentOrders     PaymentOrder[]
   shipments         Shipment[]
+  aftersales        Aftersale[]
+  refundOrders      RefundOrder[]
   createdAt         DateTime               @default(now()) @map("created_at")
   updatedAt         DateTime               @updatedAt @map("updated_at")
 
@@ -424,6 +479,8 @@ model OrderItem {
   product             Product    @relation(fields: [productId], references: [id], onDelete: Restrict)
   sku                 ProductSku @relation(fields: [skuId], references: [id], onDelete: Restrict)
   shipmentItems       ShipmentItem[]
+  aftersaleItems      AftersaleItem[]
+  reshipItems         ReshipItem[]
   createdAt           DateTime   @default(now()) @map("created_at")
 
   @@index([orderId])
@@ -490,6 +547,7 @@ model PaymentOrder {
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
   transactions      PaymentTransaction[]
+  refundOrders      RefundOrder[]
 
   @@unique([userId, idempotencyKey])
   @@unique([provider, providerPaymentId])
@@ -560,6 +618,236 @@ model ShipmentItem {
   @@map("shipment_items")
 }
 
+model Warehouse {
+  id        BigInt              @id @default(autoincrement())
+  publicId  String              @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  code      String              @unique @db.VarChar(32)
+  name      String              @db.VarChar(100)
+  enabled   Boolean             @default(true)
+  batches   InventoryBatch[]
+  balances  InventoryBalance[]
+  movements InventoryMovement[]
+  createdAt DateTime            @default(now()) @map("created_at")
+  updatedAt DateTime            @updatedAt @map("updated_at")
+
+  @@map("warehouses")
+}
+
+model InventoryBatch {
+  id           BigInt              @id @default(autoincrement())
+  publicId     String              @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  batchNo      String              @unique @map("batch_no") @db.VarChar(64)
+  skuId        BigInt              @map("sku_id")
+  warehouseId  BigInt              @map("warehouse_id")
+  unitCostCent Int                 @default(0) @map("unit_cost_cent") @db.UnsignedInt
+  sku          ProductSku          @relation(fields: [skuId], references: [id], onDelete: Restrict)
+  warehouse    Warehouse           @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
+  balances     InventoryBalance[]
+  movements    InventoryMovement[]
+  reshipItems  ReshipItem[]
+  createdAt    DateTime            @default(now()) @map("created_at")
+  updatedAt    DateTime            @updatedAt @map("updated_at")
+
+  @@index([skuId, warehouseId])
+  @@map("inventory_batches")
+}
+
+model InventoryBalance {
+  id                  BigInt         @id @default(autoincrement())
+  skuId               BigInt         @map("sku_id")
+  warehouseId         BigInt         @map("warehouse_id")
+  batchId             BigInt         @map("batch_id")
+  physicalQty         Int            @default(0) @map("physical_qty")
+  availableQty        Int            @default(0) @map("available_qty")
+  lockedQty           Int            @default(0) @map("locked_qty")
+  outboundQty         Int            @default(0) @map("outbound_qty")
+  frozenQty           Int            @default(0) @map("frozen_qty")
+  defectiveQty        Int            @default(0) @map("defective_qty")
+  returnInspectionQty Int            @default(0) @map("return_inspection_qty")
+  version             Int            @default(0) @db.UnsignedInt
+  sku                 ProductSku     @relation(fields: [skuId], references: [id], onDelete: Restrict)
+  warehouse           Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
+  batch               InventoryBatch @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  movements           InventoryMovement[]
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime       @updatedAt @map("updated_at")
+
+  @@unique([skuId, warehouseId, batchId])
+  @@index([warehouseId, skuId])
+  @@map("inventory_balances")
+}
+
+model InventoryMovement {
+  id               BigInt                @id @default(autoincrement())
+  publicId         String                @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  movementNo       String                @unique @map("movement_no") @db.VarChar(34)
+  balanceId        BigInt                @map("balance_id")
+  skuId            BigInt                @map("sku_id")
+  warehouseId      BigInt                @map("warehouse_id")
+  batchId          BigInt                @map("batch_id")
+  operatorAdminId  BigInt                @map("operator_admin_id")
+  type             InventoryMovementType
+  sourceType       String                @map("source_type") @db.VarChar(50)
+  sourceId         String                @map("source_id") @db.VarChar(36)
+  reason           String                @db.VarChar(200)
+  idempotencyKey   String                @unique @map("idempotency_key") @db.VarChar(128)
+  requestHash      String                @map("request_hash") @db.Char(64)
+  deltas           Json
+  beforeQuantities Json                  @map("before_quantities")
+  afterQuantities  Json                  @map("after_quantities")
+  balance          InventoryBalance      @relation(fields: [balanceId], references: [id], onDelete: Restrict)
+  sku              ProductSku            @relation(fields: [skuId], references: [id], onDelete: Restrict)
+  warehouse        Warehouse             @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
+  batch            InventoryBatch        @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  operatorAdmin    AdminUser              @relation(fields: [operatorAdminId], references: [id], onDelete: Restrict)
+  createdAt        DateTime               @default(now()) @map("created_at")
+
+  @@index([skuId, createdAt])
+  @@index([sourceType, sourceId])
+  @@index([operatorAdminId])
+  @@map("inventory_movements")
+}
+
+model Aftersale {
+  id             BigInt          @id @default(autoincrement())
+  publicId       String          @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  aftersaleNo    String          @unique @map("aftersale_no") @db.VarChar(34)
+  orderId        BigInt          @map("order_id")
+  userId         BigInt          @map("user_id")
+  type           AftersaleType
+  status         AftersaleStatus @default(APPLIED)
+  reason         String          @db.VarChar(100)
+  description    String          @db.VarChar(500)
+  idempotencyKey String          @map("idempotency_key") @db.VarChar(128)
+  requestHash    String          @map("request_hash") @db.Char(64)
+  order          Order           @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  user           User            @relation(fields: [userId], references: [id], onDelete: Restrict)
+  items          AftersaleItem[]
+  logs           AftersaleLog[]
+  refundOrders   RefundOrder[]
+  reshipOrder    ReshipOrder?
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  @@unique([userId, idempotencyKey])
+  @@index([orderId, createdAt])
+  @@index([status, createdAt])
+  @@map("aftersales")
+}
+
+model AftersaleItem {
+  id          BigInt    @id @default(autoincrement())
+  aftersaleId BigInt    @map("aftersale_id")
+  orderItemId BigInt    @map("order_item_id")
+  quantity    Int       @db.UnsignedTinyInt
+  aftersale   Aftersale @relation(fields: [aftersaleId], references: [id], onDelete: Cascade)
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Restrict)
+
+  @@unique([aftersaleId, orderItemId])
+  @@index([orderItemId])
+  @@map("aftersale_items")
+}
+
+model AftersaleLog {
+  id           BigInt           @id @default(autoincrement())
+  aftersaleId  BigInt           @map("aftersale_id")
+  fromStatus   AftersaleStatus? @map("from_status")
+  toStatus     AftersaleStatus  @map("to_status")
+  operatorType String           @map("operator_type") @db.VarChar(20)
+  operatorId   BigInt           @map("operator_id")
+  note         String           @db.VarChar(200)
+  aftersale    Aftersale        @relation(fields: [aftersaleId], references: [id], onDelete: Cascade)
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  @@index([aftersaleId, createdAt])
+  @@map("aftersale_logs")
+}
+
+model RefundOrder {
+  id BigInt @id @default(autoincrement())
+  publicId String @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  refundNo String @unique @map("refund_no") @db.VarChar(34)
+  orderId BigInt @map("order_id")
+  aftersaleId BigInt @map("aftersale_id")
+  paymentOrderId BigInt @map("payment_order_id")
+  requestedByAdminId BigInt @map("requested_by_admin_id")
+  provider PaymentProviderType
+  status RefundStatus @default(CREATED)
+  amountCent Int @map("amount_cent") @db.UnsignedInt
+  reason String @db.VarChar(200)
+  idempotencyKey String @unique @map("idempotency_key") @db.VarChar(128)
+  requestHash String @map("request_hash") @db.Char(64)
+  providerRefundId String? @map("provider_refund_id") @db.VarChar(128)
+  failureReason String? @map("failure_reason") @db.VarChar(64)
+  succeededAt DateTime? @map("succeeded_at")
+  order Order @relation(fields:[orderId],references:[id],onDelete:Restrict)
+  aftersale Aftersale @relation(fields:[aftersaleId],references:[id],onDelete:Restrict)
+  paymentOrder PaymentOrder @relation(fields:[paymentOrderId],references:[id],onDelete:Restrict)
+  requestedByAdmin AdminUser @relation(fields:[requestedByAdminId],references:[id],onDelete:Restrict)
+  transactions RefundTransaction[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@unique([provider,providerRefundId])
+  @@index([orderId,createdAt])
+  @@index([aftersaleId])
+  @@index([requestedByAdminId])
+  @@map("refund_orders")
+}
+
+model RefundTransaction {
+  id BigInt @id @default(autoincrement())
+  refundOrderId BigInt @map("refund_order_id")
+  provider PaymentProviderType
+  eventId String @map("event_id") @db.VarChar(128)
+  providerRefundId String @map("provider_refund_id") @db.VarChar(128)
+  amountCent Int @map("amount_cent") @db.UnsignedInt
+  occurredAt DateTime @map("occurred_at")
+  refundOrder RefundOrder @relation(fields:[refundOrderId],references:[id],onDelete:Restrict)
+  createdAt DateTime @default(now()) @map("created_at")
+  @@unique([provider,eventId])
+  @@unique([provider,providerRefundId])
+  @@index([refundOrderId,createdAt])
+  @@map("refund_transactions")
+}
+
+model ReshipOrder {
+  id BigInt @id @default(autoincrement())
+  publicId String @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  reshipNo String @unique @map("reship_no") @db.VarChar(34)
+  aftersaleId BigInt @unique @map("aftersale_id")
+  createdByAdminId BigInt @map("created_by_admin_id")
+  status ReshipStatus @default(WAIT_SHIP)
+  addressSnapshot Json @map("address_snapshot")
+  reason String @db.VarChar(200)
+  costAmountCent Int @default(0) @map("cost_amount_cent") @db.UnsignedInt
+  idempotencyKey String @unique @map("idempotency_key") @db.VarChar(128)
+  requestHash String @map("request_hash") @db.Char(64)
+  aftersale Aftersale @relation(fields:[aftersaleId],references:[id],onDelete:Restrict)
+  createdByAdmin AdminUser @relation(fields:[createdByAdminId],references:[id],onDelete:Restrict)
+  items ReshipItem[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@index([status,createdAt])
+  @@index([createdByAdminId])
+  @@map("reship_orders")
+}
+
+model ReshipItem {
+  id BigInt @id @default(autoincrement())
+  reshipOrderId BigInt @map("reship_order_id")
+  orderItemId BigInt @map("order_item_id")
+  batchId BigInt @map("batch_id")
+  quantity Int @db.UnsignedTinyInt
+  unitCostCent Int @map("unit_cost_cent") @db.UnsignedInt
+  reshipOrder ReshipOrder @relation(fields:[reshipOrderId],references:[id],onDelete:Cascade)
+  orderItem OrderItem @relation(fields:[orderItemId],references:[id],onDelete:Restrict)
+  batch InventoryBatch @relation(fields:[batchId],references:[id],onDelete:Restrict)
+  @@unique([reshipOrderId,orderItemId,batchId])
+  @@index([orderItemId])
+  @@index([batchId])
+  @@map("reship_items")
+}
+
 model AdminUser {
   id           BigInt          @id @default(autoincrement())
   username     String          @unique @db.VarChar(64)
@@ -568,6 +856,9 @@ model AdminUser {
   status       AdminUserStatus @default(ACTIVE)
   roles        AdminUserRole[]
   shipments    Shipment[]
+  inventoryMovements InventoryMovement[]
+  refundOrders RefundOrder[]
+  reshipOrders ReshipOrder[]
   createdAt    DateTime        @default(now()) @map("created_at")
   updatedAt    DateTime        @updatedAt @map("updated_at")
 

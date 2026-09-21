@@ -167,3 +167,34 @@ export interface Shipment {
   readonly shippedAt: string;
   readonly deliveredAt: string | null;
 }
+
+export interface InventoryQuantities {
+  readonly physical: number;
+  readonly available: number;
+  readonly locked: number;
+  readonly outbound: number;
+  readonly frozen: number;
+  readonly defective: number;
+  readonly returnInspection: number;
+}
+
+export interface InventoryBalance extends InventoryQuantities {
+  readonly skuId: string;
+  readonly warehouseId: string;
+  readonly batchId: string;
+  readonly version: number;
+}
+
+export type AftersaleType = 'REFUND_ONLY' | 'RETURN_REFUND' | 'RESHIP' | 'COMPENSATION';
+export type AftersaleStatus = 'APPLIED' | 'APPROVED' | 'REJECTED' | 'RETURN_PENDING' | 'RETURN_RECEIVED' | 'RESOLVED' | 'CANCELLED';
+export interface Aftersale {
+  readonly id: string;
+  readonly aftersaleNo: string;
+  readonly orderId: string;
+  readonly type: AftersaleType;
+  readonly status: AftersaleStatus;
+  readonly reason: string;
+  readonly description: string;
+  readonly items: readonly { readonly orderItemId: string; readonly quantity: number }[];
+  readonly createdAt: string;
+}

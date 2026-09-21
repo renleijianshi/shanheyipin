@@ -1,0 +1,10 @@
+import { describe, expect, it } from 'vitest';
+import { AftersaleService, type AftersaleRepository } from '../src/modules/aftersales/aftersale-service.js';
+const orderId='f410126b-b44a-483f-aad5-8dfb83382599', itemId='e0c75503-e3d5-4bd3-982f-dfef733736ac', id='581f1d31-fb5a-44e5-82a9-29a4a80294a5';
+const row={id,aftersaleNo:'AS1',orderId,type:'RESHIP' as const,status:'APPLIED' as const,reason:'破损',description:'外包装破损',items:[{orderItemId:itemId,quantity:1}],createdAt:'2026-09-21T00:00:00.000Z'};
+function repo(): AftersaleRepository & { creates:number } { const r={creates:0,findByIdempotency:async(_u:string,key:string)=>key==='after:repeat'?row:null,create:async()=>{r.creates++;return row;},listOwned:async()=>[row],findOwned:async(_u:string,x:string)=>x===id?row:null,decide:async(_a:string,_i:string,ok:boolean)=>({...row,status:ok?'APPROVED' as const:'REJECTED' as const})}; return r; }
+describe('AftersaleService',()=>{
+  it('creates and idempotently replays an application',async()=>{const r=repo(),s=new AftersaleService(r),input={orderId,type:'RESHIP' as const,reason:' 破损 ',description:' 外包装破损 ',items:[{orderItemId:itemId,quantity:1}]}; await expect(s.create('42','after:new',input)).resolves.toEqual(row); await expect(s.create('42','after:repeat',input)).resolves.toEqual(row); expect(r.creates).toBe(1);});
+  it('rejects duplicate or excessive items',async()=>{const s=new AftersaleService(repo()),base={orderId,type:'REFUND_ONLY' as const,reason:'品质',description:'商品有问题'}; await expect(s.create('42','after:new',{...base,items:[{orderItemId:itemId,quantity:1},{orderItemId:itemId,quantity:1}]})).rejects.toThrow('Duplicate'); await expect(s.create('42','after:new',{...base,items:[{orderItemId:itemId,quantity:100}]})).rejects.toThrow('quantity');});
+  it('uses ownership-filtered reads and validated admin decisions',async()=>{const s=new AftersaleService(repo()); await expect(s.get('42',id)).resolves.toEqual(row); await expect(s.get('42',orderId)).rejects.toThrow('not found'); await expect(s.decide('7',id,true,' 同意补发 ')).resolves.toMatchObject({status:'APPROVED'});});
+});
