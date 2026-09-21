@@ -184,3 +184,17 @@ export interface InventoryBalance extends InventoryQuantities {
   readonly batchId: string;
   readonly version: number;
 }
+
+export type AftersaleType = 'REFUND_ONLY' | 'RETURN_REFUND' | 'RESHIP' | 'COMPENSATION';
+export type AftersaleStatus = 'APPLIED' | 'APPROVED' | 'REJECTED' | 'RETURN_PENDING' | 'RETURN_RECEIVED' | 'RESOLVED' | 'CANCELLED';
+export interface Aftersale {
+  readonly id: string;
+  readonly aftersaleNo: string;
+  readonly orderId: string;
+  readonly type: AftersaleType;
+  readonly status: AftersaleStatus;
+  readonly reason: string;
+  readonly description: string;
+  readonly items: readonly { readonly orderItemId: string; readonly quantity: number }[];
+  readonly createdAt: string;
+}
