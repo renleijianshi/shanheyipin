@@ -144,6 +144,24 @@ enum ShipmentSyncStatus {
   UNKNOWN
 }
 
+enum InventoryMovementType {
+  PURCHASE_IN
+  PURCHASE_RETURN_OUT
+  PROCESS_MATERIAL_OUT
+  PROCESS_FINISHED_IN
+  SALES_RESERVE
+  SALES_RELEASE
+  SALES_OUT
+  RETURN_IN
+  TRANSFER_OUT
+  TRANSFER_IN
+  STOCKTAKE_GAIN
+  STOCKTAKE_LOSS
+  DAMAGE_LOSS
+  MANUAL_ADJUST
+  RESHIP_OUT
+}
+
 model User {
   id              BigInt              @id @default(autoincrement())
   publicId        String              @unique @default(uuid()) @map("public_id") @db.VarChar(36)
@@ -266,6 +284,9 @@ model ProductSku {
   specificationValues SkuSpecRelation[]
   cartItems            CartItem[]
   orderItems           OrderItem[]
+  inventoryBatches     InventoryBatch[]
+  inventoryBalances    InventoryBalance[]
+  inventoryMovements   InventoryMovement[]
   createdAt           DateTime          @default(now()) @map("created_at")
   updatedAt           DateTime          @updatedAt @map("updated_at")
 
@@ -560,6 +581,95 @@ model ShipmentItem {
   @@map("shipment_items")
 }
 
+model Warehouse {
+  id        BigInt              @id @default(autoincrement())
+  publicId  String              @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  code      String              @unique @db.VarChar(32)
+  name      String              @db.VarChar(100)
+  enabled   Boolean             @default(true)
+  batches   InventoryBatch[]
+  balances  InventoryBalance[]
+  movements InventoryMovement[]
+  createdAt DateTime            @default(now()) @map("created_at")
+  updatedAt DateTime            @updatedAt @map("updated_at")
+
+  @@map("warehouses")
+}
+
+model InventoryBatch {
+  id           BigInt              @id @default(autoincrement())
+  publicId     String              @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  batchNo      String              @unique @map("batch_no") @db.VarChar(64)
+  skuId        BigInt              @map("sku_id")
+  warehouseId  BigInt              @map("warehouse_id")
+  unitCostCent Int                 @default(0) @map("unit_cost_cent") @db.UnsignedInt
+  sku          ProductSku          @relation(fields: [skuId], references: [id], onDelete: Restrict)
+  warehouse    Warehouse           @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
+  balances     InventoryBalance[]
+  movements    InventoryMovement[]
+  createdAt    DateTime            @default(now()) @map("created_at")
+  updatedAt    DateTime            @updatedAt @map("updated_at")
+
+  @@index([skuId, warehouseId])
+  @@map("inventory_batches")
+}
+
+model InventoryBalance {
+  id                  BigInt         @id @default(autoincrement())
+  skuId               BigInt         @map("sku_id")
+  warehouseId         BigInt         @map("warehouse_id")
+  batchId             BigInt         @map("batch_id")
+  physicalQty         Int            @default(0) @map("physical_qty")
+  availableQty        Int            @default(0) @map("available_qty")
+  lockedQty           Int            @default(0) @map("locked_qty")
+  outboundQty         Int            @default(0) @map("outbound_qty")
+  frozenQty           Int            @default(0) @map("frozen_qty")
+  defectiveQty        Int            @default(0) @map("defective_qty")
+  returnInspectionQty Int            @default(0) @map("return_inspection_qty")
+  version             Int            @default(0) @db.UnsignedInt
+  sku                 ProductSku     @relation(fields: [skuId], references: [id], onDelete: Restrict)
+  warehouse           Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
+  batch               InventoryBatch @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  movements           InventoryMovement[]
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime       @updatedAt @map("updated_at")
+
+  @@unique([skuId, warehouseId, batchId])
+  @@index([warehouseId, skuId])
+  @@map("inventory_balances")
+}
+
+model InventoryMovement {
+  id               BigInt                @id @default(autoincrement())
+  publicId         String                @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  movementNo       String                @unique @map("movement_no") @db.VarChar(34)
+  balanceId        BigInt                @map("balance_id")
+  skuId            BigInt                @map("sku_id")
+  warehouseId      BigInt                @map("warehouse_id")
+  batchId          BigInt                @map("batch_id")
+  operatorAdminId  BigInt                @map("operator_admin_id")
+  type             InventoryMovementType
+  sourceType       String                @map("source_type") @db.VarChar(50)
+  sourceId         String                @map("source_id") @db.VarChar(36)
+  reason           String                @db.VarChar(200)
+  idempotencyKey   String                @unique @map("idempotency_key") @db.VarChar(128)
+  requestHash      String                @map("request_hash") @db.Char(64)
+  deltas           Json
+  beforeQuantities Json                  @map("before_quantities")
+  afterQuantities  Json                  @map("after_quantities")
+  balance          InventoryBalance      @relation(fields: [balanceId], references: [id], onDelete: Restrict)
+  sku              ProductSku            @relation(fields: [skuId], references: [id], onDelete: Restrict)
+  warehouse        Warehouse             @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
+  batch            InventoryBatch        @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  operatorAdmin    AdminUser              @relation(fields: [operatorAdminId], references: [id], onDelete: Restrict)
+  createdAt        DateTime               @default(now()) @map("created_at")
+
+  @@index([skuId, createdAt])
+  @@index([sourceType, sourceId])
+  @@index([operatorAdminId])
+  @@map("inventory_movements")
+}
+
 model AdminUser {
   id           BigInt          @id @default(autoincrement())
   username     String          @unique @db.VarChar(64)
@@ -568,6 +678,7 @@ model AdminUser {
   status       AdminUserStatus @default(ACTIVE)
   roles        AdminUserRole[]
   shipments    Shipment[]
+  inventoryMovements InventoryMovement[]
   createdAt    DateTime        @default(now()) @map("created_at")
   updatedAt    DateTime        @updatedAt @map("updated_at")
 

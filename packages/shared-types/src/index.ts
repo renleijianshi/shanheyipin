@@ -167,3 +167,20 @@ export interface Shipment {
   readonly shippedAt: string;
   readonly deliveredAt: string | null;
 }
+
+export interface InventoryQuantities {
+  readonly physical: number;
+  readonly available: number;
+  readonly locked: number;
+  readonly outbound: number;
+  readonly frozen: number;
+  readonly defective: number;
+  readonly returnInspection: number;
+}
+
+export interface InventoryBalance extends InventoryQuantities {
+  readonly skuId: string;
+  readonly warehouseId: string;
+  readonly batchId: string;
+  readonly version: number;
+}
