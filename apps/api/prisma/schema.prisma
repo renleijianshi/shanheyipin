@@ -130,6 +130,20 @@ enum PaymentTransactionStatus {
   SUCCEEDED
 }
 
+enum ShipmentStatus {
+  SHIPPED
+  IN_TRANSIT
+  DELIVERED
+  EXCEPTION
+}
+
+enum ShipmentSyncStatus {
+  NOT_CONFIGURED
+  PENDING
+  SYNCED
+  UNKNOWN
+}
+
 model User {
   id              BigInt              @id @default(autoincrement())
   publicId        String              @unique @default(uuid()) @map("public_id") @db.VarChar(36)
@@ -382,6 +396,7 @@ model Order {
   priceDetails      OrderPriceDetail[]
   statusLogs        OrderStatusLog[]
   paymentOrders     PaymentOrder[]
+  shipments         Shipment[]
   createdAt         DateTime               @default(now()) @map("created_at")
   updatedAt         DateTime               @updatedAt @map("updated_at")
 
@@ -393,6 +408,7 @@ model Order {
 
 model OrderItem {
   id                  BigInt     @id @default(autoincrement())
+  publicId            String     @unique @default(uuid()) @map("public_id") @db.VarChar(36)
   orderId             BigInt     @map("order_id")
   productId           BigInt     @map("product_id")
   skuId               BigInt     @map("sku_id")
@@ -407,6 +423,7 @@ model OrderItem {
   order               Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product             Product    @relation(fields: [productId], references: [id], onDelete: Restrict)
   sku                 ProductSku @relation(fields: [skuId], references: [id], onDelete: Restrict)
+  shipmentItems       ShipmentItem[]
   createdAt           DateTime   @default(now()) @map("created_at")
 
   @@index([orderId])
@@ -500,6 +517,49 @@ model PaymentTransaction {
   @@map("payment_transactions")
 }
 
+model Shipment {
+  id                 BigInt             @id @default(autoincrement())
+  publicId           String             @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  shipmentNo         String             @unique @map("shipment_no") @db.VarChar(34)
+  orderId            BigInt             @map("order_id")
+  shippedByAdminId   BigInt             @map("shipped_by_admin_id")
+  idempotencyKey     String             @map("idempotency_key") @db.VarChar(128)
+  requestHash        String             @map("request_hash") @db.Char(64)
+  status             ShipmentStatus     @default(SHIPPED)
+  syncStatus         ShipmentSyncStatus @default(NOT_CONFIGURED) @map("sync_status")
+  carrierCode        String             @map("carrier_code") @db.VarChar(32)
+  carrierName        String             @map("carrier_name") @db.VarChar(50)
+  trackingNo         String             @map("tracking_no") @db.VarChar(64)
+  shippedAt          DateTime           @default(now()) @map("shipped_at")
+  deliveredAt        DateTime?          @map("delivered_at")
+  order              Order              @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  shippedByAdmin     AdminUser          @relation(fields: [shippedByAdminId], references: [id], onDelete: Restrict)
+  items              ShipmentItem[]
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+
+  @@unique([orderId, idempotencyKey])
+  @@unique([carrierCode, trackingNo])
+  @@index([orderId, createdAt])
+  @@index([status, createdAt])
+  @@index([shippedByAdminId])
+  @@map("shipments")
+}
+
+model ShipmentItem {
+  id          BigInt    @id @default(autoincrement())
+  shipmentId  BigInt    @map("shipment_id")
+  orderItemId BigInt    @map("order_item_id")
+  quantity    Int       @db.UnsignedTinyInt
+  shipment    Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Restrict)
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@unique([shipmentId, orderItemId])
+  @@index([orderItemId])
+  @@map("shipment_items")
+}
+
 model AdminUser {
   id           BigInt          @id @default(autoincrement())
   username     String          @unique @db.VarChar(64)
@@ -507,6 +567,7 @@ model AdminUser {
   displayName  String          @map("display_name") @db.VarChar(100)
   status       AdminUserStatus @default(ACTIVE)
   roles        AdminUserRole[]
+  shipments    Shipment[]
   createdAt    DateTime        @default(now()) @map("created_at")
   updatedAt    DateTime        @updatedAt @map("updated_at")
 
