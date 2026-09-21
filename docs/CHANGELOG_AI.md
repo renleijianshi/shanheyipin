@@ -33,3 +33,5 @@
 - M13 本地验证通过：Prisma generate/validate、lint、typecheck、63 tests、build；库存预占明确待 M23。
 - 完成 M14：独立支付单、PaymentProvider 契约、Mock/Disabled Provider、支付发起幂等、并发抢占、订单金额复核和未知结果保护。
 - M14 本地验证通过：Prisma generate/validate、lint、typecheck、68 tests、build；未创建真实微信或支付宝适配器，未使用商户资料。
+- 完成 M15：支付回调验证器契约、Mock HMAC 验签、64KiB 正文限制、严格字段解析、金额/交易号校验、支付流水唯一约束和支付单/订单事务更新。
+- M15 覆盖重复通知幂等、签名篡改、金额篡改和超大正文测试；真实微信回调验签/解密继续 Deferred。
