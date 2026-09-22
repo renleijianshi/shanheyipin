@@ -6,6 +6,15 @@ on:
   push:
     branches: [main]
 
+  # 云端定时巡检：UTC 03:17 / 15:17 → 北京时间 11:17 / 23:17
+  # 用 :17 避开整点，GitHub 的 schedule 在高峰期会排队延迟。
+  # 注意：仓库连续 60 天无任何活动时 GitHub 会自动停用 schedule，
+  # 届时pus一次代码或去 Actions 页面手动 enable 即可恢复。
+  schedule:
+    - cron: '17 3,15 * * *'
+
+  workflow_dispatch:
+
 permissions:
   contents: read
 
@@ -22,9 +31,108 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: npm run db:validate
-      - run: npm run lint
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run build
-      - run: npm audit --omit=dev --audit-level=high
+
+      # 各步 continue-on-error：一次跑完，避免第一个失败就中断，
+      # 由最后的 Gate 统一裁决，这样报告里能看到完整结果。
+      - id: dbvalidate
+        continue-on-error: true
+        run: npm run db:validate
+      - id: lint
+        continue-on-error: true
+        run: npm run lint
+      - id: typecheck
+        continue-on-error: true
+        run: npm run typecheck
+      - id: test
+        continue-on-error: true
+        run: npm test
+      - id: build
+        continue-on-error: true
+        run: npm run build
+      - id: audit
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Summary
+        if: always()
+        run: |
+          mark() { [ "$1" = "success" ] && echo "✅ 通过" || echo "❌ 失败"; }
+          {
+            echo "## 山禾颐品 · 云端巡检快照"
+            echo ""
+            echo "- **触发方式**：\`${{ github.event_name }}\`"
+            echo "- **分支**：\`${{ github.ref_name }}\` @ \`$(git rev-parse --short HEAD)\`"
+            echo "- **时间**：$(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo ""
+            echo "| 检查项 | 结果 |"
+            echo "| --- | --- |"
+            echo "| Prisma schema 校验 | $(mark '${{ steps.dbvalidate.outcome }}') |"
+            echo "| ESLint | $(mark '${{ steps.lint.outcome }}') |"
+            echo "| TypeScript 类型检查 | $(mark '${{ steps.typecheck.outcome }}') |"
+            echo "| Vitest 测试 | $(mark '${{ steps.test.outcome }}') |"
+            echo "| 构建 | $(mark '${{ steps.build.outcome }}') |"
+            echo "| 依赖安全审计 | $(mark '${{ steps.audit.outcome }}') |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # 结果只能通过 env 传进来：GitHub 的 ${{ }} 在服务端求值，
+      # 不认 for 循环里的 shell 变量名字。
+      - name: Gate
+        if: always()
+        env:
+          R_VALIDATE: ${{ steps.dbvalidate.outcome }}
+          R_LINT: ${{ steps.lint.outcome }}
+          R_TYPECHECK: ${{ steps.typecheck.outcome }}
+          R_TEST: ${{ steps.test.outcome }}
+          R_BUILD: ${{ steps.build.outcome }}
+          R_AUDIT: ${{ steps.audit.outcome }}
+        run: |
+          FAILED=""
+          for pair in \
+            "db:validate=$R_VALIDATE" \
+            "lint=$R_LINT" \
+            "typecheck=$R_TYPECHECK" \
+            "test=$R_TEST" \
+            "build=$R_BUILD" \
+            "audit=$R_AUDIT"; do
+            outcome="${pair##*=}"
+            [ "$outcome" = "success" ] || FAILED="$FAILED ${pair%%=*}"
+          done
+          if [ -n "$FAILED" ]; then
+            echo "::error::以下校验未通过:$FAILED —— 已阻断，未做任何自动改动"
+            exit 1
+          fi
+          echo "全部校验通过"
+
+  # 定时(schedule)触发失败时，GitHub 默认只通知「最后改过 workflow 文件的人」；
+  # 本仓库的提交身份是 codex-agent@localhost，那封邮件谁也收不到。
+  # 所以这里显式开一个 issue，确保失败一定被看见（已有同名未关闭 issue 就追加评论）。
+  notify:
+    needs: quality
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'CI 巡检失败 · ' + new Date().toISOString().slice(0, 10);
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const existing = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open "${title}"`
+            });
+            if (existing.data.total_count > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.data.items[0].number,
+                body: `再次失败（${context.eventName}）：${runUrl}`
+              });
+              return;
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body: `云端校验未通过，已阻断。\n\n- 触发方式：\`${context.eventName}\`\n- 运行记录：${runUrl}\n\n请查看 Summary 里哪项挂了。`
+            });
