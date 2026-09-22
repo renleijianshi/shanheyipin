@@ -1,0 +1,45 @@
+{
+  "name": "山禾颐品 · Node 22 monorepo",
+
+  // 项目 package.json 的 engines 要求 node >= 22
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  // README/AGENTS.md：新 API 绑 127.0.0.1:3200。
+  // 注意：容器里服务必须监听 0.0.0.0，只监听 127.0.0.1 转发不出去。
+  "forwardPorts": [3200],
+  "portsAttributes": {
+    "3200": {
+      "label": "shanheyipin-api",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // 依赖安装、.env 模板、git 身份都放在脚本里，改起来不用动这份 JSON
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "Prisma.prisma",
+        "esbenp.prettier-vscode",
+        "vitest.explorer"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "eslint.validate": ["typescript"],
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true,
+        // 仓库是 LF，避免 Windows 上 checkout 出 CRLF 污染 shell 脚本
+        "files.eol": "\n"
+      }
+    }
+  },
+
+  "remoteUser": "node"
+}
