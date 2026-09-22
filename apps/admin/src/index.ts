@@ -5,3 +5,5 @@ export const adminManifest: AppManifest = {
   name: '山禾颐品管理后台',
   status: 'bootstrap'
 };
+
+export * from './miniapp-frontend-content-model.js';
