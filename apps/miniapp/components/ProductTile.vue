@@ -14,8 +14,9 @@ function formatPrice(cents: number, maxCents: number): string {
 <template>
   <button class="product-tile" @tap="emit('select', product)">
     <view class="product-image" :class="tone || 'season'">
-      <text class="image-mark">山禾颐品</text>
-      <text class="image-caption">产品图片待接入</text>
+      <image v-if="product.coverObjectKey" class="product-cover" :src="product.coverObjectKey" mode="aspectFill" />
+      <text v-if="!product.coverObjectKey" class="image-mark">山禾颐品</text>
+      <text v-if="!product.coverObjectKey" class="image-caption">产品图片待接入</text>
     </view>
     <text class="product-name">{{ product.name }}</text>
     <text class="product-subtitle">{{ product.subtitle || '山野风物与当季滋味' }}</text>
@@ -25,7 +26,8 @@ function formatPrice(cents: number, maxCents: number): string {
 
 <style scoped>
 .product-tile { min-width: 0; display: flex; flex-direction: column; align-items: stretch; text-align: left; }
-.product-image { aspect-ratio: 4 / 5; border: 1px solid rgba(24,54,43,.06); border-radius: 10rpx; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12rpx; color: rgba(255,255,255,.92); background: linear-gradient(155deg,#9f7651,#543d2e); }
+.product-image { aspect-ratio: 4 / 5; position: relative; overflow: hidden; border: 1px solid rgba(24,54,43,.06); border-radius: 10rpx; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12rpx; color: rgba(255,255,255,.92); background: linear-gradient(155deg,#9f7651,#543d2e); }
+.product-cover { position: absolute; inset: 0; width: 100%; height: 100%; }
 .product-image.gift { color: var(--v19-paper-light); background: linear-gradient(145deg,#6d402f,#2c2520); }
 .product-image.wheat { color: var(--v19-ink); background: linear-gradient(145deg,#e4d0a8,#ad8f5d); }
 .product-image.season { background: linear-gradient(145deg,#7b8b6b,#394d3d); }

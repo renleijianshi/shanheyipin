@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { V19_STOREFRONT_PREVIEW } from '../../preview-products.js';
+import { onShow } from '@dcloudio/uni-app';
+import { storefrontProducts } from '../../src/v19-content-store.js';
 import { V12_SELECTION_TABS, filterSelectionProducts, type V12SelectionTab } from '@miniapp-model/v12-ui-model.js';
 
 const activeSelection = ref<V12SelectionTab>('brand');
-const products = computed(() => filterSelectionProducts(V19_STOREFRONT_PREVIEW, activeSelection.value));
+const allProducts = ref(storefrontProducts());
+const products = computed(() => filterSelectionProducts(allProducts.value, activeSelection.value));
+onShow(() => { allProducts.value = storefrontProducts(); });
 
 const copy = {
   brand: {

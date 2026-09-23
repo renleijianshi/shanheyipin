@@ -1,20 +1,21 @@
 <script setup lang="ts">
-const stories = [
-  { title: '舟曲，山谷与白龙江', kicker: '产地 · 舟曲', copy: '先认识一片土地，再认识它的味道。白龙江穿过山谷，昼夜温差与山地气候，孕育出舟曲吊柿的风味。' },
-  { title: '一枚吊柿的慢晒时光', kicker: '工艺 · 慢晒', copy: '从鲜果挑选、削皮整理，到悬挂风干、回软与自然挂霜，时间让果香慢慢沉淀。' }
-];
+import { ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
+import { readV19Content, type V19Story } from '../../src/v19-content-store.js';
+const stories = ref<V19Story[]>([]);
+onShow(() => { stories.value = readV19Content().stories.filter(story => story.status === '发布'); });
 </script>
 
 <template>
   <view class="story-page">
-    <view class="story-hero-photo"><text>SHANHE STORIES</text></view>
-    <text class="eyebrow">{{ stories[0]?.kicker }}</text>
-    <text class="story-title">{{ stories[0]?.title }}</text>
-    <text class="story-copy">{{ stories[0]?.copy }}</text>
+    <view class="story-hero-photo" :style="stories[0]?.coverUrl ? { backgroundImage: `linear-gradient(to top,rgba(18,29,23,.65),rgba(18,29,23,.02)),url('${stories[0].coverUrl}')` } : undefined"><text>SHANHE STORIES</text></view>
+    <text class="eyebrow">{{ stories[0]?.type }} · {{ stories[0]?.origin }}</text>
+    <text class="story-title">{{ stories[0]?.title || '山野故事' }}</text>
+    <text class="story-copy">{{ stories[0]?.body || stories[0]?.summary || '故事内容由后台发布。' }}</text>
     <view class="story-divider"></view>
     <text class="eyebrow">ALL STORIES</text><text class="story-section-title">继续往下看</text>
-    <view v-for="story in stories" :key="story.title" class="story-row"><view class="story-photo"><text>{{ story.kicker }}</text></view><view><text class="story-row-title">{{ story.title }}</text><text class="story-row-copy">{{ story.copy }}</text></view></view>
-    <text class="preview-note">内容为 V19 页面结构示例，正式内容将由内容管理模块提供。</text>
+    <view v-for="story in stories" :key="story.id" class="story-row"><view class="story-photo" :style="story.coverUrl ? { backgroundImage: `linear-gradient(to top,rgba(18,29,23,.5),rgba(18,29,23,.05)),url('${story.coverUrl}')` } : undefined"><text>{{ story.type }} · {{ story.origin }}</text></view><view><text class="story-row-title">{{ story.title }}</text><text class="story-row-copy">{{ story.summary }}</text></view></view>
+    <text class="preview-note">V19 联动演示内容 · 故事由后台内容管理发布</text>
   </view>
 </template>
 

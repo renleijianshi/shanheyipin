@@ -2,13 +2,15 @@
 import { computed, onMounted, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import ProductTile from '../../components/ProductTile.vue';
-import { V19_STOREFRONT_PREVIEW } from '../../preview-products.js';
+import { storefrontProducts } from '../../src/v19-content-store.js';
+import { addV19CartItem } from '../../src/v19-content-store.js';
 import { V12_CATEGORY_TABS, filterCatalogProducts, type V12CategoryKey } from '@miniapp-model/v12-ui-model.js';
 import type { StorefrontProductSummary } from '@miniapp-model/v12-ports.js';
 
 const activeCategory = ref<V12CategoryKey>('all');
+const allProducts = ref(storefrontProducts());
 const productTones = ['persimmon', 'gift', 'wheat', 'season'] as const;
-const products = computed(() => filterCatalogProducts(V19_STOREFRONT_PREVIEW, activeCategory.value));
+const products = computed(() => filterCatalogProducts(allProducts.value, activeCategory.value));
 
 function applySavedCategory() {
   const saved = uni.getStorageSync('v19-category');
@@ -17,11 +19,16 @@ function applySavedCategory() {
 }
 
 function selectProduct(_product: StorefrontProductSummary) {
-  uni.showToast({ title: '商品详情接口尚未接入', icon: 'none' });
+  uni.showModal({ title: _product.name, content: `${_product.subtitle}\n当前为本地 V19 演示商品。`, confirmText: '加入购物车', success: ({ confirm }) => {
+    if (!confirm) return;
+    addV19CartItem(_product.id);
+    uni.showToast({ title: '已加入演示购物车' });
+  } });
 }
 
-onMounted(applySavedCategory);
-onShow(applySavedCategory);
+function refresh() { allProducts.value = storefrontProducts(); applySavedCategory(); }
+onMounted(refresh);
+onShow(refresh);
 </script>
 
 <template>
@@ -34,7 +41,7 @@ onShow(applySavedCategory);
     <view class="products-grid">
       <ProductTile v-for="(product, index) in products" :key="product.id" :product="product" :tone="productTones[index % productTones.length]!" @select="selectProduct" />
     </view>
-    <view class="preview-note">界面预览数据 · 正式商品列表将通过商品目录接口加载</view>
+    <view class="preview-note">V19 联动演示商品 · 前台商品由后台内容设置管理</view>
   </view>
 </template>
 

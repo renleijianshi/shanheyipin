@@ -1,0 +1,2173 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>山禾颐品 UI V19 · 首页精简版</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --brand-900:#18362B;--brand-800:#214538;--brand-700:#2B5747;--brand-100:#E8EFEA;
+  --canvas:#F7F3E8;--paper:#EFE5D2;--paper-light:#FBF8F0;
+  --orange:#D86F2C;--orange-soft:#F8E6D8;--copper:#A97745;
+  --ink:#1E211F;--ink-700:#484D49;--muted:#747A75;--muted-2:#A7ADA8;
+  --line:#DCD7CC;--line-strong:#C8C1B4;--white:#fff;
+  --r-xs:4px;--r-sm:8px;--r-md:12px;--r-lg:16px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+html,body{margin:0;min-height:100%;background:#e7e4dc;color:var(--ink);font-family:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif}
+button,select{font:inherit;color:inherit}button{cursor:pointer}button:focus-visible{outline:2px solid var(--brand-700);outline-offset:2px}
+.preview-top{height:64px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;background:var(--paper-light);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.preview-brand{display:flex;align-items:center;gap:12px}.preview-mark{width:36px;height:36px;display:grid;place-items:center;background:var(--brand-900);color:var(--canvas);border-radius:8px;font-family:STSong,Songti SC,serif}.preview-brand small{display:block;margin-top:2px;color:var(--muted);font-size:10px;letter-spacing:.08em}
+.mode-switch{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}.mode-switch button{min-height:40px;padding:0 16px;border:0;border-right:1px solid var(--line);background:transparent}.mode-switch button:last-child{border-right:0}.mode-switch button.active{background:var(--brand-900);color:var(--canvas)}
+.stage{display:none}.stage.active{display:flex}
+#mini{min-height:calc(100vh - 64px);padding:34px;justify-content:center;align-items:center;gap:72px}
+.phone{width:390px;height:824px;padding:8px;background:#141814;border-radius:40px;box-shadow:0 8px 24px rgba(24,54,43,.10)}
+.status{height:28px;padding:5px 18px;color:#fff;font-size:10px;display:flex;justify-content:space-between;align-items:center}
+.screen{height:780px;position:relative;overflow:hidden;background:var(--canvas);border-radius:30px}.page{display:none;height:714px;overflow-y:auto;padding-bottom:48px;scrollbar-width:none}.page::-webkit-scrollbar{display:none}.page.active{display:block;animation:pageIn .22s var(--ease)}
+@keyframes pageIn{from{opacity:.55;transform:translateY(4px)}to{opacity:1;transform:none}}
+.mini-head{padding:24px 20px 16px;display:flex;align-items:center;justify-content:space-between}.eyebrow{font-size:10px;line-height:16px;letter-spacing:.14em;color:var(--copper);text-transform:uppercase}.mini-head h1{margin:4px 0 0;font-size:26px;line-height:34px;font-weight:600;letter-spacing:.03em}.icon-btn{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;background:transparent;font-size:19px}
+.hero{margin:0 20px;min-height:392px;position:relative;overflow:hidden;border-radius:12px;background-color:var(--brand-900);background-image:linear-gradient(to top,rgba(18,29,23,.68) 0,rgba(18,29,23,.16) 48%,rgba(18,29,23,.02) 76%),url('https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg');background-size:cover;background-position:center;display:flex;align-items:flex-end}
+.hero-copy{position:relative;z-index:2;padding:28px 24px 26px;color:#fff}.hero .eyebrow{color:#F0D7B7}.hero h2{margin:8px 0 10px;font-size:30px;line-height:38px;font-weight:600;letter-spacing:.04em}.hero p{max-width:245px;margin:0;color:rgba(255,255,255,.86);font-size:14px;line-height:22px}.cta{min-height:44px;margin-top:18px;padding:0 16px;border:0;border-radius:10px;background:var(--paper-light);color:var(--brand-900);font-weight:600}.cta:active{transform:scale(.985)}
+.quick{margin:26px 20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr}.quick button{min-height:58px;padding:10px 12px;border:0;background:transparent;text-align:left;font-size:13px}.quick button:nth-child(odd){border-right:1px solid var(--line)}.quick button:nth-child(-n+2){border-bottom:1px solid var(--line)}.quick span{display:block;margin-top:2px;color:var(--muted);font-size:11px}.quick b{font-weight:500}
+.section{padding:36px 20px 0}.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px}.section-head h2{margin:3px 0 0;font-size:21px;line-height:30px;font-weight:600}.more{min-height:44px;display:flex;align-items:center;border:0;background:transparent;color:var(--brand-900);font-size:12px;padding:0}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:20px 12px}.product-card{border:0;background:transparent;padding:0;text-align:left;min-width:0}.product-card[hidden]{display:none!important}.product-photo{aspect-ratio:4/5;border-radius:10px;background:#ded5c4 center/cover no-repeat;border:1px solid rgba(24,54,43,.05)}.product-photo.persimmon{background-image:url('https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg')}.product-photo.gift{background-image:url('https://tu.chdesign.cn/Thumbnail/upload/creation/20180708/giytgojsguzdomjsgi3dkobtonidozllpbmhs4zonjygox3qojxxa33soruw63s7hayda6bygaya.jpg')}.product-photo.coffee{background-image:url('https://miro.medium.com/v2/0%2AfEk_as8NTYbSbluy')}.product-photo.beef{background-image:url('https://img.alicdn.com/bao/uploaded/i4/2212287855603/O1CN01viatkQ1rGDv5V0NDn_%21%212212287855603.jpg')}
+.product-card strong{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:10px;font-size:15px;line-height:22px;font-weight:600}.product-card small{display:block;margin-top:4px;color:var(--muted);font-size:12px;line-height:18px}.price{display:block;margin-top:8px;color:var(--orange);font-size:19px;line-height:24px;font-weight:600}.price::first-letter{font-size:12px}
+.editorial-link{margin:44px 20px 8px;border-top:1px solid var(--line);padding-top:20px;cursor:pointer}.editorial-link .photo{aspect-ratio:16/9;border-radius:8px;background:#b7a58c center/cover no-repeat url('https://k.sinaimg.cn/n/sinacn/20171120/2a6a-fynwnws0963273.jpg/w700d1q75cms.jpg')}.editorial-link h2{margin:14px 0 6px;font-size:22px;line-height:30px;font-weight:600}.editorial-link p{margin:0;color:var(--ink-700);font-size:14px;line-height:23px}.text-link{display:inline-flex;align-items:center;min-height:44px;margin-top:4px;color:var(--brand-900);font-size:13px;font-weight:600}
+.category-tabs{margin:0 20px;border-bottom:1px solid var(--line);display:flex;gap:22px;overflow-x:auto;scrollbar-width:none}.category-tabs::-webkit-scrollbar{display:none}.category-tabs button{position:relative;flex:0 0 auto;min-height:46px;padding:0;border:0;background:transparent;color:var(--muted);font-size:13px}.category-tabs button.active{color:var(--brand-900);font-weight:600}.category-tabs button.active:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--brand-900)}
+.category-note{margin:20px 20px 0;color:var(--muted);font-size:12px;line-height:20px}
+
+.selection-top{padding:24px 20px 18px}
+.selection-title-tabs{display:flex;gap:28px;margin-top:8px;border-bottom:1px solid var(--line)}
+.selection-title-tab{position:relative;min-height:54px;padding:0;border:0;background:transparent;color:var(--muted);font-size:25px;line-height:34px;font-weight:600;letter-spacing:.02em;text-align:left}
+.selection-title-tab.active{color:var(--ink)}
+.selection-title-tab.active:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--brand-900)}
+.selection-panel{display:none}
+.selection-panel.active{display:block;animation:pageIn .22s var(--ease)}
+.season-selection{padding:4px 0 24px}
+.season-intro{padding:12px 20px 20px}
+.season-intro h2{margin:7px 0 8px;font-size:23px;line-height:31px;font-weight:600}
+.season-intro p{margin:0;color:var(--ink-700);font-size:14px;line-height:23px}
+.selection-cover{margin:0 20px 30px}.selection-cover-photo{aspect-ratio:3/2;border-radius:8px;background:#667d68 center/cover no-repeat}.selection-cover-photo.selection-persimmon{background-image:url('https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg')}.selection-cover h2{margin:14px 0 8px;font-size:28px;line-height:36px;font-weight:600}.selection-cover p{margin:0;color:var(--ink-700);font-size:14px;line-height:24px}
+.origin-note{display:flex;flex-wrap:wrap;gap:8px 16px;margin:16px 0 28px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted);font-size:11px}
+.selection-story{margin-top:28px}
+.story-copy{padding:16px 0 28px}
+.story-copy h3,.story-step h3,.craft-note h3{margin:6px 0 8px;font-size:18px;line-height:26px;font-weight:600}
+.story-copy p,.story-step p,.craft-note p{margin:0;color:var(--ink-700);font-size:13px;line-height:22px}
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px 12px;margin:0 0 32px}
+.story-step{min-width:0}
+.story-image{width:100%;background:#d7c7b2 center/cover no-repeat;border-radius:8px}
+.story-image-wide{aspect-ratio:16/9;background-image:url('https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg')}
+.story-peel{aspect-ratio:4/3;background-image:url('https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg')}
+.story-hang{aspect-ratio:4/3;background-image:url('https://k.sinaimg.cn/n/sinacn/20171120/2a6a-fynwnws0963273.jpg/w700d1q75cms.jpg')}
+.story-frost{aspect-ratio:4/3;background-image:url('https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg')}
+.story-finish{aspect-ratio:4/3;background-image:url('https://tu.chdesign.cn/Thumbnail/upload/creation/20180708/giytgojsguzdomjsgi3dkobtonidozllpbmhs4zonjygox3qojxxa33soruw63s7hayda6bygaya.jpg')}
+.story-no{display:block;margin-top:10px;color:var(--copper);font-size:10px;letter-spacing:.14em}
+.craft-note{margin:30px 0;padding:24px 0;border-top:1px solid var(--line-strong);border-bottom:1px solid var(--line-strong)}
+
+@media(max-width:390px){.story-grid{grid-template-columns:1fr;gap:24px}.story-image{aspect-ratio:3/2}}
+.selection-rule{height:1px;background:var(--line);margin:24px 0 0}
+.curated-list{padding:0 20px 12px}.curated-intro{margin:-4px 0 8px;color:var(--muted);font-size:12px;line-height:20px}.selection-open{border:0;background:transparent;padding:0}.feature-product{display:block;width:100%;padding:0 0 24px;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:left}.feature-product .feature-photo{aspect-ratio:3/2;border-radius:8px;background:#8f7c62 center/cover no-repeat url('https://miro.medium.com/v2/0%2AfEk_as8NTYbSbluy')}.feature-copy{display:grid;grid-template-columns:1fr auto;gap:12px;margin-top:12px;align-items:end}.feature-copy strong{font-size:17px;line-height:24px}.feature-copy p{margin:3px 0 0;color:var(--muted);font-size:12px;line-height:19px}.feature-copy .price{margin:0}
+.curated-row{width:100%;min-height:118px;padding:16px 0;border:0;border-bottom:1px solid var(--line);background:transparent;display:grid;grid-template-columns:88px 1fr auto;gap:14px;align-items:center;text-align:left}.curated-thumb{width:88px;aspect-ratio:1;border-radius:8px;background:#cfc5b4 center/cover no-repeat}.curated-thumb.coffee{background-image:url('https://miro.medium.com/v2/0%2AfEk_as8NTYbSbluy')}.curated-thumb.beef{background-image:url('https://img.alicdn.com/bao/uploaded/i4/2212287855603/O1CN01viatkQ1rGDv5V0NDn_%21%212212287855603.jpg')}.curated-row strong{font-size:14px;line-height:21px}.curated-row small{display:block;margin-top:4px;color:var(--muted);font-size:11px}.curated-row .price{margin:0;font-size:16px}
+.cart-list{margin:0 20px;border-top:1px solid var(--line)}.cart-item{padding:18px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:88px 1fr;gap:14px;align-items:center}.thumb{width:88px;aspect-ratio:1;border-radius:8px;background:#ddd1bd center/cover no-repeat}.cart-meta strong{display:block;font-size:15px;line-height:22px}.cart-meta small{display:block;margin:6px 0;color:var(--muted);font-size:12px}.cart-meta b{color:var(--orange);font-size:17px}.cart-summary{margin:24px 20px 0;padding-top:18px;border-top:1px solid var(--line-strong);display:flex;justify-content:space-between;align-items:center}.cart-summary span{font-size:13px;color:var(--muted)}.cart-summary strong{font-size:20px}
+.profile-hero{padding:34px 20px 38px;background:var(--brand-900);color:var(--canvas)}.profile-hero .eyebrow{color:#CFB58E}.profile-hero h2{margin:6px 0 6px;font-size:24px;line-height:32px;font-weight:600}.profile-hero p{margin:0;color:rgba(247,243,232,.72);font-size:13px}.profile-menu{margin:22px 20px 0;border-top:1px solid var(--line)}.profile-menu button{width:100%;min-height:54px;padding:0;border:0;border-bottom:1px solid var(--line);background:transparent;display:flex;align-items:center;justify-content:space-between;text-align:left;font-size:14px}.profile-menu span{color:var(--muted)}
+.tabbar{height:66px;padding-bottom:env(safe-area-inset-bottom);position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);background:rgba(251,248,240,.98);border-top:1px solid var(--line);z-index:10}.tabbar button{min-width:0;border:0;background:transparent;color:var(--muted);font-size:11px;line-height:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}.tabbar i{font-style:normal;font-size:20px;line-height:22px}.tabbar button.active{color:var(--brand-900);font-weight:600}.tabbar button.active:before{content:"";position:absolute;margin-top:-51px;width:18px;height:2px;border-radius:2px;background:var(--brand-900)}
+.intro{width:420px}.intro .eyebrow{font-size:11px}.intro h1{margin:12px 0;font-size:38px;line-height:1.25;font-weight:600}.intro>p{color:var(--ink-700);font-size:14px;line-height:1.85}.principle{padding:16px 0;border-top:1px solid var(--line)}.principle b{font-size:14px}.principle p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.7}
+/* Admin retained: same business structure, visually quieter */
+#admin{min-height:calc(100vh - 64px);background:#f3f1ea}.sidebar{width:232px;padding:24px 14px;background:var(--brand-900);color:#e9eee9}.admin-brand{padding:4px 14px 24px;font-size:19px;font-weight:600}.admin-brand small{display:block;margin-top:5px;color:#9fb0a7;font-size:10px}.nav-group{margin-bottom:18px}.nav-group label{display:block;padding:0 13px 7px;color:#91a39a;font-size:10px}.nav-group button{width:100%;min-height:42px;padding:0 13px;border:0;border-radius:7px;background:transparent;color:#d7e0db;text-align:left}.nav-group button.active{background:#2b5142}.admin-content{flex:1;padding:30px 36px}.admin-header{display:flex;justify-content:space-between;align-items:center}.admin-header h1{margin:0;font-size:27px;font-weight:600}.admin-header p{margin:6px 0 0;color:var(--muted);font-size:12px}.primary{min-height:44px;padding:0 16px;border:0;border-radius:8px;background:var(--brand-900);color:#fff}.metrics{margin:26px 0 18px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.metric,.source-card,.table-card{background:#fff;border:1px solid #e4e0d7;border-radius:10px;box-shadow:none}.metric{padding:18px}.metric small{color:var(--muted)}.metric strong{display:block;margin-top:8px;font-size:24px}.product-source{display:grid;grid-template-columns:1fr 1fr;gap:16px}.source-card{padding:22px}.source-card.selected{background:#f1ebe0}.source-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:8px;background:var(--brand-100);color:var(--brand-900);font-weight:600}.source-card h2{margin:15px 0 7px;font-size:20px}.source-card p{color:var(--muted);font-size:12px;line-height:1.7}.source-card button{min-height:42px;padding:0 13px;border:0;border-radius:7px;background:var(--brand-900);color:#fff}.table-card{margin-top:18px;padding:20px}.table-head{display:flex;justify-content:space-between;align-items:center}.filter{min-height:40px;padding:0 10px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink-700)}table{width:100%;margin-top:12px;border-collapse:collapse}th,td{padding:14px 9px;border-bottom:1px solid #eee;text-align:left;font-size:12px}th{color:var(--muted);font-weight:500}.tag{display:inline-block;padding:4px 8px;border-radius:6px;background:var(--brand-100);color:var(--brand-700)}.tag.selected{background:var(--orange-soft);color:#9b5631}
+
+
+
+
+/* ===== Dynamic Shanhe Stories ===== */
+.home-story-module{margin:48px 20px 18px;padding-top:28px;border-top:1px solid var(--line)}
+.home-story-head,.story-feed-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
+.home-story-head h2,.story-feed-head h2{margin:5px 0 0;font-size:23px;line-height:31px;font-weight:600}
+.story-more-link{padding:6px 0;border:0;background:transparent;color:var(--brand-700);font-size:12px}
+.home-story-card{margin-top:18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer}
+.home-story-photo{aspect-ratio:16/10;background:#c7b9a5 center/cover no-repeat}
+.home-story-copy{padding:17px 0 18px}
+.home-story-meta{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.home-story-meta>span:last-child{color:var(--muted);font-size:10px;letter-spacing:.08em}
+.home-story-copy h3{margin:8px 0 7px;font-size:20px;line-height:28px;font-weight:600}
+.home-story-copy p{margin:0;color:var(--ink-700);font-size:13px;line-height:22px}
+.home-story-read{margin-top:13px;padding:0;border:0;background:transparent;color:var(--brand-700);font-size:12px;font-weight:600}
+.home-story-controls{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+.story-arrow-group{display:flex;gap:8px}
+.story-arrow-group button,.story-change-btn{min-height:34px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--brand-900);font-size:12px}
+.story-arrow-group button{width:38px;padding:0;font-size:15px}
+.story-progress{display:flex;gap:5px;margin-top:14px}
+.story-progress button{height:3px;flex:1;border:0;border-radius:3px;background:var(--line);padding:0;transition:background .2s ease}
+.story-progress button.active{background:var(--brand-700)}
+.story-rotation-note{margin:9px 0 0;color:var(--muted);font-size:10px;line-height:17px}
+.story-full-body{margin-top:18px;padding-top:18px;border-top:1px solid var(--line);color:var(--ink-700);font-size:13px;line-height:23px}
+.story-feed-wrap{padding:0 20px 34px}
+.story-feed-head{padding:20px 0 6px;border-top:1px solid var(--line)}
+.story-feed-head h2{font-size:20px;line-height:28px}
+.story-article{cursor:pointer}
+.story-article.active{background:linear-gradient(90deg,var(--brand-100),transparent);margin-left:-10px;margin-right:-10px;padding-left:10px;padding-right:10px}
+.story-product-tag{display:inline-block;margin-top:7px;color:var(--copper);font-size:10px}
+
+/* ===== Home Entry Subpages ===== */
+.subpage-head{padding:22px 20px 14px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line)}
+.subpage-head h1{margin:3px 0 0;font-size:26px;line-height:34px;font-weight:600}
+.subpage-back{width:42px;height:42px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--brand-900);font-size:20px}
+.story-hero-block{padding:22px 20px 30px}
+.story-hero-photo{aspect-ratio:16/10;border-radius:10px;background:#8c9a84 center/cover no-repeat url('https://k.sinaimg.cn/n/sinacn/20171120/2a6a-fynwnws0963273.jpg/w700d1q75cms.jpg');margin-bottom:18px}
+.story-hero-block h2{margin:7px 0 10px;font-size:27px;line-height:36px;font-weight:600}
+.story-hero-block p{margin:0;color:var(--ink-700);font-size:14px;line-height:24px}
+.story-feed{padding:0 20px 30px}
+.story-article{display:grid;grid-template-columns:112px 1fr;gap:14px;padding:18px 0;border-top:1px solid var(--line);align-items:start}
+.story-article-photo{width:112px;aspect-ratio:4/3;border-radius:8px;background:#d1c2ad center/cover no-repeat}
+.story-article-photo.zhouqu{background-image:url('https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg')}
+.story-article-photo.farmer{background-image:url('https://n.sinaimg.cn/sinacn10107/36/w1024h612/20190407/d066-hvhrcxm5250136.jpg')}
+.story-article-photo.craft{background-image:url('https://k.sinaimg.cn/n/sinacn/20171120/2a6a-fynwnws0963273.jpg/w700d1q75cms.jpg')}
+.story-article h3{margin:4px 0 6px;font-size:16px;line-height:23px}
+.story-article p{margin:0;color:var(--muted);font-size:12px;line-height:20px}
+
+.trace-intro{padding:42px 28px 30px;text-align:center}
+.trace-mark{width:72px;height:72px;margin:0 auto 20px;border-radius:16px;display:grid;place-items:center;background:var(--brand-900);color:var(--canvas);font-size:27px;font-weight:600}
+.trace-intro h2{margin:0 0 10px;font-size:23px;line-height:31px}
+.trace-intro p{margin:0 auto;max-width:290px;color:var(--ink-700);font-size:13px;line-height:22px}
+.trace-scan-btn{min-height:46px;margin-top:22px;padding:0 18px;border:0;border-radius:10px;background:var(--brand-900);color:var(--canvas);font-size:14px;font-weight:600}
+.trace-result{padding:0 20px 32px}
+.trace-result-head{padding:22px 0 16px;border-top:1px solid var(--line)}
+.trace-result-head h2{margin:5px 0 7px;font-size:21px;line-height:29px}
+.trace-result-head p{margin:0;color:var(--muted);font-size:12px;line-height:20px}
+.trace-list{border-top:1px solid var(--line)}
+.trace-list>div{min-height:52px;padding:10px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:92px 1fr;gap:14px;align-items:center}
+.trace-list span{color:var(--muted);font-size:12px}
+.trace-list strong{font-size:13px;line-height:20px}
+.trace-note{margin-top:26px;padding-top:18px;border-top:1px solid var(--line-strong)}
+.trace-note h3{margin:0 0 8px;font-size:17px}
+.trace-note p{margin:0;color:var(--ink-700);font-size:13px;line-height:22px}
+
+/* ===== Selection Editorial Content ===== */
+.selection-editorial-list{padding:0 20px 28px}
+.selection-editorial-item{padding:24px 0 28px;border-top:1px solid var(--line)}
+.selection-editorial-item:first-child{border-top:0;padding-top:8px}
+.selection-editorial-photo{aspect-ratio:16/9;border-radius:8px;background:#d6c8b3 center/cover no-repeat;margin-bottom:16px}
+.selection-editorial-photo.local-persimmon{background-image:url('https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg')}
+.selection-editorial-photo.gaolan-wheat{background-image:url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80')}
+.local-selection-note{margin-top:28px;padding:18px 0 4px;border-top:1px solid var(--line)}
+.local-selection-note p{margin:7px 0 0;color:var(--muted);font-size:12px;line-height:20px}
+
+.selection-editorial-photo.coffee{background-image:url('https://miro.medium.com/v2/0%2AfEk_as8NTYbSbluy')}
+.selection-editorial-photo.beef{background-image:url('https://img.alicdn.com/bao/uploaded/i4/2212287855603/O1CN01viatkQ1rGDv5V0NDn_%21%212212287855603.jpg')}
+.selection-editorial-photo.seasonal{background-image:url('https://n.sinaimg.cn/sinacn10107/36/w1024h612/20190407/d066-hvhrcxm5250136.jpg')}
+.selection-editorial-copy h3{margin:6px 0 5px;font-size:21px;line-height:29px;font-weight:600}
+.selection-editorial-copy>p{margin:0;color:var(--ink-700);font-size:13px;line-height:22px}
+.selection-editorial-copy .selection-subline{margin-bottom:10px;color:var(--muted);font-size:12px}
+.selection-points{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.selection-points span{color:var(--brand-700);font-size:11px}
+
+/* ===== Product Quick Detail Sheet ===== */
+.sheet-mask{position:absolute;inset:0;background:rgba(19,25,21,.38);z-index:40}
+.product-sheet{position:absolute;left:0;right:0;bottom:0;z-index:41;height:min(68vh,590px);max-height:72%;background:var(--paper-light);border-radius:18px 18px 0 0;transform:translateY(102%);transition:transform .28s var(--ease);box-shadow:0 -10px 28px rgba(24,54,43,.10);overflow:hidden}
+.product-sheet.open{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;border-radius:4px;background:var(--line-strong);margin:10px auto 4px}
+.sheet-close{position:absolute;top:12px;right:16px;width:38px;height:38px;border:0;background:rgba(251,248,240,.9);border-radius:50%;font-size:24px;z-index:2}
+.sheet-scroll{height:calc(100% - 78px);max-height:none;overflow-y:auto;padding:10px 20px 26px}
+.sheet-product-image{height:168px;border-radius:10px;background:#d9cbb8 center/cover no-repeat;margin-bottom:18px}
+.product-sheet h2{margin:6px 0 6px;font-size:21px;line-height:28px;font-weight:600}
+.sheet-product-desc{margin:0;color:var(--ink-700);font-size:13px;line-height:21px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sheet-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sheet-meta span{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+.sheet-meta strong{font-size:13px}
+.sheet-detail-copy{color:var(--ink-700);font-size:12px;line-height:20px;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.sheet-action{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 20px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--paper-light)}
+.sheet-action small{display:block;color:var(--muted);font-size:11px}
+.sheet-action strong{display:block;margin-top:2px;color:var(--orange);font-size:22px}
+.sheet-action button{min-width:146px;min-height:46px;border:0;border-radius:10px;background:var(--brand-900);color:var(--canvas);font-size:15px;font-weight:600}
+.cart-tab{position:relative}
+.cart-badge{position:absolute;top:7px;left:calc(50% + 7px);min-width:16px;height:16px;padding:0 4px;border-radius:10px;background:var(--orange);color:#fff;font-size:9px;line-height:16px;text-align:center}
+.mini-toast{position:absolute;left:50%;bottom:92px;transform:translateX(-50%);z-index:60;background:rgba(30,33,31,.92);color:#fff;padding:9px 14px;border-radius:8px;font-size:12px}
+
+
+
+/* ===== Real demo data binding ===== */
+.entry-count{display:inline-grid;place-items:center;min-width:22px;height:22px;margin-left:6px;padding:0 6px;border-radius:11px;background:var(--brand-100);color:var(--brand-700);font-size:11px;font-style:normal;font-weight:600;vertical-align:2px}
+.saved-content-list{margin-top:12px;border-top:1px solid var(--line)}
+.saved-content-row{display:grid;grid-template-columns:110px 1fr auto;gap:14px;align-items:center;min-height:54px;padding:10px 0;border-bottom:1px solid var(--line)}
+.saved-content-row span{font-size:11px;color:var(--muted)}
+.saved-content-row strong{font-size:13px;line-height:20px}
+.saved-content-row small{font-size:11px;color:var(--brand-700)}
+.dynamic-photo{background:#d9cdbb center/cover no-repeat}
+.saved-trace-list{margin-top:24px;padding-top:18px;border-top:1px solid var(--line);text-align:left}
+.saved-trace-list:empty{display:none}
+.saved-trace-title{display:block;margin-bottom:8px;color:var(--muted);font-size:11px}
+.saved-trace-btn{width:100%;min-height:44px;padding:8px 0;border:0;border-bottom:1px solid var(--line);background:transparent;display:flex;justify-content:space-between;align-items:center;text-align:left}
+.saved-trace-btn strong{font-size:13px}
+.saved-trace-btn span{font-size:11px;color:var(--muted)}
+.demo-sync-tip{margin:12px 0 0;padding:10px 12px;border-left:2px solid var(--brand-700);background:var(--brand-100);color:var(--brand-700);font-size:11px;line-height:18px}
+
+/* ===== Mini Program Frontend Content Manager ===== */
+.miniapp-nav-group{padding-top:4px;padding-bottom:4px;border-top:1px solid rgba(220,215,204,.65);border-bottom:1px solid rgba(220,215,204,.65)}
+.miniapp-nav-group button{font-weight:600;color:var(--brand-900)}
+.miniapp-control-hero{display:flex;justify-content:space-between;gap:24px;align-items:flex-end;padding:20px 0 2px;border-bottom:1px solid var(--line)}
+.miniapp-control-hero h2{margin:5px 0 7px;font-size:24px;line-height:32px}
+.miniapp-control-hero p{max-width:720px;margin:0 0 16px;color:var(--muted);font-size:12px;line-height:20px}
+.sync-state{min-width:180px;padding:12px 14px;border-left:2px solid var(--brand-700);background:var(--brand-100);font-size:11px;line-height:18px;color:var(--brand-700)}
+.miniapp-entry-card{position:relative}
+.entry-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto}
+.entry-btn{min-height:34px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--brand-900);font-size:11px;font-weight:600}
+.entry-btn.primary{border-color:var(--brand-900);background:var(--brand-900);color:#fff}
+.saved-content-row{grid-template-columns:104px minmax(180px,1fr) 120px auto}
+.saved-row-actions{display:flex;gap:6px;justify-content:flex-end;align-items:center}
+.saved-action{min-height:30px;padding:0 9px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--brand-900);font-size:10px}
+.saved-action.danger{color:#8f4c35}
+.status-dot{display:inline-flex;align-items:center;gap:5px}
+.status-dot:before{content:"";width:6px;height:6px;border-radius:50%;background:#A97745}
+.status-dot.live:before{background:#2B5747}
+.status-dot.off:before{background:#9B9D97}
+.miniapp-section-title{margin:24px 0 10px}
+.miniapp-section-title h3{margin:0;font-size:17px}
+.miniapp-section-title p{margin:4px 0 0;color:var(--muted);font-size:11px;line-height:18px}
+
+.miniapp-entry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:26px 0 18px}
+.miniapp-entry-card{min-height:176px;padding:22px;border:1px solid var(--line);border-radius:10px;background:#fff;text-align:left;box-shadow:none}
+.miniapp-entry-card:hover{border-color:var(--brand-700)}
+.entry-kicker{display:block;color:var(--copper);font-size:10px;letter-spacing:.14em;margin-bottom:14px}
+.miniapp-entry-card strong{display:block;font-size:20px;line-height:28px}
+.miniapp-entry-card p{margin:8px 0 18px;color:var(--muted);font-size:12px;line-height:20px}
+.entry-action{color:var(--brand-900);font-size:12px;font-weight:600}
+.miniapp-overview{margin-top:18px}
+.miniapp-content-modal{width:min(820px,calc(100vw - 48px))}
+@media(max-width:900px){.miniapp-entry-grid{grid-template-columns:1fr}}
+
+/* ===== Admin Product Editor ===== */
+.admin-modal-mask{position:fixed;inset:0;background:rgba(24,28,25,.42);z-index:1000}
+.admin-product-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1001;width:min(760px,calc(100vw - 48px));max-height:86vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 50px rgba(24,54,43,.16);padding:24px}
+.admin-modal-head{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.admin-modal-head h2{margin:5px 0 0;font-size:24px}
+.admin-modal-close{width:40px;height:40px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:24px}
+.admin-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.admin-form-grid label{display:block}
+.admin-form-grid label.full{grid-column:1/-1}
+.admin-form-grid label>span{display:block;margin-bottom:7px;color:var(--ink-700);font-size:12px}
+.admin-form-grid input,.admin-form-grid select,.admin-form-grid textarea{width:100%;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font:inherit;padding:10px 12px;outline:none}
+.admin-form-grid input,.admin-form-grid select{min-height:42px}
+.admin-form-grid textarea{resize:vertical;line-height:1.6}
+.admin-form-grid input:focus,.admin-form-grid select:focus,.admin-form-grid textarea:focus{border-color:var(--brand-700)}
+.admin-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+.secondary-admin,.primary-admin{min-height:42px;padding:0 16px;border-radius:8px;font:inherit}
+.secondary-admin{border:1px solid var(--line);background:#fff}
+.primary-admin{border:0;background:var(--brand-900);color:#fff}
+@media(max-width:760px){.admin-form-grid{grid-template-columns:1fr}.admin-form-grid label.full{grid-column:auto}}
+
+@media(max-width:1000px){.intro{display:none}#mini{padding:18px}.metrics{grid-template-columns:1fr 1fr}}
+@media(max-width:460px){.preview-top{display:none}#mini{padding:0;min-height:100vh}.phone{width:100vw;height:100vh;padding:0;border-radius:0;box-shadow:none}.status{display:none}.screen{width:100%;height:100vh;border-radius:0}.page{height:calc(100vh - 66px)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ===== V17 Four-Skill polish layer ===== */
+:root{
+  --focus-ring:#2B5747;
+  --surface-muted:#F3EEE3;
+  --success:#3F7456;
+  --warning:#B57A2B;
+  --danger:#B34E42;
+}
+
+button,input,select,textarea{font:inherit}
+button{touch-action:manipulation}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible{
+  outline:2px solid var(--focus-ring);
+  outline-offset:2px;
+}
+button:disabled{cursor:not-allowed;color:var(--ink-300,#A7ADA8);border-color:var(--line);background:transparent}
+a,button{transition:color .18s var(--ease),background-color .18s var(--ease),border-color .18s var(--ease),transform .18s var(--ease)}
+button:active{transform:translateY(1px)}
+
+.phone-shell{box-shadow:0 12px 32px rgba(24,54,43,.08)}
+.admin-shell{background:#F7F3E8}
+.admin-content{background:#F7F3E8}
+.admin-header{border-bottom:1px solid var(--line);background:rgba(247,243,232,.96);backdrop-filter:blur(10px)}
+.admin-header h1{letter-spacing:.01em}
+.admin-header p{max-width:720px}
+
+.miniapp-control-hero{
+  padding:28px 0 20px;
+  align-items:flex-start;
+}
+.miniapp-control-hero h2{
+  margin:6px 0 8px;
+  font-size:24px;
+  line-height:32px;
+  font-weight:600;
+}
+.miniapp-control-hero p{
+  max-width:680px;
+  margin:0;
+  font-size:13px;
+  line-height:21px;
+}
+.sync-state{
+  min-width:196px;
+  padding:12px 0 12px 16px;
+  border-left:2px solid var(--brand-700);
+  background:transparent;
+}
+.sync-state strong{display:block;color:var(--brand-900);font-size:12px}
+.sync-state span{display:block;margin-top:3px;color:var(--muted);font-size:11px;line-height:18px}
+
+.miniapp-entry-grid{
+  grid-template-columns:repeat(12,minmax(0,1fr));
+  gap:12px;
+  margin:28px 0 20px;
+}
+.miniapp-entry-card{
+  grid-column:span 6;
+  min-height:164px;
+  padding:20px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:transparent;
+}
+.miniapp-entry-card:nth-child(1){grid-column:span 12;min-height:150px}
+.miniapp-entry-card:hover{border-color:var(--line-strong,#C8C1B4);background:rgba(251,248,240,.45)}
+.miniapp-entry-card strong{font-size:18px;line-height:26px;font-weight:600}
+.miniapp-entry-card p{max-width:620px;margin:8px 0 18px;font-size:12px;line-height:20px}
+.entry-kicker{letter-spacing:.11em}
+.entry-actions{gap:8px}
+.entry-btn,.saved-action,.filter{
+  min-height:40px;
+  border-radius:8px;
+}
+.entry-btn.primary{background:var(--brand-900);border-color:var(--brand-900)}
+.entry-btn.primary:hover{background:var(--brand-800,#214538)}
+.entry-count{
+  margin-left:6px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  font-size:12px;
+  font-style:normal;
+  font-weight:500;
+}
+
+.miniapp-overview,.miniapp-saved{
+  border-radius:10px;
+  box-shadow:none;
+  overflow:hidden;
+}
+.miniapp-overview table,.miniapp-saved table{font-size:12px}
+.table-head{min-height:52px}
+.saved-content-row{
+  min-height:58px;
+  align-items:center;
+  border-top:1px solid var(--line);
+}
+.saved-content-row:first-child{border-top:0}
+.status-dot{font-size:11px}
+.status-dot:before{width:6px;height:6px}
+.saved-row-actions{min-width:96px}
+.saved-action{background:transparent}
+.saved-action:hover{border-color:var(--brand-700);color:var(--brand-900)}
+
+.quick button,
+.tabbar button,
+.story-arrow-group button,
+.story-change-btn,
+.home-story-read,
+.story-more-link{
+  min-height:44px;
+}
+.quick button{padding:11px 12px}
+.tabbar{height:68px}
+.tabbar button{position:relative}
+.tabbar button.active:before{margin-top:-52px}
+
+.selection-title-tabs button{
+  min-height:52px;
+  padding:0 0 10px;
+}
+.selection-editorial-item{padding:32px 0;border-top:1px solid var(--line)}
+.selection-editorial-item:first-child{border-top:0}
+.selection-editorial-copy h3{font-size:20px;line-height:28px}
+.selection-points{gap:8px}
+.selection-points span{
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--copper);
+}
+
+.home-story-card{outline:none}
+.home-story-card:focus-visible{
+  outline:2px solid var(--focus-ring);
+  outline-offset:4px;
+}
+.home-story-controls{margin-top:12px}
+.story-progress button{min-height:12px;background:transparent;position:relative}
+.story-progress button:before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:5px;
+  height:2px;
+  border-radius:2px;
+  background:var(--line);
+}
+.story-progress button.active:before{background:var(--brand-700)}
+.story-rotation-note{line-height:18px}
+
+.product-sheet{
+  border-radius:16px 16px 0 0;
+  box-shadow:0 -8px 24px rgba(24,54,43,.09);
+  transition:transform .28s var(--ease);
+}
+.product-sheet-footer button{
+  min-height:48px;
+  border-radius:10px;
+}
+.admin-product-modal{
+  border-radius:12px;
+  box-shadow:0 12px 32px rgba(24,54,43,.12);
+}
+.admin-product-modal input,
+.admin-product-modal select,
+.admin-product-modal textarea{
+  border-radius:8px;
+}
+.admin-product-modal input:focus,
+.admin-product-modal select:focus,
+.admin-product-modal textarea:focus{
+  border-color:var(--brand-700);
+  box-shadow:none;
+}
+.admin-modal-close{min-width:44px;min-height:44px}
+
+.v17-guidance{
+  margin:0 0 24px;
+  padding:12px 0;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:0;
+}
+.v17-guidance div{padding:0 16px;border-left:1px solid var(--line)}
+.v17-guidance div:first-child{padding-left:0;border-left:0}
+.v17-guidance b{display:block;font-size:12px;color:var(--ink);font-weight:600}
+.v17-guidance span{display:block;margin-top:4px;color:var(--muted);font-size:11px;line-height:18px}
+
+@media(max-width:1100px){
+  .miniapp-entry-card,.miniapp-entry-card:nth-child(1){grid-column:span 12}
+  .miniapp-control-hero{display:block}
+  .sync-state{margin-top:16px}
+}
+@media(max-width:900px){
+  .miniapp-entry-grid{grid-template-columns:1fr}
+  .v17-guidance{grid-template-columns:1fr}
+  .v17-guidance div{padding:12px 0;border-left:0;border-top:1px solid var(--line)}
+  .v17-guidance div:first-child{border-top:0}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+  .product-sheet{transition:none}
+}
+
+
+/* ===== V18 Home Image Manager ===== */
+.home-image-modal{width:min(920px,calc(100vw - 48px))}
+.home-image-help{
+  margin:16px 0 0;
+  padding:12px 14px;
+  border-left:2px solid var(--brand-700);
+  background:var(--brand-100);
+  color:var(--ink-700);
+  font-size:11px;
+  line-height:19px;
+}
+.home-image-list{display:grid;gap:0;margin-top:18px;border-top:1px solid var(--line)}
+.home-image-row{
+  display:grid;
+  grid-template-columns:150px minmax(0,1fr) 100px;
+  gap:18px;
+  align-items:center;
+  padding:18px 0;
+  border-bottom:1px solid var(--line);
+}
+.home-image-preview{
+  aspect-ratio:4/3;
+  border-radius:8px;
+  background:#D8D0C1 center/cover no-repeat;
+  border:1px solid rgba(24,54,43,.06);
+}
+.home-image-row.hero-row .home-image-preview{aspect-ratio:3/4}
+.home-image-fields strong{display:block;font-size:14px;line-height:21px}
+.home-image-fields small{display:block;margin-top:3px;color:var(--muted);font-size:10px;line-height:16px}
+.home-image-fields input[type="url"]{
+  width:100%;
+  min-height:42px;
+  margin-top:10px;
+  padding:9px 11px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  color:var(--ink);
+}
+.home-image-file{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:8px;
+  font-size:11px;
+  color:var(--brand-700);
+}
+.home-image-file input{max-width:100%}
+.home-image-actions{display:flex;flex-direction:column;gap:7px}
+.home-image-actions button{
+  min-height:36px;
+  padding:0 10px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:transparent;
+  color:var(--brand-900);
+  font-size:10px;
+}
+.home-image-actions button:hover{border-color:var(--brand-700)}
+.home-image-status{margin-top:10px;color:var(--muted);font-size:10px;line-height:16px}
+@media(max-width:760px){
+  .home-image-row{grid-template-columns:96px minmax(0,1fr)}
+  .home-image-actions{grid-column:1/-1;flex-direction:row}
+}
+
+</style>
+</head>
+<!--
+V17 uni-app migration contract:
+- Bottom navigation -> pages.json native tabBar; tab pages use uni.switchTab.
+- Story / trace / product detail -> subpackages; use uni.navigateTo where applicable.
+- Product Quick Sheet -> Vue component/state, no querySelector/classList in formal uni-app implementation.
+- Story carousel -> uni-app swiper; reduced-motion/auto-play policy preserved.
+- Trace scan -> uni.scanCode; mock trace remains prototype-only.
+- Images -> <image mode="aspectFill"> with owned/authorized OSS/CDN assets.
+- Safe area -> env(safe-area-inset-bottom) / uni-app safe-area handling; do not hardcode 100vh subtraction.
+-->
+<body>
+<header class="preview-top">
+  <div class="preview-brand"><div class="preview-mark">山</div><div><strong>山禾颐品</strong><small>HOME SIMPLIFIED · V19</small></div></div>
+  <div style="font-size:10px;color:#2B5747;border:1px solid #DCD7CC;padding:7px 10px;border-radius:7px;background:#FBF8F0">已接：PublicProductDetail · Cart · catalog-view-model</div><div class="mode-switch"><button class="active" data-mode="mini">小程序</button><button data-mode="admin">运营后台</button></div>
+</header>
+<main id="mini" class="stage active">
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>● ● ▰</span></div>
+    <div class="screen">
+      <section class="page active" data-page="home">
+        <header class="mini-head"><div><span class="eyebrow">FROM ZHOUQU</span><h1>山禾颐品</h1></div><button class="icon-btn" aria-label="搜索">⌕</button></header>
+        <section class="hero" id="homeHeroImage"><div class="hero-copy"><span class="eyebrow">舟曲 · 白龙江畔</span><h2>山河有味<br>一口知秋</h2><p>自然慢晒，把西北的甜认真带给你。</p><button class="cta" data-open="selection" data-selection-default="brand">探索本季吊柿 →</button></div></section>
+        <section class="quick">
+          <button data-open="category" data-category-default="gift"><b>礼盒精选</b><span>节令与赠礼</span></button>
+          <button data-open="trace"><b>扫码溯源</b><span>看见来源</span></button>
+          <button data-open="story"><b>山野故事</b><span>人、地与风物</span></button>
+          <button data-open="selection" data-selection-default="season"><b>本季甄选</b><span>编辑推荐</span></button>
+        </section>
+        <section class="section"><div class="section-head"><div><span class="eyebrow">SHANHE ORIGINAL</span><h2>舟曲好物</h2></div><button class="more">查看全部 →</button></div><div class="products" id="homeProductList">
+          <button class="product-card" data-product="persimmon"><div class="product-photo persimmon" id="homePersimmonImage"></div><strong>舟曲吊柿 · 分享装</strong><small>自然慢晒 · 500g</small><b class="price">¥59.8</b></button>
+          <button class="product-card" data-product="gift"><div class="product-photo gift" id="homeGiftImage"></div><strong>吊柿 · 臻选礼盒</strong><small>节日赠礼 · 山禾颐品</small><b class="price">¥168</b></button>
+        </div></section>
+      </section>
+      <section class="page" data-page="category">
+        <header class="mini-head"><div><span class="eyebrow">DISCOVER</span><h1>分类</h1></div></header>
+        <div class="category-tabs"><button class="active" data-category="all">全部商品</button><button data-category="seasonal">应季甄选</button><button data-category="gift">礼盒</button><button data-category="mountain">山野好物</button></div>
+        <p class="category-note">后台按商品分类标签归档；“全部商品”汇总所有已上架商品。</p>
+        <section class="section" style="padding-top:22px"><div class="products" id="categoryProductList">
+          <button class="product-card" data-product="persimmon" data-product-category="seasonal"><div class="product-photo persimmon"></div><strong>舟曲吊柿</strong><small>应季甄选 · 甘肃舟曲</small><b class="price">¥59.8</b></button>
+          <button class="product-card" data-product="gift" data-product-category="gift"><div class="product-photo gift"></div><strong>双层臻选礼盒</strong><small>礼盒 · 节日赠礼</small><b class="price">¥168</b></button>
+          <button class="product-card" data-product="coffee" data-product-category="mountain"><div class="product-photo coffee"></div><strong>云南精品咖啡豆</strong><small>山野好物 · 云南</small><b class="price">¥68</b></button>
+          <button class="product-card" data-product="beef" data-product-category="mountain"><div class="product-photo beef"></div><strong>草原风味牛肉干</strong><small>山野好物 · 草原风物</small><b class="price">¥79</b></button>
+        </div></section>
+      </section>
+      <section class="page" data-page="selection">
+        <header class="selection-top">
+          <span class="eyebrow">SHANHE SELECTION</span>
+          <div class="selection-title-tabs" role="tablist" aria-label="甄选内容切换">
+            <button class="selection-title-tab active" data-selection-tab="brand">山禾甄选</button>
+            <button class="selection-title-tab" data-selection-tab="season">本期甄选</button>
+          </div>
+        </header>
+
+        <div class="selection-panel active" data-selection-panel="brand">
+          <section class="season-selection">
+            <div class="season-intro">
+              <span class="eyebrow">LOCAL SELECTION · GANSU</span>
+              <h2>本地好物，我们为什么选这些</h2>
+              <p>山禾甄选以甘肃及周边本地风物为主，不限定只有一个单品。这里持续收录来源清楚、地域特色明确、适合日常食用或节令分享的本地好物；每一款都先讲产地、原料、工艺与为什么值得被选进来。</p>
+            </div>
+
+            <div class="selection-editorial-list" id="brandSelectionEditorialList">
+              <article class="selection-editorial-item">
+                <div class="selection-editorial-photo local-persimmon"></div>
+                <div class="selection-editorial-copy">
+                  <span class="eyebrow">甘肃 · 舟曲</span>
+                  <h3>舟曲吊柿</h3>
+                  <p class="selection-subline">传统吊晒 · 自然风干 · 柔软甜润</p>
+                  <p>从鲜柿挑选、削皮、整理，到悬挂风干、回软与自然挂霜，舟曲吊柿真正吸引我们的，是一颗鲜果经过山风和时间之后留下的柔软、甜润与果香。正式上线时，这里将使用真实产地、吊晒和成品影像。</p>
+                  <div class="selection-points">
+                    <span>舟曲产地</span><span>传统吊晒</span><span>自然挂霜</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="selection-editorial-item">
+                <div class="selection-editorial-photo gaolan-wheat"></div>
+                <div class="selection-editorial-copy">
+                  <span class="eyebrow">甘肃 · 皋兰</span>
+                  <h3>皋兰禾尚头挂面</h3>
+                  <p class="selection-subline">本地麦香 · 筋道耐煮 · 家常面食</p>
+                  <p>禾尚头小麦是皋兰具有地域特色的小麦。做成挂面或长寿面一类面食时，我们更看重它自然的麦香、筋道口感和日常食用属性。山禾甄选会把这类真正扎根本地餐桌的东西放进来，而不是只追求“稀有”或“猎奇”。</p>
+                  <div class="selection-points">
+                    <span>皋兰本地</span><span>麦香清楚</span><span>家常耐吃</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <div class="local-selection-note">
+              <span class="eyebrow">LOCAL CURATION</span>
+              <p>以后还可以继续从后台往“山禾甄选”中添加甘肃本地及周边好物；它是一个持续扩充的本地甄选集合，不再绑定单一商品。</p>
+            </div>
+          </section>
+        </div>
+
+        <div class="selection-panel" data-selection-panel="season">
+          <section class="season-selection">
+            <div class="season-intro">
+              <span class="eyebrow">THIS SEASON</span>
+              <h2>这一期，我们为什么选这些</h2>
+              <p>本期甄选不以促销和价格为重点，只讲来源、风味、工艺与为什么值得被山禾颐品选进来。</p>
+            </div>
+
+            <div class="selection-editorial-list" id="selectionEditorialList">
+              <article class="selection-editorial-item">
+                <div class="selection-editorial-photo coffee"></div>
+                <div class="selection-editorial-copy">
+                  <span class="eyebrow">云南 · 咖啡</span>
+                  <h3>云南精品咖啡豆</h3>
+                  <p class="selection-subline">中度烘焙 · 日常友好 · 风味平衡</p>
+                  <p>我们选择它，不是因为“稀有”，而是因为它更适合日常喝：香气清楚、酸苦平衡、入口干净。中度烘焙能保留产地风味，同时降低冲煮门槛，手冲、法压和日常奶咖都更容易得到稳定表现。</p>
+                  <div class="selection-points">
+                    <span>风味干净</span><span>中度烘焙</span><span>日常好冲</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="selection-editorial-item">
+                <div class="selection-editorial-photo beef"></div>
+                <div class="selection-editorial-copy">
+                  <span class="eyebrow">草原 · 肉食</span>
+                  <h3>草原风味牛肉干</h3>
+                  <p class="selection-subline">肉香明确 · 口感有嚼劲 · 适合分享</p>
+                  <p>这类产品真正重要的是原料感和调味克制。山禾颐品更看重肉本身的香气、纤维口感和配料是否清楚，而不是靠过重香精或甜辣味遮盖原料。适合作为办公室、旅途和节令分享的小食。</p>
+                  <div class="selection-points">
+                    <span>肉香清楚</span><span>调味克制</span><span>耐嚼不柴</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="selection-editorial-item">
+                <div class="selection-editorial-photo seasonal"></div>
+                <div class="selection-editorial-copy">
+                  <span class="eyebrow">山野 · 时令</span>
+                  <h3>山野时令好物</h3>
+                  <p class="selection-subline">跟着季节更新 · 不长期固定上架</p>
+                  <p>有些山野风物最好的时候很短，所以它们不适合被做成常年固定 SKU。这里会根据季节、产量、风味和供应稳定性更新：什么时候好吃，什么时候上；季节过去，就暂时下架。</p>
+                  <div class="selection-points">
+                    <span>应季而选</span><span>来源清楚</span><span>少量更新</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+
+      <section class="page" data-page="story">
+        <header class="subpage-head">
+          <button class="subpage-back" data-open="home">←</button>
+          <div><span class="eyebrow">SHANHE STORIES</span><h1>山野故事</h1></div>
+        </header>
+
+        <section class="story-hero-block">
+          <div class="story-hero-photo" id="storyHeroPhoto"></div>
+          <span class="eyebrow" id="storyHeroKicker">产地 · 舟曲</span>
+          <h2 id="storyHeroTitle">舟曲，山谷与白龙江</h2>
+          <p id="storyHeroSummary">先认识一片土地，再认识它的味道。</p>
+          <div class="story-full-body" id="storyHeroBody"></div>
+        </section>
+
+        <section class="story-feed-wrap">
+          <div class="story-feed-head">
+            <div>
+              <span class="eyebrow">ALL STORIES</span>
+              <h2>继续往下看</h2>
+            </div>
+            <button class="story-change-btn" id="storyPageRandom">换一篇</button>
+          </div>
+          <section class="story-feed" id="storyFeed"></section>
+        </section>
+      </section>
+
+      <section class="page" data-page="trace">
+        <header class="subpage-head">
+          <button class="subpage-back" data-open="home">←</button>
+          <div><span class="eyebrow">TRACEABILITY</span><h1>扫码溯源</h1></div>
+        </header>
+
+        <section class="trace-intro">
+          <div class="trace-mark">溯</div>
+          <h2>扫一扫包装上的溯源码</h2>
+          <p>正式微信小程序中，这里会调用微信扫码能力。扫码后进入对应商品批次的溯源结果。</p>
+          <button class="trace-scan-btn" id="demoTraceBtn">原型演示 · 查看样例溯源</button>
+          <div class="saved-trace-list" id="savedTraceList"></div>
+        </section>
+
+        <section class="trace-result" id="traceResult" hidden>
+          <div class="trace-result-head">
+            <span class="eyebrow">TRACE RESULT</span>
+            <h2>舟曲吊柿 · 批次 ZQ-2026-09</h2>
+            <p>以下为原型样例，用来展示正式溯源页的信息结构。</p>
+          </div>
+          <div class="trace-list">
+            <div><span>商品</span><strong>舟曲吊柿</strong></div>
+            <div><span>产地</span><strong>甘肃 · 舟曲</strong></div>
+            <div><span>工艺</span><strong>传统吊晒 · 自然风干</strong></div>
+            <div><span>批次</span><strong>ZQ-2026-09</strong></div>
+            <div><span>包装状态</span><strong>山禾颐品批次包装</strong></div>
+            <div><span>质量信息</span><strong>正式版关联检测 / 留样信息</strong></div>
+          </div>
+          <section class="trace-note">
+            <h3>这一袋从哪里来</h3>
+            <p>正式后台可把采购批次、农户/供应方、收货、检测、包装和二维码绑定在同一个溯源批次下。</p>
+          </section>
+        </section>
+      </section>
+
+<section class="page" data-page="cart"><header class="mini-head"><div><h1>购物车</h1><span class="eyebrow">2 ITEMS</span></div></header><section class="cart-list">
+        <article class="cart-item"><div class="thumb" style="background-image:url('https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg')"></div><div class="cart-meta"><strong>舟曲吊柿 · 分享装</strong><small>500g × 1</small><b>¥59.8</b></div></article>
+        <article class="cart-item"><div class="thumb" style="background-image:url('https://miro.medium.com/v2/0%2AfEk_as8NTYbSbluy')"></div><div class="cart-meta"><strong>云南精品咖啡豆</strong><small>250g × 1</small><b>¥68</b></div></article>
+      </section><div class="cart-summary"><span>商品合计</span><strong>¥127.8</strong></div></section>
+      <section class="page" data-page="profile"><section class="profile-hero"><span class="eyebrow">MY SHANHE</span><h2>晚上好，山友</h2><p>把山川好物慢慢带回家。</p></section><section class="profile-menu">
+        <button>我的订单<span>›</span></button><button>收货地址<span>›</span></button><button>我的收藏<span>›</span></button><button>优惠权益<span>›</span></button><button>客服与售后<span>›</span></button><button>关于山禾颐品<span>›</span></button>
+      </section></section>
+
+      <div class="sheet-mask" id="productSheetMask" hidden></div>
+      <aside class="product-sheet" id="productSheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="sheetProductName">
+        <div class="sheet-handle"></div>
+        <button class="sheet-close" id="productSheetClose" aria-label="关闭">×</button>
+        <div class="sheet-scroll">
+          <div class="sheet-product-image" id="sheetProductImage"></div>
+          <span class="eyebrow" id="sheetProductEyebrow">SHANHE PRODUCT</span>
+          <h2 id="sheetProductName">商品名称</h2>
+          <p class="sheet-product-desc" id="sheetProductDesc"></p>
+          <div class="sheet-meta">
+            <div><span>产地</span><strong id="sheetProductOrigin">—</strong></div>
+            <div><span>规格</span><strong id="sheetProductSpec">—</strong></div>
+          </div>
+          <div class="sheet-detail-copy" id="sheetProductDetail"></div>
+        </div>
+        <div class="sheet-action">
+          <div>
+            <small>到手价</small>
+            <strong id="sheetProductPrice">¥0</strong>
+          </div>
+          <button id="sheetAddCart">加入购物车</button>
+        </div>
+      </aside>
+      <div class="mini-toast" id="miniToast" hidden>已加入购物车</div>
+
+      <nav class="tabbar"><button class="active" data-nav="home"><i>⌂</i>首页</button><button data-nav="category"><i>▦</i>分类</button><button data-nav="selection"><i>◇</i>甄选</button><button data-nav="cart"><i>▱</i>购物车</button><button data-nav="profile"><i>○</i>我的</button></nav>
+    </div>
+  </div>
+  <aside class="intro"><span class="eyebrow">SHANHE YIPIN · V3</span><h1>西北山野 ×<br>Editorial Commerce</h1><p>本版保留原有首页、分类、甄选、购物车、我的五个业务入口，重点删除概念稿式装饰，用真实摄影、排版、留白与内容层级建立品牌识别。</p><article class="principle"><b>01 · 分类 = 效率</b><p>线性筛选 + 双列商品，帮助用户快速找货。</p></article><article class="principle"><b>02 · 甄选 = 策展</b><p>大图、编辑说明、主选单品与纵向清单，避免与分类同质化。</p></article><article class="principle"><b>03 · 少装饰，多真实</b><p>取消伪柿子图形、彩色渐变、漂浮卡片和无意义圆形图标。</p></article></aside>
+</main>
+<main id="admin" class="stage">
+  <aside class="sidebar"><div class="admin-brand">山禾颐品<small>运营管理中心</small></div>
+    <div class="nav-group"><label>经营</label><button class="active" data-admin-page="dashboard">⌂　工作台</button><button data-admin-page="reports">⌁　数据报表</button></div>
+    <div class="nav-group miniapp-nav-group"><label>小程序前台</label><button data-admin-page="miniappContent">▣　小程序前端页面添加</button></div>
+    <div class="nav-group"><label>交易</label><button data-admin-page="products">◇　商品中心</button><button data-admin-page="orders">▤　订单中心</button><button data-admin-page="aftersales">↺　售后中心</button></div>
+    <div class="nav-group"><label>用户与增长</label><button data-admin-page="members">◎　会员中心</button><button data-admin-page="marketing">券　营销中心</button><button data-admin-page="content">文　内容中心</button></div>
+    <div class="nav-group"><label>供应链</label><button data-admin-page="purchase">采　采购管理</button><button data-admin-page="warehouse">仓　仓库库存</button><button data-admin-page="processing">包　加工包装</button><button data-admin-page="trace">溯　溯源管理</button></div>
+    <div class="nav-group"><label>企业与系统</label><button data-admin-page="enterprise">企　企业团购</button><button data-admin-page="service">客　客服中心</button><button data-admin-page="finance">¥　财务中心</button><button data-admin-page="system">⚙　系统管理</button></div>
+  </aside>
+  <section class="admin-content"><header class="admin-header"><div><h1 id="adminTitle">经营概览</h1><p id="adminSubtitle">今日经营、履约与供应链关键数据</p></div><button class="primary" id="adminPrimaryBtn">下载日报</button></header><div id="adminBody"></div></section>
+</main>
+<script>
+const modeButtons=document.querySelectorAll('[data-mode]'),stages=document.querySelectorAll('.stage');
+modeButtons.forEach(b=>b.addEventListener('click',()=>{modeButtons.forEach(x=>x.classList.remove('active'));b.classList.add('active');stages.forEach(s=>s.classList.remove('active'));document.getElementById(b.dataset.mode).classList.add('active')}));
+function openPage(name,scrollTarget){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const page=document.querySelector(`[data-page="${name}"]`);
+  page?.classList.add('active');
+  document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));
+  if(page){
+    if(scrollTarget){
+      requestAnimationFrame(()=>{
+        const target=document.getElementById(scrollTarget);
+        if(target){ page.scrollTop=Math.max(0,target.offsetTop-8); }
+      });
+    }else{
+      page.scrollTop=0;
+    }
+  }
+}
+document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>openPage(b.dataset.nav)));
+document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>{
+  openPage(b.dataset.open,b.dataset.scrollTarget);
+
+  if(b.dataset.open==='selection' && b.dataset.selectionDefault){
+    const key=b.dataset.selectionDefault;
+    document.querySelectorAll('[data-selection-tab]').forEach(x=>x.classList.toggle('active',x.dataset.selectionTab===key));
+    document.querySelectorAll('[data-selection-panel]').forEach(panel=>panel.classList.toggle('active',panel.dataset.selectionPanel===key));
+  }
+
+  if(b.dataset.open==='category' && b.dataset.categoryDefault){
+    const key=b.dataset.categoryDefault;
+    document.querySelectorAll('.category-tabs button').forEach(x=>x.classList.toggle('active',x.dataset.category===key));
+    document.querySelectorAll('[data-product-category]').forEach(card=>{
+      card.hidden=key!=='all'&&card.dataset.productCategory!==key;
+    });
+  }
+}));
+document.querySelectorAll('.category-tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.category-tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');const category=b.dataset.category||'all';document.querySelectorAll('[data-product-category]').forEach(card=>{card.hidden=category!=='all'&&card.dataset.productCategory!==category;});}));
+
+document.querySelectorAll('[data-selection-tab]').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    const target=tab.dataset.selectionTab;
+    document.querySelectorAll('[data-selection-tab]').forEach(x=>x.classList.toggle('active',x===tab));
+    document.querySelectorAll('[data-selection-panel]').forEach(panel=>{
+      panel.classList.toggle('active',panel.dataset.selectionPanel===target);
+    });
+    const page=document.querySelector('[data-page="selection"]');
+    if(page) page.scrollTop=0;
+  });
+});
+document.querySelectorAll('[data-open-product]').forEach(el=>el.addEventListener('click',()=>openProductSheet('persimmon')));
+
+
+const demoTraceBtn=document.getElementById('demoTraceBtn');
+const traceResult=document.getElementById('traceResult');
+demoTraceBtn?.addEventListener('click',()=>{
+  const latest=demoDB.traces.filter(t=>t.status!=='草稿').slice(-1)[0];
+  if(latest){ showTraceRecord(latest); return; }
+  traceResult.hidden=false;
+  const page=document.querySelector('[data-page="trace"]');
+  if(page){
+    requestAnimationFrame(()=>{ page.scrollTop=Math.max(0,traceResult.offsetTop-14); });
+  }
+});
+
+
+const DEMO_DB_KEY='shanhe_yipin_v12_demo_db';
+
+function makeId(prefix){
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+}
+function esc(value=''){
+  return String(value).replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+}
+function safeImage(value=''){
+  const v=String(value||'').trim();
+  return /^https?:\/\//i.test(v) ? v.replace(/["'()]/g,'') : '';
+}
+function loadDemoDB(){
+  try{
+    const raw=localStorage.getItem(DEMO_DB_KEY);
+    if(raw){
+      const parsed=JSON.parse(raw);
+      return {
+        products:Array.isArray(parsed.products)?parsed.products:[],
+        stories:Array.isArray(parsed.stories)?parsed.stories:[],
+        traces:Array.isArray(parsed.traces)?parsed.traces:[],
+        homeImages:(parsed.homeImages && typeof parsed.homeImages==='object')?parsed.homeImages:{}
+      };
+    }
+  }catch(e){}
+  return {products:[],stories:[],traces:[],homeImages:{}};
+}
+let demoDB=loadDemoDB();
+
+function saveDemoDB(){
+  localStorage.setItem(DEMO_DB_KEY,JSON.stringify(demoDB));
+}
+
+const DEFAULT_HOME_IMAGES={
+  hero:'https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg',
+  persimmon:'https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg',
+  gift:'https://tu.chdesign.cn/Thumbnail/upload/creation/20180708/giytgojsguzdomjsgi3dkobtonidozllpbmhs4zonjygox3qojxxa33soruw63s7hayda6bygaya.jpg'
+};
+const HOME_IMAGE_SLOTS=[
+  {key:'hero',label:'首页首屏大图',note:'首页最上方主视觉，建议竖版 3:4 或 4:5',target:'homeHeroImage'},
+  {key:'persimmon',label:'舟曲吊柿商品图',note:'首页「舟曲好物」第一张商品图，建议 4:5',target:'homePersimmonImage'},
+  {key:'gift',label:'礼盒商品图',note:'首页「舟曲好物」礼盒图片，建议 4:5',target:'homeGiftImage'}
+];
+
+function safeHomeImage(value=''){
+  const v=String(value||'').trim();
+  if(/^https?:\/\//i.test(v)) return v.replace(/["'()]/g,'');
+  if(/^data:image\/(png|jpeg|jpg|webp|gif);base64,/i.test(v)) return v;
+  return '';
+}
+function getHomeImage(key){
+  return safeHomeImage(demoDB.homeImages?.[key]) || DEFAULT_HOME_IMAGES[key] || '';
+}
+function renderHomeImages(){
+  HOME_IMAGE_SLOTS.forEach(slot=>{
+    const el=document.getElementById(slot.target);
+    if(!el) return;
+    const url=getHomeImage(slot.key);
+    if(slot.key==='hero'){
+      el.style.backgroundImage=`linear-gradient(to top,rgba(18,29,23,.68) 0,rgba(18,29,23,.16) 48%,rgba(18,29,23,.02) 76%),url("${url}")`;
+    }else{
+      el.style.backgroundImage=`url("${url}")`;
+    }
+  });
+}
+function categoryKey(label){
+  return label==='礼盒'?'gift':label==='山野好物'?'mountain':'seasonal';
+}
+function categoryLabel(key){
+  return key==='gift'?'礼盒':key==='mountain'?'山野好物':'应季甄选';
+}
+function productKey(id){ return `dynamic_${id}`; }
+
+function hydrateProductData(){
+  demoDB.products.filter(p=>p.status!=='下架').forEach(p=>{
+    productData[productKey(p.id)]={
+      name:p.name||'未命名商品',
+      eyebrow:(p.type==='curated'?'SHANHE SELECTION':'SHANHE ORIGINAL')+(p.origin?` · ${p.origin}`:''),
+      desc:p.summary||p.intro||'山禾颐品商品',
+      origin:p.origin||'—',
+      spec:p.spec||'—',
+      price:`¥${p.price||0}`,
+      image:safeImage(p.image),
+      detail:p.detail||p.intro||'暂无更多说明'
+    };
+  });
+}
+
+function renderDynamicProducts(){
+  hydrateProductData();
+
+  document.querySelectorAll('[data-dynamic-product="1"]').forEach(el=>el.remove());
+  document.querySelectorAll('[data-dynamic-selection="1"]').forEach(el=>el.remove());
+
+  const home=document.getElementById('homeProductList');
+  const category=document.getElementById('categoryProductList');
+  const brandSelection=document.getElementById('brandSelectionEditorialList');
+  const seasonSelection=document.getElementById('selectionEditorialList');
+
+  demoDB.products.filter(p=>p.status!=='下架').forEach(p=>{
+    const key=productKey(p.id);
+    const img=safeImage(p.image);
+    const bg=img?`style="background-image:url('${esc(img)}')"`:'';
+    const cat=categoryKey(p.category);
+
+    if(category){
+      category.insertAdjacentHTML('beforeend',`
+        <button class="product-card" data-dynamic-product="1" data-product="${esc(key)}" data-product-category="${cat}">
+          <div class="product-photo dynamic-photo" ${bg}></div>
+          <strong>${esc(p.name||'未命名商品')}</strong>
+          <small>${esc(categoryLabel(cat))} · ${esc(p.origin||'未填写产地')}</small>
+          <b class="price">¥${esc(p.price||'0')}</b>
+        </button>`);
+    }
+
+    if(home && p.type==='owned'){
+      home.insertAdjacentHTML('beforeend',`
+        <button class="product-card" data-dynamic-product="1" data-product="${esc(key)}">
+          <div class="product-photo dynamic-photo" ${bg}></div>
+          <strong>${esc(p.name||'未命名商品')}</strong>
+          <small>${esc(p.summary||p.spec||'山禾颐品自有商品')}</small>
+          <b class="price">¥${esc(p.price||'0')}</b>
+        </button>`);
+    }
+
+    if(p.inSelection==='yes'){
+      const isLocal=p.selectionPosition==='山禾甄选' || p.selectionPosition==='山禾甄选首选';
+      const target=isLocal?brandSelection:seasonSelection;
+      const label=isLocal?'山禾甄选':'本期甄选';
+      if(target){
+        target.insertAdjacentHTML('beforeend',`
+          <article class="selection-editorial-item" data-dynamic-selection="1">
+            <div class="selection-editorial-photo dynamic-photo" ${bg}></div>
+            <div class="selection-editorial-copy">
+              <span class="eyebrow">${esc(p.origin||label)}</span>
+              <h3>${esc(p.name||'未命名甄选商品')}</h3>
+              <p class="selection-subline">${esc(p.summary||label)}</p>
+              <p>${esc(p.intro||p.detail||`由山禾颐品后台添加到${label}的内容。`)}</p>
+              <div class="selection-points"><span>来源清楚</span><span>${label}</span><span>后台发布</span></div>
+            </div>
+          </article>`);
+      }
+    }
+  });
+
+  applyCurrentCategoryFilter();
+}
+
+function applyCurrentCategoryFilter(){
+  const active=document.querySelector('.category-tabs button.active');
+  const key=active?.dataset.category||'all';
+  document.querySelectorAll('[data-product-category]').forEach(card=>{
+    card.hidden=key!=='all'&&card.dataset.productCategory!==key;
+  });
+}
+
+const builtInStories=[
+  {
+    id:'zhouqu-land',
+    type:'产地',
+    origin:'甘肃 · 舟曲',
+    product:'舟曲吊柿',
+    title:'舟曲，山谷与白龙江',
+    summary:'先认识一片土地，再认识它的味道。',
+    body:'舟曲的山谷、白龙江和秋冬气候，构成了吊柿故事的背景。这里不只讲一颗柿饼，也记录产地、季节和当地人怎样把鲜柿慢慢交给山风和时间。',
+    cover:'https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg',
+    featured:'yes',status:'发布',sort:10
+  },
+  {
+    id:'zhouqu-craft',
+    type:'传统工艺',
+    origin:'甘肃 · 舟曲',
+    product:'舟曲吊柿',
+    title:'传统吊晒，不追求速成',
+    summary:'从削皮到挂霜，一颗鲜柿怎样慢慢变成吊柿。',
+    body:'挑选成熟鲜柿、削皮整理、悬挂风干、回软与自然挂霜，每一步都需要时间。正式版会用真实拍摄素材把这些步骤逐一记录下来。',
+    cover:'https://k.sinaimg.cn/n/sinacn/20171120/2a6a-fynwnws0963273.jpg/w700d1q75cms.jpg',
+    featured:'yes',status:'发布',sort:20
+  },
+  {
+    id:'coffee-yunnan',
+    type:'产地',
+    origin:'云南',
+    product:'云南精品咖啡豆',
+    title:'云南的山里，为什么适合咖啡生长',
+    summary:'同样是山地风物，咖啡讲的是海拔、成熟度与风味。',
+    body:'云南咖啡不是“外地商品”四个字就能讲完。山禾颐品会从产区、豆种、处理方式和烘焙程度出发，解释一杯咖啡里的果香、坚果调和日常饮用体验从哪里来。',
+    cover:'https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1200&q=80',
+    featured:'yes',status:'发布',sort:30
+  },
+  {
+    id:'coffee-roast',
+    type:'产品知识',
+    origin:'云南',
+    product:'云南精品咖啡豆',
+    title:'为什么我们更愿意从中度烘焙讲起',
+    summary:'不是越苦越像咖啡，平衡和好冲也很重要。',
+    body:'中度烘焙更容易让普通家庭在手冲、法压和奶咖之间找到平衡。故事页可以继续解释冲煮参数、保存方式和不同喝法，而不是只在商品页堆参数。',
+    cover:'https://images.unsplash.com/photo-1512568400610-62da28bc8a13?auto=format&fit=crop&w=1200&q=80',
+    featured:'yes',status:'发布',sort:40
+  },
+  {
+    id:'beef-source',
+    type:'原料',
+    origin:'草原风物',
+    product:'草原风味牛肉干',
+    title:'牛肉干好不好吃，先看原料和肉香',
+    summary:'调味可以很热闹，但原料感不能被盖住。',
+    body:'我们更愿意从肉本身的香气、纤维感、含水状态和配料表说起。好的牛肉干应该让人先吃到肉，而不是只剩甜、辣和香精感。',
+    cover:'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1200&q=80',
+    featured:'yes',status:'发布',sort:50
+  },
+  {
+    id:'beef-travel',
+    type:'食用方式',
+    origin:'草原风物',
+    product:'草原风味牛肉干',
+    title:'一袋耐嚼的小食，适合什么场景',
+    summary:'办公室、旅途、分享，一种商品也可以有很多生活故事。',
+    body:'山野故事不必每一篇都讲产地。也可以讲什么时候吃、怎么搭配、怎么保存，以及为什么一种风物会进入普通人的日常。',
+    cover:'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80',
+    featured:'yes',status:'发布',sort:60
+  }
+];
+
+function getAllStories(){
+  const dynamic=demoDB.stories
+    .filter(s=>s.status!=='草稿')
+    .map(s=>({
+      ...s,
+      type:s.type||'山野故事',
+      product:s.product||'',
+      featured:s.featured||'yes',
+      body:s.body||s.summary||'',
+      cover:safeImage(s.cover),
+      sort:Number(s.sort||100)
+    }));
+  return [...builtInStories,...dynamic].sort((a,b)=>(a.sort||0)-(b.sort||0));
+}
+
+let activeStoryId='zhouqu-land';
+let homeStoryIndex=0;
+let storyAutoTimer=null;
+
+function getStoryById(id){
+  return getAllStories().find(s=>s.id===id)||getAllStories()[0]||null;
+}
+
+function updateStoryHero(id){
+  const story=getStoryById(id);
+  if(!story) return;
+  activeStoryId=story.id;
+  const photo=document.getElementById('storyHeroPhoto');
+  const kicker=document.getElementById('storyHeroKicker');
+  const title=document.getElementById('storyHeroTitle');
+  const summary=document.getElementById('storyHeroSummary');
+  const body=document.getElementById('storyHeroBody');
+  if(photo) photo.style.backgroundImage=story.cover?`url('${story.cover}')`:'';
+  if(kicker) kicker.textContent=[story.type,story.origin].filter(Boolean).join(' · ');
+  if(title) title.textContent=story.title;
+  if(summary) summary.textContent=story.summary||'';
+  if(body) body.textContent=story.body||'';
+  document.querySelectorAll('[data-story-id]').forEach(el=>el.classList.toggle('active',el.dataset.storyId===story.id));
+}
+
+function openStoryById(id){
+  updateStoryHero(id);
+  openPage('story');
+  const page=document.querySelector('[data-page="story"]');
+  if(page) page.scrollTop=0;
+}
+
+function renderHomeStoryCarousel(){
+  const stories=getAllStories().filter(s=>s.featured!=='no');
+  const card=document.getElementById('homeStoryCard');
+  if(!card||!stories.length) return;
+  if(homeStoryIndex>=stories.length) homeStoryIndex=0;
+  const story=stories[homeStoryIndex];
+  const photo=document.getElementById('homeStoryPhoto');
+  const kicker=document.getElementById('homeStoryKicker');
+  const title=document.getElementById('homeStoryTitle');
+  const summary=document.getElementById('homeStorySummary');
+  const counter=document.getElementById('homeStoryCounter');
+  if(photo) photo.style.backgroundImage=story.cover?`url('${story.cover}')`:'';
+  if(kicker) kicker.textContent=[story.type,story.origin].filter(Boolean).join(' · ');
+  if(title) title.textContent=story.title;
+  if(summary) summary.textContent=story.summary||'';
+  if(counter) counter.textContent=`${String(homeStoryIndex+1).padStart(2,'0')} / ${String(stories.length).padStart(2,'0')}`;
+  card.dataset.storyId=story.id;
+  const read=document.getElementById('homeStoryRead');
+  if(read) read.dataset.storyId=story.id;
+
+  const progress=document.getElementById('homeStoryProgress');
+  if(progress){
+    progress.innerHTML=stories.map((_,i)=>`<button class="${i===homeStoryIndex?'active':''}" data-story-index="${i}" aria-label="第${i+1}篇故事"></button>`).join('');
+  }
+}
+
+function stepHomeStory(direction=1){
+  const stories=getAllStories().filter(s=>s.featured!=='no');
+  if(!stories.length) return;
+  homeStoryIndex=(homeStoryIndex+direction+stories.length)%stories.length;
+  renderHomeStoryCarousel();
+  restartStoryAuto();
+}
+
+function randomHomeStory(){
+  const stories=getAllStories().filter(s=>s.featured!=='no');
+  if(stories.length<2) return;
+  let next=homeStoryIndex;
+  while(next===homeStoryIndex) next=Math.floor(Math.random()*stories.length);
+  homeStoryIndex=next;
+  renderHomeStoryCarousel();
+  restartStoryAuto();
+}
+
+function restartStoryAuto(){
+  if(storyAutoTimer) clearInterval(storyAutoTimer);
+  const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  if(reduced || document.hidden) return;
+  storyAutoTimer=setInterval(()=>{
+    if(document.hidden) return;
+    const stories=getAllStories().filter(s=>s.featured!=='no');
+    if(stories.length>1){
+      homeStoryIndex=(homeStoryIndex+1)%stories.length;
+      renderHomeStoryCarousel();
+    }
+  },7000);
+}
+
+function renderDynamicStories(){
+  document.querySelectorAll('[data-dynamic-story="1"]').forEach(el=>el.remove());
+  const feed=document.getElementById('storyFeed');
+  if(!feed) return;
+  feed.innerHTML='';
+  getAllStories().forEach(s=>{
+    const img=safeImage(s.cover)||s.cover||'';
+    const bg=img?`style="background-image:url('${esc(img)}')"`:'';
+    feed.insertAdjacentHTML('beforeend',`
+      <article class="story-article ${s.id===activeStoryId?'active':''}" data-dynamic-story="1" data-story-id="${esc(s.id)}">
+        <div class="story-article-photo dynamic-photo" ${bg}></div>
+        <div>
+          <span class="eyebrow">${esc(s.type||'山野故事')}</span>
+          <h3>${esc(s.title||'未命名故事')}</h3>
+          <p>${esc(s.summary||s.body||'')}</p>
+          ${s.product?`<span class="story-product-tag">关联：${esc(s.product)}</span>`:''}
+        </div>
+      </article>`);
+  });
+  updateStoryHero(activeStoryId);
+}
+
+document.addEventListener('click',e=>{
+  const storyEl=e.target.closest('[data-story-id]');
+  if(storyEl){
+    e.preventDefault();
+    e.stopPropagation();
+    openStoryById(storyEl.dataset.storyId);
+    return;
+  }
+  const progress=e.target.closest('[data-story-index]');
+  if(progress){
+    homeStoryIndex=Number(progress.dataset.storyIndex)||0;
+    renderHomeStoryCarousel();
+    restartStoryAuto();
+  }
+});
+
+document.getElementById('homeStoryPrev')?.addEventListener('click',e=>{e.stopPropagation();stepHomeStory(-1)});
+document.getElementById('homeStoryNext')?.addEventListener('click',e=>{e.stopPropagation();stepHomeStory(1)});
+document.getElementById('homeStoryChange')?.addEventListener('click',e=>{e.stopPropagation();randomHomeStory()});
+document.getElementById('homeStoryCard')?.addEventListener('keydown',e=>{
+  if(e.key==='Enter'||e.key===' '){
+    e.preventDefault();
+    const id=e.currentTarget.dataset.storyId;
+    if(id) openStoryById(id);
+  }
+});
+document.addEventListener('visibilitychange',restartStoryAuto);
+
+document.getElementById('storyPageRandom')?.addEventListener('click',()=>{
+  const stories=getAllStories();
+  if(!stories.length) return;
+  const current=stories.findIndex(s=>s.id===activeStoryId);
+  const next=(current+1)%stories.length;
+  updateStoryHero(stories[next].id);
+  const page=document.querySelector('[data-page="story"]');
+  if(page) page.scrollTop=0;
+});
+
+function renderSavedTraces(){
+  const box=document.getElementById('savedTraceList');
+  if(!box) return;
+  const active=demoDB.traces.filter(t=>t.status!=='草稿');
+  box.innerHTML=active.length?`<span class="saved-trace-title">后台已添加的溯源批次</span>`:'';
+  active.slice().reverse().forEach(t=>{
+    box.insertAdjacentHTML('beforeend',`
+      <button class="saved-trace-btn" data-trace-id="${esc(t.id)}">
+        <strong>${esc(t.product||'未命名商品')}</strong>
+        <span>${esc(t.batch||'未填写批次')}</span>
+      </button>`);
+  });
+  const demoBtn=document.getElementById('demoTraceBtn');
+  if(demoBtn && active.length){
+    demoBtn.textContent=`查看最新溯源 · ${active[active.length-1].batch||'新批次'}`;
+  }
+}
+
+function showTraceRecord(t){
+  if(!t) return;
+  const result=document.getElementById('traceResult');
+  if(!result) return;
+  result.hidden=false;
+  result.innerHTML=`
+    <div class="trace-result-head">
+      <span class="eyebrow">TRACE RESULT</span>
+      <h2>${esc(t.product||'商品')} · 批次 ${esc(t.batch||'—')}</h2>
+      <p>该内容来自运营后台“小程序前端页面添加 → 扫码溯源”。</p>
+    </div>
+    <div class="trace-list">
+      <div><span>商品</span><strong>${esc(t.product||'—')}</strong></div>
+      <div><span>产地</span><strong>${esc(t.origin||'—')}</strong></div>
+      <div><span>供应方 / 农户</span><strong>${esc(t.supplier||'—')}</strong></div>
+      <div><span>批次</span><strong>${esc(t.batch||'—')}</strong></div>
+      <div><span>收货日期</span><strong>${esc(t.receiveDate||'—')}</strong></div>
+      <div><span>包装日期</span><strong>${esc(t.packDate||'—')}</strong></div>
+      <div><span>工艺</span><strong>${esc(t.craft||'—')}</strong></div>
+      <div><span>质量信息</span><strong>${esc(t.quality||'—')}</strong></div>
+    </div>
+    <section class="trace-note"><h3>这一袋从哪里来</h3><p>${esc(t.note||'暂无补充说明')}</p></section>`;
+  const page=document.querySelector('[data-page="trace"]');
+  if(page) requestAnimationFrame(()=>{page.scrollTop=Math.max(0,result.offsetTop-14)});
+}
+
+function renderAdminMiniappState(){
+  const owned=demoDB.products.filter(p=>p.type==='owned').length;
+  const curated=demoDB.products.filter(p=>p.type==='curated').length;
+  const brandSelection=demoDB.products.filter(p=>p.inSelection==='yes'&&(p.selectionPosition==='山禾甄选'||p.selectionPosition==='山禾甄选首选')).length;
+  const seasonSelection=demoDB.products.filter(p=>p.inSelection==='yes'&&p.selectionPosition==='本期甄选').length;
+  const nodes={
+    ownedCount:owned+curated,
+    brandSelectionCount:brandSelection,
+    seasonSelectionCount:seasonSelection,
+    storyCount:demoDB.stories.length,
+    traceCount:demoDB.traces.length
+  };
+  Object.entries(nodes).forEach(([id,val])=>{
+    const el=document.getElementById(id); if(el) el.textContent=String(val);
+  });
+
+  const list=document.getElementById('miniappSavedList');
+  if(list){
+    const rows=[];
+    demoDB.products.slice().reverse().forEach(p=>{
+      const status=p.status||'上架';
+      const live=status!=='下架';
+      rows.push(`
+        <div class="saved-content-row">
+          <span>${p.type==='owned'?'商品':'甄选商品'}</span>
+          <strong>${esc(p.name||'未命名')}</strong>
+          <small class="status-dot ${live?'live':'off'}">${esc(status)} · ${esc(p.selectionPosition||p.category||'')}</small>
+          <div class="saved-row-actions">
+            <button class="saved-action" data-toggle-product="${esc(p.id)}">${live?'下架':'重新上架'}</button>
+          </div>
+        </div>`);
+    });
+    demoDB.stories.slice().reverse().forEach(s=>{
+      const live=s.status!=='草稿';
+      rows.push(`
+        <div class="saved-content-row">
+          <span>山野故事</span>
+          <strong>${esc(s.title||'未命名')}</strong>
+          <small class="status-dot ${live?'live':'off'}">${esc(s.status||'发布')}</small>
+          <div class="saved-row-actions">
+            <button class="saved-action" data-toggle-story="${esc(s.id)}">${live?'转为草稿':'发布'}</button>
+          </div>
+        </div>`);
+    });
+    demoDB.traces.slice().reverse().forEach(t=>{
+      const live=t.status==='启用';
+      rows.push(`
+        <div class="saved-content-row">
+          <span>扫码溯源</span>
+          <strong>${esc(t.product||'未命名')} · ${esc(t.batch||'')}</strong>
+          <small class="status-dot ${live?'live':'off'}">${esc(t.status||'草稿')}</small>
+          <div class="saved-row-actions">
+            <button class="saved-action" data-toggle-trace="${esc(t.id)}">${live?'停用':'启用'}</button>
+          </div>
+        </div>`);
+    });
+    list.innerHTML=rows.length?rows.join(''):'<div class="demo-sync-tip">还没有新增内容。请从上面的总控入口添加；保存以后会立即同步到左侧小程序预览。</div>';
+  }
+
+  document.getElementById('clearDemoData')?.addEventListener('click',()=>{
+    demoDB={products:[],stories:[],traces:[],homeImages:{}};
+    saveDemoDB();
+    renderAllDynamicContent();
+    renderAdminMiniappState();
+  },{once:true});
+
+  document.querySelector('[data-scroll-miniapp-list]')?.addEventListener('click',()=>{
+    document.getElementById('miniappSavedAnchor')?.scrollIntoView({behavior:'smooth',block:'start'});
+  },{once:true});
+}
+
+document.addEventListener('click',e=>{
+  const productBtn=e.target.closest('[data-toggle-product]');
+  if(productBtn){
+    const product=demoDB.products.find(p=>p.id===productBtn.dataset.toggleProduct);
+    if(product){
+      product.status=(product.status||'上架')==='上架'?'下架':'上架';
+      saveDemoDB(); renderAllDynamicContent(); renderAdminMiniappState();
+    }
+    return;
+  }
+  const storyBtn=e.target.closest('[data-toggle-story]');
+  if(storyBtn){
+    const story=demoDB.stories.find(s=>s.id===storyBtn.dataset.toggleStory);
+    if(story){
+      story.status=story.status==='草稿'?'发布':'草稿';
+      saveDemoDB(); renderAllDynamicContent(); renderAdminMiniappState();
+    }
+    return;
+  }
+  const traceBtn=e.target.closest('[data-toggle-trace]');
+  if(traceBtn){
+    const trace=demoDB.traces.find(t=>t.id===traceBtn.dataset.toggleTrace);
+    if(trace){
+      trace.status=trace.status==='启用'?'草稿':'启用';
+      saveDemoDB(); renderAllDynamicContent(); renderAdminMiniappState();
+    }
+  }
+});
+
+
+const homeImageMask=document.getElementById('homeImageMask');
+const homeImageModal=document.getElementById('homeImageModal');
+const homeImageList=document.getElementById('homeImageList');
+const homeImageDraft={};
+
+function closeHomeImageManager(){
+  if(homeImageModal) homeImageModal.hidden=true;
+  if(homeImageMask) homeImageMask.hidden=true;
+}
+function buildHomeImageManager(){
+  if(!homeImageList) return;
+  HOME_IMAGE_SLOTS.forEach(slot=>homeImageDraft[slot.key]=getHomeImage(slot.key));
+  homeImageList.innerHTML=HOME_IMAGE_SLOTS.map(slot=>`
+    <div class="home-image-row ${slot.key==='hero'?'hero-row':''}" data-home-slot="${slot.key}">
+      <div class="home-image-preview" data-home-preview="${slot.key}" style="background-image:url('${esc(getHomeImage(slot.key))}')"></div>
+      <div class="home-image-fields">
+        <strong>${esc(slot.label)}</strong>
+        <small>${esc(slot.note)}</small>
+        <input type="url" data-home-url="${slot.key}" value="${esc(getHomeImage(slot.key))}" placeholder="https://...">
+        <label class="home-image-file">选择本地图片
+          <input type="file" accept="image/png,image/jpeg,image/webp" data-home-file="${slot.key}">
+        </label>
+      </div>
+      <div class="home-image-actions">
+        <button type="button" data-home-preview-apply="${slot.key}">预览</button>
+        <button type="button" data-home-reset="${slot.key}">恢复默认</button>
+      </div>
+    </div>`).join('');
+}
+function openHomeImageManager(){
+  buildHomeImageManager();
+  if(homeImageMask) homeImageMask.hidden=false;
+  if(homeImageModal) homeImageModal.hidden=false;
+}
+function updateHomeImagePreview(key,value){
+  const safe=safeHomeImage(value);
+  if(!safe) return false;
+  homeImageDraft[key]=safe;
+  const preview=document.querySelector(`[data-home-preview="${key}"]`);
+  if(preview) preview.style.backgroundImage=`url("${safe}")`;
+  return true;
+}
+
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-home-images]')){
+    openHomeImageManager();
+    return;
+  }
+  const apply=e.target.closest('[data-home-preview-apply]');
+  if(apply){
+    const key=apply.dataset.homePreviewApply;
+    const input=document.querySelector(`[data-home-url="${key}"]`);
+    if(input && !updateHomeImagePreview(key,input.value)){
+      const status=document.getElementById('homeImageStatus');
+      if(status) status.textContent='图片地址无效，请使用 http/https 图片地址，或选择本地图片。';
+    }
+    return;
+  }
+  const reset=e.target.closest('[data-home-reset]');
+  if(reset){
+    const key=reset.dataset.homeReset;
+    homeImageDraft[key]=DEFAULT_HOME_IMAGES[key];
+    const input=document.querySelector(`[data-home-url="${key}"]`);
+    const preview=document.querySelector(`[data-home-preview="${key}"]`);
+    if(input) input.value=DEFAULT_HOME_IMAGES[key];
+    if(preview) preview.style.backgroundImage=`url("${DEFAULT_HOME_IMAGES[key]}")`;
+  }
+});
+
+document.addEventListener('change',e=>{
+  const input=e.target.closest('[data-home-file]');
+  if(!input || !input.files?.[0]) return;
+  const key=input.dataset.homeFile;
+  const file=input.files[0];
+  const status=document.getElementById('homeImageStatus');
+  if(file.size>700*1024){
+    if(status) status.textContent='原型演示建议单张图片不超过 700KB；正式版会上传 OSS/CDN。';
+    input.value='';
+    return;
+  }
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const value=String(reader.result||'');
+    homeImageDraft[key]=value;
+    const preview=document.querySelector(`[data-home-preview="${key}"]`);
+    const urlInput=document.querySelector(`[data-home-url="${key}"]`);
+    if(preview) preview.style.backgroundImage=`url("${value}")`;
+    if(urlInput) urlInput.value='';
+    if(status) status.textContent=`已选择：${file.name}，点击“保存首页图片”后生效。`;
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('homeImageClose')?.addEventListener('click',closeHomeImageManager);
+document.getElementById('homeImageCancel')?.addEventListener('click',closeHomeImageManager);
+homeImageMask?.addEventListener('click',closeHomeImageManager);
+document.getElementById('homeImageSave')?.addEventListener('click',()=>{
+  HOME_IMAGE_SLOTS.forEach(slot=>{
+    const input=document.querySelector(`[data-home-url="${slot.key}"]`);
+    if(input?.value.trim()){
+      const safe=safeHomeImage(input.value);
+      if(safe) homeImageDraft[slot.key]=safe;
+    }
+  });
+  demoDB.homeImages={...(demoDB.homeImages||{}),...homeImageDraft};
+  try{
+    saveDemoDB();
+    renderHomeImages();
+    const status=document.getElementById('homeImageStatus');
+    if(status) status.textContent='已保存：首页图片已经同步到左侧预览。';
+    setTimeout(closeHomeImageManager,450);
+  }catch(err){
+    const status=document.getElementById('homeImageStatus');
+    if(status) status.textContent='保存失败：本地图片可能过大。请改用图片 URL，正式版将上传 OSS/CDN。';
+  }
+});
+
+
+function renderAllDynamicContent(){
+  renderDynamicProducts();
+  renderDynamicStories();
+  renderSavedTraces();
+  renderHomeImages();
+}
+
+document.addEventListener('click',e=>{
+  const traceBtn=e.target.closest('[data-trace-id]');
+  if(traceBtn){
+    const t=demoDB.traces.find(x=>x.id===traceBtn.dataset.traceId);
+    showTraceRecord(t);
+  }
+});
+
+
+const productData={
+  persimmon:{
+    name:'舟曲吊柿',
+    eyebrow:'SHANHE ORIGINAL · ZHOUQU',
+    desc:'传统吊晒，自然挂霜。把舟曲山谷里的秋甜慢慢晒进果肉。',
+    origin:'甘肃 · 舟曲',
+    spec:'500g',
+    price:'¥59.8',
+    image:"https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg",
+    detail:'传统吊晒，自然风干，果肉逐渐回软、糖分集中并形成自然白霜。适合直接食用，也可作为节令分享。'
+  },
+  gift:{
+    name:'吊柿 · 臻选礼盒',
+    eyebrow:'SHANHE GIFT',
+    desc:'以舟曲吊柿为核心的节令礼盒，适合分享与赠礼。',
+    origin:'甘肃 · 舟曲',
+    spec:'礼盒装',
+    price:'¥168',
+    image:"https://tu.chdesign.cn/Thumbnail/upload/creation/20180708/giytgojsguzdomjsgi3dkobtonidozllpbmhs4zonjygox3qojxxa33soruw63s7hayda6bygaya.jpg",
+    detail:'以舟曲吊柿为核心组合，强调包装、规格和赠礼场景。正式商品资料由运营后台维护。'
+  },
+  coffee:{
+    name:'云南精品咖啡豆',
+    eyebrow:'SHANHE SELECTION · YUNNAN',
+    desc:'从产地、风味与烘焙表现出发，挑一款适合日常饮用的精品豆。',
+    origin:'云南',
+    spec:'250g',
+    price:'¥68',
+    image:"https://miro.medium.com/v2/0%2AfEk_as8NTYbSbluy",
+    detail:'中度烘焙，风味平衡，适合手冲、法压与日常奶咖。详细产区、处理法和烘焙信息由后台维护。'
+  },
+  beef:{
+    name:'草原风味牛肉干',
+    eyebrow:'SHANHE SELECTION',
+    desc:'作为山野好物甄选商品，重点呈现原料、风味、产地与食用场景。',
+    origin:'内蒙古',
+    spec:'200g',
+    price:'¥79',
+    image:"https://img.alicdn.com/bao/uploaded/i4/2212287855603/O1CN01viatkQ1rGDv5V0NDn_%21%212212287855603.jpg",
+    detail:'重点看原料感、肉香和调味是否克制。规格、配料、保质期与保存方式由后台维护。'
+  },
+  seasonal:{
+    name:'山野时令好物',
+    eyebrow:'SHANHE SELECTION · SEASONAL',
+    desc:'跟着季节更新的地方风物，只在适合的时候上架。',
+    origin:'产地限定',
+    spec:'按商品',
+    price:'¥39',
+    image:"https://n.sinaimg.cn/sinacn10107/36/w1024h612/20190407/d066-hvhrcxm5250136.jpg",
+    detail:'跟着季节更新的地方风物，适合在当季少量上架。产地、规格与保存方式由后台维护。'
+  }
+};
+
+let currentProductKey=null;
+let cartCount=0;
+const productSheet=document.getElementById('productSheet');
+const productSheetMask=document.getElementById('productSheetMask');
+const productSheetClose=document.getElementById('productSheetClose');
+
+function openProductSheet(key){
+  const p=productData[key];
+  if(!p) return;
+  currentProductKey=key;
+  document.getElementById('sheetProductImage').style.backgroundImage=`url("${p.image}")`;
+  document.getElementById('sheetProductEyebrow').textContent=p.eyebrow;
+  document.getElementById('sheetProductName').textContent=p.name;
+  document.getElementById('sheetProductDesc').textContent=p.desc;
+  document.getElementById('sheetProductOrigin').textContent=p.origin;
+  document.getElementById('sheetProductSpec').textContent=p.spec;
+  document.getElementById('sheetProductDetail').textContent=p.detail;
+  document.getElementById('sheetProductPrice').textContent=p.price;
+  productSheetMask.hidden=false;
+  productSheet.classList.add('open');
+  productSheet.setAttribute('aria-hidden','false');
+}
+
+function closeProductSheet(){
+  productSheet.classList.remove('open');
+  productSheet.setAttribute('aria-hidden','true');
+  setTimeout(()=>productSheetMask.hidden=true,260);
+}
+
+document.addEventListener('click',e=>{
+  const productEl=e.target.closest('[data-product]');
+  if(productEl){ openProductSheet(productEl.dataset.product); }
+});
+
+productSheetClose?.addEventListener('click',closeProductSheet);
+productSheetMask?.addEventListener('click',closeProductSheet);
+
+document.getElementById('sheetAddCart')?.addEventListener('click',()=>{
+  cartCount+=1;
+  const badge=document.getElementById('cartBadge');
+  badge.textContent=String(cartCount);
+  badge.hidden=false;
+  const toast=document.getElementById('miniToast');
+  toast.hidden=false;
+  setTimeout(()=>toast.hidden=true,1200);
+  closeProductSheet();
+});
+
+
+/* Mini program frontend content editor */
+const miniappContentMask=document.getElementById('miniappContentMask');
+const miniappContentModal=document.getElementById('miniappContentModal');
+const miniappContentTitle=document.getElementById('miniappContentTitle');
+const storyEditorFields=document.getElementById('storyEditorFields');
+const traceEditorFields=document.getElementById('traceEditorFields');
+let currentMiniappEditor=null;
+
+function openMiniappEditor(type){
+  currentMiniappEditor=type;
+  miniappContentMask.hidden=false;
+  miniappContentModal.hidden=false;
+  storyEditorFields.hidden=type!=='story';
+  traceEditorFields.hidden=type!=='trace';
+  miniappContentTitle.textContent=type==='story'?'添加小程序山野故事':'添加扫码溯源';
+}
+
+function closeMiniappEditor(){
+  miniappContentMask.hidden=true;
+  miniappContentModal.hidden=true;
+  currentMiniappEditor=null;
+}
+
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('[data-miniapp-editor]');
+  if(btn){ openMiniappEditor(btn.dataset.miniappEditor); }
+});
+
+document.getElementById('miniappContentClose')?.addEventListener('click',closeMiniappEditor);
+document.getElementById('miniappContentCancel')?.addEventListener('click',closeMiniappEditor);
+miniappContentMask?.addEventListener('click',closeMiniappEditor);
+
+document.getElementById('miniappContentSave')?.addEventListener('click',()=>{
+  if(currentMiniappEditor==='story'){
+    const data={
+      id:makeId('story'),
+      title:document.getElementById('storyTitle').value.trim(),
+      type:document.getElementById('storyType').value,
+      origin:document.getElementById('storyOrigin').value.trim(),
+      product:document.getElementById('storyProduct').value.trim(),
+      featured:document.getElementById('storyFeatured').value,
+      publishAt:document.getElementById('storyPublishAt').value,
+      summary:document.getElementById('storySummary').value.trim(),
+      body:document.getElementById('storyBody').value.trim(),
+      cover:document.getElementById('storyCover').value.trim(),
+      media:document.getElementById('storyMedia').value.trim(),
+      status:document.getElementById('storyStatus').value,
+      sort:Number(document.getElementById('storySort').value||10)
+    };
+    if(!data.title){ alert('请填写故事标题'); return; }
+    demoDB.stories.push(data);
+  }else if(currentMiniappEditor==='trace'){
+    const data={
+      id:makeId('trace'),
+      product:document.getElementById('traceProduct').value.trim(),
+      batch:document.getElementById('traceBatch').value.trim(),
+      origin:document.getElementById('traceOrigin').value.trim(),
+      supplier:document.getElementById('traceSupplier').value.trim(),
+      receiveDate:document.getElementById('traceReceiveDate').value,
+      packDate:document.getElementById('tracePackDate').value,
+      craft:document.getElementById('traceCraft').value.trim(),
+      quality:document.getElementById('traceQuality').value.trim(),
+      note:document.getElementById('traceNote').value.trim(),
+      qrStatus:document.getElementById('traceQrStatus').value,
+      status:document.getElementById('traceStatus').value
+    };
+    if(!data.product || !data.batch){ alert('请填写关联商品和溯源批次号'); return; }
+    demoDB.traces.push(data);
+  }
+  saveDemoDB();
+  renderAllDynamicContent();
+  renderAdminMiniappState();
+  closeMiniappEditor();
+  alert('已保存，并同步到小程序前台预览。');
+});
+
+
+/* Admin uploader */
+const adminProductMask=document.getElementById('adminProductMask');
+const adminProductModal=document.getElementById('adminProductModal');
+
+function openAdminProductModal(type){
+  adminProductMask.hidden=false;
+  adminProductModal.hidden=false;
+  document.getElementById('formType').value=type;
+  document.getElementById('adminProductModalTitle').textContent=
+    type==='curated'?'上传甄选商品':'上传自有商品';
+  document.getElementById('formInSelection').value=type==='curated'?'yes':'no';
+  document.getElementById('formSelectionPosition').value=type==='curated'?'本期甄选':'不指定';
+  document.getElementById('formStatus').value='上架';
+}
+
+function openSelectionContentEditor(position){
+  openAdminProductModal('curated');
+  document.getElementById('formSelectionPosition').value=position;
+  document.getElementById('formInSelection').value='yes';
+  document.getElementById('adminProductModalTitle').textContent=
+    position==='山禾甄选'?'添加山禾甄选内容':'添加本期甄选内容';
+}
+
+function closeAdminProductModal(){
+  adminProductMask.hidden=true;
+  adminProductModal.hidden=true;
+}
+
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('[data-upload-product]');
+  if(btn){ openAdminProductModal(btn.dataset.uploadProduct); return; }
+  const selectionBtn=e.target.closest('[data-selection-editor]');
+  if(selectionBtn){
+    openSelectionContentEditor(selectionBtn.dataset.selectionEditor==='brand'?'山禾甄选':'本期甄选');
+  }
+});
+
+document.getElementById('adminProductClose')?.addEventListener('click',closeAdminProductModal);
+document.getElementById('adminProductCancel')?.addEventListener('click',closeAdminProductModal);
+adminProductMask?.addEventListener('click',closeAdminProductModal);
+document.getElementById('adminProductSave')?.addEventListener('click',()=>{
+  const data={
+    id:makeId('product'),
+    name:document.getElementById('formName').value.trim(),
+    type:document.getElementById('formType').value,
+    category:document.getElementById('formCategory').value,
+    origin:document.getElementById('formOrigin').value.trim(),
+    price:document.getElementById('formPrice').value.trim(),
+    status:document.getElementById('formStatus').value,
+    spec:document.getElementById('formSpec').value.trim(),
+    summary:document.getElementById('formSummary').value.trim(),
+    intro:document.getElementById('formIntro').value.trim(),
+    detail:document.getElementById('formDetail').value.trim(),
+    image:document.getElementById('formImage').value.trim(),
+    inSelection:document.getElementById('formInSelection').value,
+    selectionPosition:document.getElementById('formSelectionPosition').value
+  };
+  if(!data.name){
+    alert('请先填写商品名称');
+    return;
+  }
+  demoDB.products.push(data);
+  saveDemoDB();
+  renderAllDynamicContent();
+  renderAdminMiniappState();
+  closeAdminProductModal();
+  alert('已保存，并同步到小程序前台预览。');
+});
+
+const adminTitle=document.getElementById('adminTitle'),adminSubtitle=document.getElementById('adminSubtitle'),adminPrimaryBtn=document.getElementById('adminPrimaryBtn'),adminBody=document.getElementById('adminBody');
+function setAdminActive(page){document.querySelectorAll('[data-admin-page]').forEach(b=>b.classList.toggle('active',b.dataset.adminPage===page))}
+function showDashboard(){adminTitle.textContent='经营概览';adminSubtitle.textContent='今日经营、履约与供应链关键数据';adminPrimaryBtn.textContent='下载日报';adminBody.innerHTML=`<section class="metrics"><article class="metric"><small>今日 GMV</small><strong>¥28,650</strong></article><article class="metric"><small>支付订单</small><strong>126</strong></article><article class="metric"><small>待发货</small><strong>32</strong></article><article class="metric"><small>库存预警</small><strong>6</strong></article></section><section class="table-card"><div class="table-head"><h3>今日待办</h3></div><table><tbody><tr><td><b>待发货订单</b></td><td>32</td><td>进入订单中心</td></tr><tr><td><b>待处理售后</b></td><td>7</td><td>进入售后中心</td></tr><tr><td><b>库存与履约告警</b></td><td>6</td><td>进入仓库库存</td></tr><tr><td><b>待收货采购单</b></td><td>4</td><td>进入采购管理</td></tr></tbody></table></section>`}
+
+function showMiniappContent(){
+  adminTitle.textContent='小程序前端页面添加';
+  adminSubtitle.textContent='一个后台入口，统一控制首页图片、商品、甄选、山野故事与扫码溯源';
+  adminPrimaryBtn.textContent='前台内容总控';
+  adminBody.innerHTML=`
+    <section class="miniapp-control-hero">
+      <div>
+        <span class="eyebrow">MINI PROGRAM CONTENT CONTROL</span>
+        <h2>小程序前台内容总控台</h2>
+        <p>首页图片、商品上架下架、山禾甄选、本期甄选、山野故事和扫码溯源统一从这里添加与发布。当前为浏览器联动原型：保存或切换状态后，小程序预览会立即更新。</p>
+      </div>
+      <div class="sync-state"><strong>联动状态：已开启</strong><span>后台保存 → 前台预览立即变化</span></div>
+    </section>
+
+    <section class="v17-guidance" aria-label="前台内容发布规则">
+      <div><b>商品</b><span>负责分类、价格、规格与上下架</span></div>
+      <div><b>甄选 / 故事</b><span>负责内容表达，不替代商品交易信息</span></div>
+      <div><b>溯源</b><span>按批次发布，停用后前台不再展示</span></div>
+    </section>
+
+    <section class="miniapp-entry-grid">
+      <article class="miniapp-entry-card">
+        <span class="entry-kicker">HOME · VISUALS</span>
+        <strong>首页图片管理</strong>
+        <p>统一更换首页首屏大图、舟曲吊柿和礼盒图片。修改只影响首页，不会误改分类页或甄选正文里的图片。</p>
+        <div class="entry-actions">
+          <button class="entry-btn primary" data-home-images="1">更换首页图片</button>
+        </div>
+      </article>
+
+      <article class="miniapp-entry-card">
+        <span class="entry-kicker">PRODUCTS · PUBLISH</span>
+        <strong>商品与前台状态 <em class="entry-count" id="ownedCount">0</em></strong>
+        <p>统一维护商品资料、前台分类、规格、价格、图片与上架状态；甄选内容仍由下方两个内容入口单独管理。</p>
+        <div class="entry-actions">
+          <button class="entry-btn primary" data-upload-product="owned">＋ 添加自有商品</button>
+          <button class="entry-btn" data-upload-product="curated">＋ 添加甄选商品</button>
+        </div>
+      </article>
+
+      <article class="miniapp-entry-card">
+        <span class="entry-kicker">LOCAL SELECTION</span>
+        <strong>山禾甄选 · 本地风物 <em class="entry-count" id="brandSelectionCount">0</em></strong>
+        <p>管理舟曲吊柿、皋兰禾尚头挂面等本地好物的文章、图片、产地、推荐理由与排序。</p>
+        <div class="entry-actions">
+          <button class="entry-btn primary" data-selection-editor="brand">＋ 添加山禾甄选</button>
+        </div>
+      </article>
+
+      <article class="miniapp-entry-card">
+        <span class="entry-kicker">OUTER SELECTION</span>
+        <strong>本期甄选 · 四方好物 <em class="entry-count" id="seasonSelectionCount">0</em></strong>
+        <p>管理云南咖啡豆、牛肉干及其他外地好物的文章、图片、风味介绍、推荐理由与排序。</p>
+        <div class="entry-actions">
+          <button class="entry-btn primary" data-selection-editor="season">＋ 添加本期甄选</button>
+        </div>
+      </article>
+
+      <article class="miniapp-entry-card">
+        <span class="entry-kicker">SHANHE STORIES</span>
+        <strong>山野故事 <em class="entry-count" id="storyCount">0</em></strong>
+        <p>添加故事、关联商品、封面、正文、视频、首页轮播、发布时间与发布状态。</p>
+        <div class="entry-actions">
+          <button class="entry-btn primary" data-miniapp-editor="story">＋ 添加山野故事</button>
+        </div>
+      </article>
+
+      <article class="miniapp-entry-card">
+        <span class="entry-kicker">TRACEABILITY</span>
+        <strong>扫码溯源 <em class="entry-count" id="traceCount">0</em></strong>
+        <p>添加商品批次、产地、供应方、收货 / 包装日期、工艺、质量摘要和二维码状态。</p>
+        <div class="entry-actions">
+          <button class="entry-btn primary" data-miniapp-editor="trace">＋ 添加溯源</button>
+        </div>
+      </article>
+
+      <article class="miniapp-entry-card">
+        <span class="entry-kicker">FRONTEND STATUS</span>
+        <strong>发布状态总览</strong>
+        <p>集中查看当前商品、甄选、故事和溯源哪些已经发布，哪些处于草稿或下架状态。</p>
+        <div class="entry-actions">
+          <button class="entry-btn" data-scroll-miniapp-list="1">查看已添加内容 ↓</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="table-card miniapp-overview">
+      <div class="table-head"><h3>这个模块控制前台哪里</h3></div>
+      <table>
+        <thead><tr><th>功能</th><th>前台位置</th><th>后台可以控制</th></tr></thead>
+        <tbody>
+          <tr><td>首页图片管理</td><td>首页主视觉 / 商品图</td><td>图片替换、恢复默认，保存后立即同步预览</td></tr>
+          <tr><td>商品添加 / 上下架</td><td>首页 / 分类 / 商品详情</td><td>名称、图片、价格、规格、分类、上架状态</td></tr>
+          <tr><td>山禾甄选</td><td>甄选 → 山禾甄选</td><td>本地商品、文章、图片、产地、推荐理由</td></tr>
+          <tr><td>本期甄选</td><td>甄选 → 本期甄选</td><td>外地商品、文章、图片、风味、推荐理由</td></tr>
+          <tr><td>山野故事</td><td>首页轮播 / 山野故事页</td><td>故事、商品关联、封面、正文、视频、推荐与发布</td></tr>
+          <tr><td>扫码溯源</td><td>扫码溯源页</td><td>批次、产地、供应方、包装、质量信息、二维码状态</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="miniapp-section-title" id="miniappSavedAnchor">
+      <h3>已添加内容与发布状态</h3>
+      <p>这里直接控制演示数据的上架 / 下架、发布 / 草稿、启用 / 停用。</p>
+    </div>
+    <section class="table-card miniapp-saved">
+      <div class="table-head">
+        <h3>前台内容清单</h3>
+        <button class="filter" id="clearDemoData">清空演示数据</button>
+      </div>
+      <div id="miniappSavedList" class="saved-content-list"></div>
+    </section>`;
+  requestAnimationFrame(()=>renderAdminMiniappState());
+}
+
+function showProducts(){adminTitle.textContent='商品中心';adminSubtitle.textContent='保留原商品中心结构；上传商品时设置“前台分类”标签，系统按标签进入对应分类栏目，同时可单独设置是否进入“山禾甄选”';adminPrimaryBtn.textContent='商品设置';adminBody.innerHTML=`<section class="product-source"><article class="source-card"><div class="source-icon">山</div><h2>自有商品</h2><p>上传舟曲吊柿、自有礼盒、自有包装及山禾颐品自主经营商品。</p><p><b>前台展示：</b>分类页</p><button data-upload-product="owned">＋ 上传自有商品</button></article><article class="source-card selected"><div class="source-icon">甄</div><h2>山禾甄选</h2><p>上传咖啡、咖啡豆、牛肉干及其他地区经过甄选的地方好物。</p><p><b>前台展示：</b>甄选页</p><button data-upload-product="curated">＋ 上传甄选商品</button></article></section><section class="table-card"><div class="table-head"><h3>商品列表</h3><select class="filter"><option>全部商品</option><option>自有商品</option><option>山禾甄选</option></select></div><table><thead><tr><th>商品</th><th>商品类型</th><th>前台分类</th><th>前台位置</th><th>产地</th><th>售价</th><th>状态</th></tr></thead><tbody><tr><td><b>舟曲吊柿 · 分享装</b></td><td><span class="tag">自有商品</span></td><td>应季甄选</td><td>分类 / 甄选首选</td><td>甘肃舟曲</td><td>¥59.8</td><td>销售中</td></tr><tr><td><b>双层臻选礼盒</b></td><td><span class="tag">自有商品</span></td><td>礼盒</td><td>分类</td><td>甘肃舟曲</td><td>¥168</td><td>销售中</td></tr><tr><td><b>云南精品咖啡豆</b></td><td><span class="tag selected">山禾甄选</span></td><td>山野好物</td><td>分类 / 甄选</td><td>云南</td><td>¥68</td><td>销售中</td></tr><tr><td><b>草原牛肉干</b></td><td><span class="tag selected">山禾甄选</span></td><td>山野好物</td><td>分类 / 甄选</td><td>内蒙古</td><td>¥79</td><td>草稿</td></tr></tbody></table></section>`}
+function showGeneric(title,subtitle){adminTitle.textContent=title;adminSubtitle.textContent=subtitle;adminPrimaryBtn.textContent='进入管理';adminBody.innerHTML=`<section class="table-card"><h3>${title}</h3><p style="color:#747A75;line-height:1.8">保留原运营后台功能结构，本次视觉精修不改变这里的既有业务能力。</p></section>`}
+const map={reports:['数据报表','销售、商品、复购、库存、损耗与内容转化'],orders:['订单中心','订单、发货、物流与订单备注'],aftersales:['售后中心','退款、退货、补发、赔付与售后统计'],members:['会员中心','用户、标签、等级、积分与会员资产'],marketing:['营销中心','优惠券、预售、活动与会员价'],content:['内容中心','山野故事、文章、视频与首页内容'],purchase:['采购管理','供应商、农户、采购、收货与成本'],warehouse:['仓库库存','仓库、批次库存、出入库、盘点与损耗'],processing:['加工包装','包装 BOM、加工任务、领料与完工入库'],trace:['溯源管理','批次、二维码、扫码记录与页面模板'],enterprise:['企业团购','询价、跟进、报价、企业客户与多地址'],service:['客服中心','工单、用户备注、快捷回复与客诉'],finance:['财务中心','支付退款流水、收入、成本、毛利与对账'],system:['系统管理','员工、权限、参数、日志与系统配置']};
+document.querySelectorAll('[data-admin-page]').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.adminPage;setAdminActive(p);if(p==='dashboard')return renderAllDynamicContent();
+showDashboard();if(p==='products')return showProducts();if(p==='miniappContent')return showMiniappContent();const [t,s]=map[p]||['运营管理','保留原后台功能'];showGeneric(t,s)}));showDashboard();
+</script>
+
+<div class="admin-modal-mask" id="adminProductMask" hidden></div>
+<section class="admin-product-modal" id="adminProductModal" hidden role="dialog" aria-modal="true" aria-labelledby="adminProductModalTitle">
+  <header class="admin-modal-head">
+    <div>
+      <span class="eyebrow">PRODUCT EDITOR</span>
+      <h2 id="adminProductModalTitle">上传商品</h2>
+    </div>
+    <button class="admin-modal-close" id="adminProductClose">×</button>
+  </header>
+
+  <div class="admin-form-grid">
+    <label>
+      <span>商品名称</span>
+      <input id="formName" placeholder="例如：舟曲吊柿 · 分享装">
+    </label>
+
+    <label>
+      <span>商品类型</span>
+      <select id="formType">
+        <option value="owned">自有商品</option>
+        <option value="curated">山禾甄选</option>
+      </select>
+    </label>
+
+    <label>
+      <span>前台分类</span>
+      <select id="formCategory">
+        <option>应季甄选</option>
+        <option>礼盒</option>
+        <option>山野好物</option>
+      </select>
+    </label>
+
+    <label>
+      <span>产地</span>
+      <input id="formOrigin" placeholder="例如：甘肃舟曲 / 云南">
+    </label>
+
+    <label>
+      <span>售价</span>
+      <input id="formPrice" type="number" step="0.01" placeholder="68">
+    </label>
+    <label>
+      <span>前台状态</span>
+      <select id="formStatus">
+        <option value="上架">上架</option>
+        <option value="下架">下架</option>
+      </select>
+    </label>
+
+    <label>
+      <span>规格</span>
+      <input id="formSpec" placeholder="例如：500g / 250g">
+    </label>
+
+    <label class="full">
+      <span>一句话卖点</span>
+      <input id="formSummary" placeholder="例如：传统吊晒，自然挂霜">
+    </label>
+
+    <label class="full">
+      <span>商品介绍</span>
+      <textarea id="formIntro" rows="4" placeholder="这里填写用户点开商品后首先看到的介绍。"></textarea>
+    </label>
+
+    <label class="full">
+      <span>详细说明 / 工艺 / 风味</span>
+      <textarea id="formDetail" rows="6" placeholder="可填写产地、制作方式、口感、食用建议、保存方式等完整详情。"></textarea>
+    </label>
+
+    <label class="full">
+      <span>封面图片 URL（原型演示）</span>
+      <input id="formImage" placeholder="https://...">
+    </label>
+
+    <label>
+      <span>是否进入甄选页</span>
+      <select id="formInSelection">
+        <option value="yes">是</option>
+        <option value="no">否</option>
+      </select>
+    </label>
+
+    <label>
+      <span>甄选位置</span>
+      <select id="formSelectionPosition">
+        <option>本期甄选</option>
+        <option>山禾甄选</option>
+        <option>不指定</option>
+      </select>
+    </label>
+  </div>
+
+  <footer class="admin-modal-actions">
+    <button class="secondary-admin" id="adminProductCancel">取消</button>
+    <button class="primary-admin" id="adminProductSave">保存商品</button>
+  </footer>
+</section>
+
+
+<div class="admin-modal-mask" id="miniappContentMask" hidden></div>
+<section class="admin-product-modal miniapp-content-modal" id="miniappContentModal" hidden role="dialog" aria-modal="true" aria-labelledby="miniappContentTitle">
+  <header class="admin-modal-head">
+    <div>
+      <span class="eyebrow">MINI PROGRAM CONTENT</span>
+      <h2 id="miniappContentTitle">添加前台内容</h2>
+    </div>
+    <button class="admin-modal-close" id="miniappContentClose" aria-label="关闭内容编辑器">×</button>
+  </header>
+
+  <div id="storyEditorFields" hidden>
+    <div class="admin-form-grid">
+      <label class="full">
+        <span>故事标题</span>
+        <input id="storyTitle" placeholder="例如：舟曲，山谷与白龙江">
+      </label>
+      <label>
+        <span>内容类型</span>
+        <select id="storyType">
+          <option>产地故事</option>
+          <option>人物故事</option>
+          <option>传统工艺</option>
+          <option>品牌故事</option>
+          <option>视频内容</option>
+        </select>
+      </label>
+      <label>
+        <span>关联产地</span>
+        <input id="storyOrigin" placeholder="例如：甘肃舟曲">
+      </label>
+      <label>
+        <span>关联商品</span>
+        <input id="storyProduct" placeholder="例如：舟曲吊柿 / 云南咖啡豆">
+      </label>
+      <label>
+        <span>首页展示</span>
+        <select id="storyFeatured">
+          <option value="yes">加入首页轮播</option>
+          <option value="no">仅山野故事页</option>
+        </select>
+      </label>
+      <label>
+        <span>发布时间</span>
+        <input id="storyPublishAt" type="datetime-local">
+      </label>
+      <label class="full">
+        <span>摘要</span>
+        <textarea id="storySummary" rows="3" placeholder="首页/列表显示的简短介绍"></textarea>
+      </label>
+      <label class="full">
+        <span>正文内容</span>
+        <textarea id="storyBody" rows="8" placeholder="填写完整故事、产地、人物、工艺说明等"></textarea>
+      </label>
+      <label class="full">
+        <span>封面图片 URL（原型演示）</span>
+        <input id="storyCover" placeholder="https://...">
+      </label>
+      <label class="full">
+        <span>图集 / 视频地址（可多条）</span>
+        <textarea id="storyMedia" rows="4" placeholder="每行一个图片或视频地址"></textarea>
+      </label>
+      <label>
+        <span>前台状态</span>
+        <select id="storyStatus">
+          <option>发布</option>
+          <option>草稿</option>
+        </select>
+      </label>
+      <label>
+        <span>排序</span>
+        <input id="storySort" type="number" value="10">
+      </label>
+    </div>
+  </div>
+
+  <div id="traceEditorFields" hidden>
+    <div class="admin-form-grid">
+      <label>
+        <span>关联商品</span>
+        <input id="traceProduct" placeholder="例如：舟曲吊柿 · 分享装">
+      </label>
+      <label>
+        <span>溯源批次号</span>
+        <input id="traceBatch" placeholder="例如：ZQ-2026-09">
+      </label>
+      <label>
+        <span>产地</span>
+        <input id="traceOrigin" placeholder="甘肃 · 舟曲">
+      </label>
+      <label>
+        <span>供应方 / 农户</span>
+        <input id="traceSupplier" placeholder="填写供应方或农户信息">
+      </label>
+      <label>
+        <span>收货日期</span>
+        <input id="traceReceiveDate" type="date">
+      </label>
+      <label>
+        <span>包装日期</span>
+        <input id="tracePackDate" type="date">
+      </label>
+      <label class="full">
+        <span>工艺说明</span>
+        <textarea id="traceCraft" rows="4" placeholder="例如：挑选 → 削皮 → 吊晒 → 自然挂霜 → 包装"></textarea>
+      </label>
+      <label class="full">
+        <span>质量 / 检测信息</span>
+        <textarea id="traceQuality" rows="4" placeholder="填写检测项目、留样、检测报告编号等"></textarea>
+      </label>
+      <label class="full">
+        <span>溯源说明</span>
+        <textarea id="traceNote" rows="5" placeholder="用户扫码后看到的批次说明"></textarea>
+      </label>
+      <label>
+        <span>二维码状态</span>
+        <select id="traceQrStatus">
+          <option>待生成</option>
+          <option>已生成</option>
+          <option>停用</option>
+        </select>
+      </label>
+      <label>
+        <span>前台状态</span>
+        <select id="traceStatus">
+          <option>启用</option>
+          <option>草稿</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <footer class="admin-modal-actions">
+    <button class="secondary-admin" id="miniappContentCancel">取消</button>
+    <button class="primary-admin" id="miniappContentSave">保存内容</button>
+  </footer>
+</section>
+
+
+<div class="admin-modal-mask" id="homeImageMask" hidden></div>
+<section class="admin-product-modal home-image-modal" id="homeImageModal" hidden role="dialog" aria-modal="true" aria-labelledby="homeImageTitle">
+  <header class="admin-modal-head">
+    <div>
+      <span class="eyebrow">HOME VISUAL MANAGER</span>
+      <h2 id="homeImageTitle">首页图片管理</h2>
+    </div>
+    <button class="admin-modal-close" id="homeImageClose" aria-label="关闭首页图片管理">×</button>
+  </header>
+  <p class="home-image-help">原型支持粘贴图片 URL，也支持选择本地小图片预览并保存。正式小程序上线后，这里应改为上传到 OSS/CDN，再把图片地址保存到后台。</p>
+  <div class="home-image-list" id="homeImageList"></div>
+  <div class="home-image-status" id="homeImageStatus">保存后会立即同步到左侧小程序首页。</div>
+  <footer class="admin-modal-actions">
+    <button class="secondary-admin" id="homeImageCancel">取消</button>
+    <button class="primary-admin" id="homeImageSave">保存首页图片</button>
+  </footer>
+</section>
+
+</body>
+</html>

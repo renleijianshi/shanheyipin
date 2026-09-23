@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { onShareAppMessage } from '@dcloudio/uni-app';
+import { computed, ref } from 'vue';
+import { onShareAppMessage, onShow } from '@dcloudio/uni-app';
 import ProductTile from '../../components/ProductTile.vue';
-import { V19_STOREFRONT_PREVIEW } from '../../preview-products.js';
+import { addV19CartItem, readV19Content, storefrontProducts } from '../../src/v19-content-store.js';
 import type { StorefrontProductSummary } from '@miniapp-model/v12-ports.js';
 
 const selectedProduct = ref<StorefrontProductSummary | null>(null);
 const previewToast = ref('');
+const products = ref(storefrontProducts());
+const homeImages = ref(readV19Content().homeImages);
+const homeProducts = computed(() => products.value.slice(0, 2).map((product, index) => ({ ...product, coverObjectKey: product.coverObjectKey || (index === 0 ? homeImages.value.persimmon : homeImages.value.gift) })));
 
 onShareAppMessage(() => ({ title: '山禾颐品 · 来自舟曲的山野风物', path: '/pages/home/index' }));
 
@@ -39,6 +42,8 @@ function showPreviewNotice() {
   previewToast.value = '当前为 V19 界面预览，商品接口尚未接入';
   setTimeout(() => { previewToast.value = ''; }, 2200);
 }
+onShow(() => { products.value = storefrontProducts(); homeImages.value = readV19Content().homeImages; });
+function addProductToCart() { if (!selectedProduct.value) return; addV19CartItem(selectedProduct.value.id); selectedProduct.value = null; uni.showToast({ title: '已加入演示购物车' }); }
 </script>
 
 <template>
@@ -56,7 +61,7 @@ function showPreviewNotice() {
         <text>测试：进入后台预览</text><text class="entry-arrow">↗</text>
       </button>
 
-      <view class="hero">
+      <view class="hero" :style="homeImages.hero ? { backgroundImage: `linear-gradient(to top,rgba(18,29,23,.76),rgba(18,29,23,.08)),url('${homeImages.hero}')` } : undefined">
         <view class="hero-landscape" aria-hidden="true"><view class="ridge ridge-back"></view><view class="ridge ridge-front"></view><view class="persimmon-orb"></view></view>
         <view class="hero-copy">
           <text class="eyebrow hero-eyebrow">舟曲 · 白龙江畔</text>
@@ -80,7 +85,7 @@ function showPreviewNotice() {
         </view>
         <view class="products-grid">
           <ProductTile
-            v-for="(product, index) in V19_STOREFRONT_PREVIEW.slice(0, 2)"
+            v-for="(product, index) in homeProducts"
             :key="product.id"
             :product="product"
             :tone="index === 0 ? 'persimmon' : 'gift'"
@@ -96,7 +101,7 @@ function showPreviewNotice() {
         <text class="editorial-action">阅读山野故事 →</text>
       </button>
 
-      <view class="preview-note">界面预览 · 商品内容与图片待连接正式目录和授权素材</view>
+      <view class="preview-note">本机 V19 演示内容 · 正式商品目录、API 与授权素材待接入</view>
       <view class="bottom-safe-space"></view>
     </scroll-view>
 
@@ -109,7 +114,7 @@ function showPreviewNotice() {
         <text class="sheet-description">{{ selectedProduct.subtitle }}</text>
         <view class="sheet-meta"><text>产地</text><text>甘肃 · 舟曲</text></view>
         <view class="sheet-meta"><text>详情</text><text>将从正式商品资料读取</text></view>
-        <button class="sheet-action" @tap="showPreviewNotice">加入购物车</button>
+        <button class="sheet-action" @tap="addProductToCart">加入购物车</button>
       </view>
     </view>
     <view v-if="previewToast" class="preview-toast">{{ previewToast }}</view>
