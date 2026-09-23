@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "declaration": false,
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["@dcloudio/types"],
+    "baseUrl": ".",
+    "paths": { "@miniapp-model/*": ["src/*"] }
+  },
+  "include": ["src/**/*.ts", "src/**/*.vue", "src/**/*.d.ts", "*.ts", "*.vue", "*.d.ts", "components/**/*.vue", "pages/**/*.vue"]
+}

@@ -15,12 +15,12 @@
 | 项目 | 2026-09-23 实况 |
 | --- | --- |
 | 当前仓库 | `C:\Users\19993\Desktop\山禾颐品\daima`，`origin = https://github.com/renleijianshi/shanheyipin.git` |
-| 分支与检查时 HEAD | `feature/v13-frontend-fusion`，`d49881b`；跟踪 `origin/feature/v13-frontend-fusion` |
-| 检查开始时工作树 | 本次接续 M17 开发；开始时仅有供应商 Prisma schema/service 草稿变更 |
+| 分支与检查时 HEAD | `feature/v13-frontend-fusion`；开始本次 V19 页面工作时为 `19ee256`，本次提交后补充新 HEAD |
+| 检查开始时工作树 | 本次任务开始前工作树干净；本次新增 V19 uni-app 页面、标准工程入口与迁移说明 |
 | 远程同步 | 2026-09-23 已为本仓库配置 `http://127.0.0.1:7897` Git 代理；开发分支与默认 `main` 均通过 `git ls-remote` 核对为 `205896e`。后续每次提交仍须实际推送并核对；代理未运行或网络中断时不能宣称同步 |
 | 代码规模证据 | 16 个 Prisma migration；API 22 个、miniapp 4 个、admin 2 个测试文件 |
-| 本机验证 | 依赖恢复后 `npm run check` 通过：lint、typecheck、98 项测试（28 个文件）、TypeScript build |
-| 验证边界 | 以上主要验证领域逻辑与编译；未验证真实 MySQL、HTTP 接口、微信开发者工具、端到端购物和生产部署 |
+| 本机验证 | 本次 `npm run lint`、`npm run typecheck:uni --workspace @shanheyipin/miniapp` 通过；Node 22 下直接以 Vite 编译 H5 通过；`build:mp-weixin` 仍失败 |
+| 验证边界 | 本次未运行全仓测试；未在微信开发者工具验收，未验证真实商品/API、素材授权、购物车端到端或生产部署 |
 
 本次参考的 V1 原始资料位于 `C:\Users\19993\Desktop\山禾颐品\小程序文件`：`00_项目总览_README.md`、`AGENTS.md`、`山禾颐品_Work执行总说明_v1.md`。它们定义产品范围和最初路线；其中“业务代码尚未开始”、旧启动包目录、Docker/Nginx 建议均是当时状态。当前有效部署与支付决策见 `docs/DECISIONS.md` 和 `docs/PROJECT_STATE.md`，实际完成度以下表及代码为准。
 
@@ -29,10 +29,10 @@
 | 应用 | 已有 | 尚缺 | 优先读取 |
 | --- | --- | --- | --- |
 | API | `apps/api/src/modules/` 下的业务服务、Prisma 仓储和迁移 | `src/index.ts` 仍是 bootstrap manifest 和健康函数；未见 NestJS 启动、Controller、路由、OpenAPI 或实际监听 `127.0.0.1:3200` 的代码 | `apps/api/src/index.ts`、目标模块 service/repository/test |
-| 微信小程序 | 商品视图模型、V12 导航/分类/甄选契约、Catalog/Cart/Content/Trace Port 和控制器 | `apps/miniapp/src/` 只有 TS 文件；没有 uni-app 的 `pages.json`、Vue 页面、`App.vue`、实际路由、样式、平台构建或与 HTTP API 的适配器。不能在微信开发者工具中认定为已完成商城 | `apps/miniapp/src/index.ts`、`v12-ports.ts`、`v12-ui-model.ts`、`v12-catalog-controller.ts` |
+| 微信小程序 | 已建立 uni-app + Vue 3 页面骨架，V19 首页/分类/甄选/空购物车/我的/故事/扫码溯源/后台预览、V19 设计 token、五栏原生导航及测试后台入口均已落入 `apps/miniapp/`；V12 分类/甄选契约继续复用 | 当前商品为预览数据、图片为占位，商品/购物车/内容/后台 API 未接；manifest AppID 为空；H5 构建和页面类型检查通过，微信端编译被 uni-app CLI 与 `estree-walker` 依赖解析错误阻塞，不能宣称可发布 | `apps/miniapp/README.md`、`apps/miniapp/pages.json`、`apps/miniapp/pages/home/index.vue`、`apps/miniapp/src/v12-ports.ts`、`apps/miniapp/src/v12-ui-model.ts` |
 | Web 管理后台 | “小程序前端添加”四种内容入口的数据模型和校验函数 | `apps/admin/src/` 只有 TS 文件；没有 Vue/Vite/Element Plus 页面、登录界面、管理路由或 API 连接 | `apps/admin/src/miniapp-frontend-content-model.ts` |
 
-`prototype/index.html`、`prototype/app.js`、`prototype/styles.css` 是独立演示原型，不是正式小程序页面。本次在消费者预览侧增加“测试：进入后台”按钮，可切换到同页的运营后台演示；后台仍为演示数据、无真实登录/API 写入。由于 Codex 浏览器策略拒绝打开本地文件，本次未能在对话内展示预览；可在本机浏览器打开 `prototype/index.html` 检查。正式 uni-app / Vue 页面、管理后台框架仍未建立。本仓库文件名和本地提交历史中未发现 `山禾颐品_UI_V19_首页精简版.html`；若原件在仓库外，需给出路径再对照，不能把 V19 记为已融合。
+`prototype/index.html` 仍为独立演示原型。本机临时预览文件 `山禾颐品_UI_V19_首页精简版.html` 已按其 V19 视觉契约迁移到正式 uni-app 页面；映射细节、依赖来源、已知缺口及后续顺序见 `apps/miniapp/README.md`。首页保留“测试：进入后台预览”按钮，进入的是只读演示后台，无登录或 API 写入。V19 引用的外链图片尚未确认授权与微信域名，页面以占位呈现。H5 与类型检查通过；微信端构建被当前 CLI/`estree-walker` 依赖兼容问题阻塞。
 
 ## 4. 完成状态的口径
 

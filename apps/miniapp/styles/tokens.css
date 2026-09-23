@@ -1,0 +1,28 @@
+:root {
+  --v19-brand-900: #18362b;
+  --v19-brand-800: #214538;
+  --v19-brand-700: #2b5747;
+  --v19-brand-100: #e8efea;
+  --v19-canvas: #f7f3e8;
+  --v19-paper: #efe5d2;
+  --v19-paper-light: #fbf8f0;
+  --v19-orange: #d86f2c;
+  --v19-orange-soft: #f8e6d8;
+  --v19-copper: #a97745;
+  --v19-ink: #1e211f;
+  --v19-ink-700: #484d49;
+  --v19-muted: #747a75;
+  --v19-muted-2: #a7ada8;
+  --v19-line: #dcd7cc;
+  --v19-line-strong: #c8c1b4;
+  --v19-white: #fff;
+  --v19-success: #3f7456;
+  --v19-warning: #b57a2b;
+  --v19-danger: #b34e42;
+  --v19-r-xs: 4px;
+  --v19-r-sm: 8px;
+  --v19-r-md: 12px;
+  --v19-r-lg: 16px;
+}
+
+html, body, #app { min-height: 100%; margin: 0; font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; }

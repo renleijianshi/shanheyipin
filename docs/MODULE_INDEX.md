@@ -22,6 +22,7 @@
 | M18 采购 | 已完成（领域层） | `apps/api/src/modules/procurement/`, `apps/api/prisma/` | `tasks/M18_采购.md`, `docs/07_商品采购仓储库存设计.md` |
 | M19 到货 | 已完成（领域层） | `apps/api/src/modules/procurement/`, `apps/api/prisma/` | `tasks/M19_到货.md`, `docs/07_商品采购仓储库存设计.md` |
 | M20 质检 | 已完成（领域层） | `apps/api/src/modules/procurement/`, `apps/api/prisma/` | `tasks/M20_质检.md`, `docs/07_商品采购仓储库存设计.md` |
+| 小程序 V19 页面预览 | 进行中（前端预览，未接业务 API） | `apps/miniapp/pages/`, `apps/miniapp/components/`, `apps/miniapp/styles/` | `apps/miniapp/README.md`, `apps/miniapp/src/v12-ui-model.ts`, `apps/miniapp/src/v12-ports.ts` |
 | M21-M22/M25-M29 批次、仓库、加工 | 待开始 | `apps/api/src/modules/` 对应供应链目录 | `docs/07_商品采购仓储库存设计.md` |
 | M23-M24 库存余额/流水 | 已完成 | `apps/api/src/modules/inventory/`, `apps/api/prisma/` | `tasks/M23_库存余额.md`, `tasks/M24_库存流水.md`, `docs/07_商品采购仓储库存设计.md` |
 | M30-M32 售后/退款/补发 | 已完成 | `apps/api/src/modules/aftersales/`, `apps/api/src/modules/refunds/`, `apps/api/prisma/` | `tasks/M30_售后.md`, `tasks/M31_退款.md`, `tasks/M32_补发.md` |
