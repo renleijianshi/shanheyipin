@@ -127,12 +127,20 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
 <style scoped>
 .admin-preview button { margin: 0; background: transparent; box-shadow: none; }
 .admin-preview button::after { border: 0; }
+.admin-preview button { transition: background-color .16s ease, color .16s ease, transform .16s ease; }
+.admin-preview button:active { transform: translateY(1rpx); }
+.admin-preview button:focus-visible { outline: 2px solid #9b673e; outline-offset: 2px; }
+.editor-modal { height: 82vh; overflow-y: auto; }
 .admin-preview .primary { color: white; background: #18362b; }
+.admin-preview .primary:active { background: #2b5747; }
 .admin-menu button { background: transparent; }
 .admin-menu button.active { background: #2b5142; }
+.admin-menu { scrollbar-width: none; }
+.admin-menu::-webkit-scrollbar { width: 0; height: 0; display: none; }
 .admin-banner button { padding: 0 14rpx; border: 1px solid #6c8778; border-radius: 7rpx; color: #f7f3e8; background: transparent; }
 .record-card button { background: transparent; }
 .todo-card button { background: transparent; }
+.record-card button:active, .todo-card button:active { color: var(--v19-brand-700); background: var(--v19-brand-100); }
 .admin-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18rpx; }
 .admin-form-grid label { min-width: 0; color: var(--v19-ink-700); font-size: 20rpx; }
 .admin-form-grid .form-full { grid-column: 1 / -1; }
@@ -144,6 +152,7 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
 .image-label { font-size: 22rpx; font-weight: 600; }
 .image-note { margin-top: 4rpx; color: var(--v19-muted); font-size: 17rpx; }
 @media (min-width: 600px) {
+  .editor-modal { height: min(86vh, 760px); }
   .modal-mask { align-items: center; justify-content: center; }
   .editor-modal { width: min(920px, calc(100vw - 48px)); max-height: calc(100vh - 64px); padding: 24px 28px; border-radius: 12px; }
   .modal-title { font-size: 24px; }
@@ -160,7 +169,7 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
 }
 @media (max-width: 599px) {
   .admin-layout { display: block; }
-  .admin-menu { width: 100%; max-height: none; background: #18362b; }
+  .admin-menu { width: 100%; height: 86rpx; max-height: none; overflow: hidden; background: #18362b; }
   .admin-menu-inner { display: flex; width: max-content; padding: 10rpx 20rpx; }
   .admin-menu-inner > view { display: flex; align-items: center; }
   .group-title { display: none; }

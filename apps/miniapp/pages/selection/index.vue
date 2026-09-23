@@ -37,7 +37,11 @@ const copy = {
     </view>
     <view v-if="activeSelection === 'brand'" class="editorial-item">
       <view class="editorial-photo gaolan-photo"><image src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80" mode="aspectFill" /><text>甘肃 · 皋兰</text></view>
-      <view class="editorial-copy"><text class="eyebrow">甘肃 · 皋兰</text><text class="editorial-title">皋兰禾尚头挂面</text><text class="editorial-body">禾尚头小麦是皋兰具有地域特色的小麦。做成挂面时，我们更看重自然的麦香、筋道口感和日常食用属性。</text><view class="selection-points"><text>皋兰本地</text><text>麦香清楚</text><text>家常耐吃</text></view></view>
+      <view class="editorial-copy"><text class="eyebrow">甘肃 · 皋兰</text><text class="editorial-title">皋兰禾尚头挂面</text><text class="editorial-subline">本地麦香 · 筋道耐煮 · 家常面食</text><text class="editorial-body">禾尚头小麦是皋兰具有地域特色的小麦。做成挂面或长寿面一类面食时，我们更看重它自然的麦香、筋道口感和日常食用属性。山禾甄选会把这类真正扎根本地餐桌的东西放进来，而不是只追求稀有或猎奇。</text><view class="selection-points"><text>皋兰本地</text><text>麦香清楚</text><text>家常耐吃</text></view></view>
+    </view>
+    <view v-else class="editorial-item">
+      <view class="editorial-photo seasonal-photo"><image src="https://n.sinaimg.cn/sinacn10107/36/w1024h612/20190407/d066-hvhrcxm5250136.jpg" mode="aspectFill" /><text>山野 · 时令</text></view>
+      <view class="editorial-copy"><text class="eyebrow">山野 · 时令</text><text class="editorial-title">山野时令好物</text><text class="editorial-subline">跟着季节更新 · 不长期固定上架</text><text class="editorial-body">有些山野风物最好的时候很短，所以它们不适合被做成常年固定 SKU。这里会根据季节、产量、风味和供应稳定性更新：什么时候好吃，什么时候上；季节过去，就暂时下架。</text><view class="selection-points"><text>应季而选</text><text>来源清楚</text><text>少量更新</text></view></view>
     </view>
     <view class="selection-note">甄选页呈现内容与入选理由，不显示价格或加购操作。</view>
   </view>
@@ -63,6 +67,7 @@ const copy = {
 .editorial-photo.photo-season { background: linear-gradient(145deg,#859272,#374b3d); }
 .editorial-copy { padding: 22rpx 0; }
 .editorial-title { display: block; margin: 8rpx 0 10rpx; font-size: 36rpx; font-weight: 600; }
+.editorial-subline { display: block; margin: 0 0 12rpx; color: var(--v19-muted); font-size: 21rpx; line-height: 34rpx; }
 .editorial-body { display: block; color: var(--v19-ink-700); font-size: 24rpx; line-height: 40rpx; }
 .selection-points { margin-top: 20rpx; display: flex; flex-wrap: wrap; gap: 12rpx; }
 .selection-points text { padding: 8rpx 14rpx; border: 1px solid var(--v19-line); border-radius: 999rpx; color: var(--v19-muted); font-size: 20rpx; }

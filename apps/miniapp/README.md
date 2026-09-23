@@ -16,12 +16,12 @@
 - 山野故事、扫码溯源与后台预览作为二级页面；溯源按钮调用 `uni.scanCode`。
 - 后台预览沿用 V19 的经营、小程序前台、交易、用户增长、供应链、企业与系统分组。首页图片、商品新增/上下架、甄选归属、故事发布/草稿、溯源记录启用/停用均可在本机保存，并被前台读取；提供恢复演示数据入口。
 - 分类商品加入本地演示购物车，购物车可增减数量；首页、分类、甄选、故事与溯源页面会重新显示时读取后台保存的数据。
-- 首页故事可切换并进入选中故事；分类恢复 V19 的四件演示商品与双列卡片；商品详情片显示产地、规格与介绍；甄选页补回图文卡片；后台商品表单可编辑类型、产地、规格、文案、图片与甄选归属。
+- 首页下方故事展示模块已按用户要求移除，快捷入口仍可打开故事列表；分类商品详情改为固定底栏、内容独立滚动，完整保留图片、产地、规格、详情和加入购物车；甄选页恢复本地/本期内容、时令卡片与 V19 对照图；后台表单改为明确高度的独立滚动面板，按钮和横向菜单样式统一。
 
 ## 主要代码入口
 
 - 页面路由与原生 tabBar：`pages.json`
-- 首页：`pages/home/index.vue`
+- 首页（故事快捷入口；首页下方故事模块已移除）：`pages/home/index.vue`
 - 分类、甄选、购物车、我的：`pages/category/index.vue`、`pages/selection/index.vue`、`pages/cart/index.vue`、`pages/profile/index.vue`
 - 故事、溯源、后台预览：`pages/story/index.vue`、`pages/trace/index.vue`、`pages/admin-preview/index.vue`
 - 共用商品卡和详情片、设计 token、预览商品：`components/ProductTile.vue`、`components/ProductSheet.vue`、`styles/tokens.css`、`preview-products.ts`
@@ -47,6 +47,7 @@
 
 - `2026-09-23`：增加 `src/v19-content-store.ts` 本机预览数据层；后台保存的商品、甄选、故事、溯源和首页图能反馈到前台；加入/调整购物车演示数据。
 - `2026-09-23`：补齐 V19 视觉迁移：真实首页主视觉、窄屏布局、分类商品、选品图文、故事切换、商品详情与后台桌面布局；本机演示存储由 v2 升级为 v3，保留用户新增商品并更新默认演示商品。
+- `2026-09-23`：修正商品详情抽屉的滚动与固定加购栏；甄选页恢复时令内容和原型对应图片；移除首页下方山野故事展示模块，保留快捷入口；调整后台导航和弹窗滚动及控件反馈。
 - 验证：`npm run lint`、`npm run typecheck:uni --workspace @shanheyipin/miniapp` 通过；设置 `UNI_INPUT_DIR=.` 后 Vite H5 构建通过。package script 默认入口目录不匹配导致直接 CLI build 报错，仍需修正统一启动脚本。微信构建/真机尚未验收。
 
 ## 本机运行
