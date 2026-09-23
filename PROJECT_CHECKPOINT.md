@@ -15,12 +15,12 @@
 | 项目 | 2026-09-23 实况 |
 | --- | --- |
 | 当前仓库 | `C:\Users\19993\Desktop\山禾颐品\daima`，`origin = https://github.com/renleijianshi/shanheyipin.git` |
-| 分支与本轮基线 | `feature/v13-frontend-fusion`，当前提交 `d73518a`；跟踪 `origin/feature/v13-frontend-fusion`。本轮 V19 联动改动尚未提交/推送 |
-| 检查开始时工作树 | 上一轮 V19 页面迁移提交为 `d73518a`；本轮完善 V19 前后台本机预览联动，原型副本 `apps/miniapp/v19-preview.html` 未跟踪 |
-| 远程同步 | 上次记录 `04b2828` 已推送 `feature/v13-frontend-fusion` 与 `main`；本轮改动尚未推送，完成前需重新查询远端。 |
+| 分支与本轮基线 | `feature/v13-frontend-fusion`，当前提交 `7e10d62`；与 `origin/feature/v13-frontend-fusion` 一致；`main` 保持在 `d73518a` |
+| 检查开始时工作树 | 开始时只有 `apps/miniapp/v19-preview.html` 未跟踪；本轮实现前后台本机预览联动并已纳入提交 |
+| 远程同步 | `7e10d62` 已推送至 `origin/feature/v13-frontend-fusion`，`git ls-remote` 核对一致；本轮未改 `main` |
 | 代码规模证据 | 16 个 Prisma migration；API 22 个、miniapp 4 个、admin 2 个测试文件 |
 | 本机验证 | 本轮 `npm run lint`、`npm run typecheck:uni --workspace @shanheyipin/miniapp` 通过；`UNI_INPUT_DIR=.` 下 Vite H5 build 通过；CLI 默认 H5 build 仍找错 manifest 根目录；微信端未验收 |
-| 验证边界 | 本次未运行全仓测试；未在微信开发者工具验收，未验证真实商品/API、素材授权、购物车端到端或生产部署 |
+| 验证边界 | H5 浏览器已验证后台故事保存/列表显示/恢复默认流程；未在微信开发者工具验收，未验证真实商品/API、素材授权和生产部署 |
 
 本次参考的 V1 原始资料位于 `C:\Users\19993\Desktop\山禾颐品\小程序文件`：`00_项目总览_README.md`、`AGENTS.md`、`山禾颐品_Work执行总说明_v1.md`。它们定义产品范围和最初路线；其中“业务代码尚未开始”、旧启动包目录、Docker/Nginx 建议均是当时状态。当前有效部署与支付决策见 `docs/DECISIONS.md` 和 `docs/PROJECT_STATE.md`，实际完成度以下表及代码为准。
 
