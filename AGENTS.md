@@ -1118,3 +1118,16 @@ docs/08_订单支付退款售后设计.md
 可上线
 的山禾颐品完整小程序系统。
 ```
+
+---
+
+# ⑰ 项目级开发 Skills
+
+项目 Skills 位于 `.agents/skills/`。开始相关工作时只读取匹配当前任务的一份 Skill，不要一次性加载全部 Skills：
+
+- 多文件功能或模块开发：`.agents/skills/shanheyipin-incremental-implementation/SKILL.md`
+- 新业务逻辑、行为改动或 Bug 修复：`.agents/skills/shanheyipin-tdd/SKILL.md`
+- uni-app 页面、组件、交互或样式：`.agents/skills/shanheyipin-miniapp-ui/SKILL.md`
+- 故障、测试失败、构建/集成异常：`.agents/skills/shanheyipin-debugging/SKILL.md`
+
+项目硬规则以本文件和相关业务文档为准；Skill 只补充对应工作方法，不扩大任务范围。

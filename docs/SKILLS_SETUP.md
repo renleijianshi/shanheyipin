@@ -1,5 +1,18 @@
 # Skills 选择说明（低 Token 版）
 
+## 项目内 Skills
+
+项目级开发 Skills 放在 `.agents/skills/`，会随仓库版本管理，适用于本项目的所有新窗口：
+
+| Skill | 适用任务 |
+| --- | --- |
+| `shanheyipin-incremental-implementation` | 多文件功能与模块增量开发 |
+| `shanheyipin-tdd` | 业务逻辑、行为修改与 Bug 修复 |
+| `shanheyipin-miniapp-ui` | uni-app 页面、组件、交互和样式 |
+| `shanheyipin-debugging` | 故障、测试失败、构建与集成排错 |
+
+每次只读与当前任务匹配的 Skill；根目录 `AGENTS.md` 提供触发映射。
+
 ## 默认安装
 
 ### 1. planning-with-files（中文）
