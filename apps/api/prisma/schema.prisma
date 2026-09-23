@@ -162,6 +162,18 @@ enum InventoryMovementType {
   RESHIP_OUT
 }
 
+enum SupplierType {
+  FARMER
+  COOPERATIVE
+  PACKAGING_FACTORY
+  OTHER
+}
+
+enum SupplierStatus {
+  ACTIVE
+  DISABLED
+}
+
 enum AftersaleType {
   REFUND_ONLY
   RETURN_REFUND
@@ -631,6 +643,33 @@ model Warehouse {
   updatedAt DateTime            @updatedAt @map("updated_at")
 
   @@map("warehouses")
+}
+
+model Supplier {
+  id                      BigInt         @id @default(autoincrement())
+  publicId                String         @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  supplierNo              String         @unique @map("supplier_no") @db.VarChar(32)
+  type                    SupplierType
+  name                    String         @db.VarChar(120)
+  contactName             String?        @map("contact_name") @db.VarChar(50)
+  phone                   String?        @db.VarChar(24)
+  address                 String?        @db.VarChar(255)
+  supplyCategories        Json           @map("supply_categories")
+  settlementTerms         String?        @map("settlement_terms") @db.VarChar(500)
+  qualityGrade            String?        @map("quality_grade") @db.VarChar(32)
+  qualityScore            Int?           @map("quality_score") @db.UnsignedTinyInt
+  deliveryScore           Int?           @map("delivery_score") @db.UnsignedTinyInt
+  quantityAccuracyScore   Int?           @map("quantity_accuracy_score") @db.UnsignedTinyInt
+  afterSalesScore         Int?           @map("after_sales_score") @db.UnsignedTinyInt
+  priceStabilityScore     Int?           @map("price_stability_score") @db.UnsignedTinyInt
+  attachmentObjectKeys    Json           @map("attachment_object_keys")
+  status                  SupplierStatus @default(ACTIVE)
+  createdAt               DateTime       @default(now()) @map("created_at")
+  updatedAt               DateTime       @updatedAt @map("updated_at")
+
+  @@index([type, status])
+  @@index([name])
+  @@map("suppliers")
 }
 
 model InventoryBatch {

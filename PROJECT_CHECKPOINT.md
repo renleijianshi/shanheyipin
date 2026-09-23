@@ -16,7 +16,7 @@
 | --- | --- |
 | 当前仓库 | `C:\Users\19993\Desktop\山禾颐品\daima`，`origin = https://github.com/renleijianshi/shanheyipin.git` |
 | 分支与检查时 HEAD | `feature/v13-frontend-fusion`，`d49881b`；跟踪 `origin/feature/v13-frontend-fusion` |
-| 检查开始时工作树 | 干净；本次只更新此文档 |
+| 检查开始时工作树 | 本次接续 M17 开发；开始时仅有供应商 Prisma schema/service 草稿变更 |
 | 远程同步 | 2026-09-23 已为本仓库配置 `http://127.0.0.1:7897` Git 代理；开发分支与默认 `main` 均通过 `git ls-remote` 核对为 `205896e`。后续每次提交仍须实际推送并核对；代理未运行或网络中断时不能宣称同步 |
 | 代码规模证据 | 16 个 Prisma migration；API 22 个、miniapp 4 个、admin 2 个测试文件 |
 | 本机验证 | 依赖恢复后 `npm run check` 通过：lint、typecheck、98 项测试（28 个文件）、TypeScript build |
@@ -54,7 +54,8 @@
 | M13 订单 | 订单快照、幂等、状态等 service/repository/schema/test 已有 | `apps/api/src/modules/orders/`；订单代码未调用库存预占/取消释放，真实下单前必须补事务一致性与并发测试 |
 | M14–M15 支付抽象/回调 | PaymentOrder、Mock/Disabled Provider、Mock 验签与幂等逻辑、迁移/测试已有 | `apps/api/src/modules/payments/`；真实渠道 Deferred；缺 HTTP 接口和端到端验证 |
 | M16 发货物流 | shipment 服务、仓储、迁移/测试已有，Mock/Disabled 发货同步 | `apps/api/src/modules/shipping/`；实物出库与正式批次分配、真实微信同步未接通 |
-| M17–M22 供应商至仓库 | 未见独立业务模块与完成测试 | 从 `tasks/M17_供应商.md`、`docs/07_商品采购仓储库存设计.md` 开始；按 M17→M22 逐项建模 |
+| M17 供应商 | 已有领域服务、Prisma 仓储及建表迁移；评分采用 1–5 整数，停用代替删除 | `apps/api/src/modules/suppliers/`、`tasks/M17_供应商.md`；管理 HTTP 接口尚未接入 |
+| M18–M22 采购至仓库 | 未完成 | 从 `tasks/M18_采购单.md` 开始；按 M18→M22 逐项实现 |
 | M23–M24 库存余额/流水 | `inventory` 服务、仓储、迁移/测试已有，含守恒与流水；部分批次/仓库是引用维度 | `apps/api/src/modules/inventory/`；待接订单预占/取消/支付/出库，正式批次与仓库管理仍属 M21–M22 |
 | M25–M29 盘点、损耗、包装、成品批次 | 未见独立业务模块与完成测试 | `tasks/M25_*.md` 至 `M29_*.md`、`docs/07_商品采购仓储库存设计.md`；不能直接手改库存代替流水 |
 | M30–M32 售后、退款、补发 | aftersales/refunds/reship service、仓储、迁移/测试已有；退款仅 Mock/Disabled | `apps/api/src/modules/{aftersales,refunds}/`；缺 HTTP/小程序操作流和全链路验收 |
@@ -65,7 +66,7 @@
 
 ## 6. 下一步顺序
 
-1. **先选一个小任务**：若目标是让小程序可见，优先完成 uni-app 运行骨架和首页，再做商品 HTTP 路由/网络适配；若按原 Mxx 依赖顺序继续后端，下一项是 M17 供应商。一次只做一个明确模块。
+1. **下一模块：M18 采购单**，入口 `tasks/M18_采购单.md`、`docs/07_商品采购仓储库存设计.md`。若开发目标转为让小程序可见，应另开明确任务实现 uni-app 运行骨架和首页，再接商品 HTTP 路由/网络适配。
 2. 在开放真实下单前，必须补 M13 ↔ M23/M24 的库存原子预占、取消/超时释放和支付后待出库转换，并做并发/幂等验证。
 3. 后续逐步补 API HTTP 层、正式小程序页面与后台页面；不要把 `prototype/` 或 TS 模型算作正式 UI 完成。
 4. 每次变更先查 Git、改相关文件、测试、审 diff、提交；GitHub 连通时推送并核对远端提交。网络或权限失败须记录具体原因，不能写“已同步”。

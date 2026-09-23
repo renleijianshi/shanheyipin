@@ -18,7 +18,8 @@
 | M14 支付抽象 | 已完成 | `apps/api/src/modules/payments/`, `apps/api/prisma/` | `tasks/M14_微信支付.md`, `docs/08_订单支付退款售后设计.md`, `docs/11_安全合规部署运维.md` |
 | M15 支付回调抽象 | 已完成 | `apps/api/src/modules/payments/`, `apps/api/prisma/` | `tasks/M15_支付回调.md`, `docs/08_订单支付退款售后设计.md`, `docs/11_安全合规部署运维.md` |
 | M16 发货物流 | 已完成 | `apps/api/src/modules/shipping/`, `apps/api/prisma/` | `tasks/M16_发货物流.md`, `docs/08_订单支付退款售后设计.md` |
-| M17-M22/M25-M29 供应链与库存 | 待开始 | `apps/api/src/procurement`, `inventory`, `processing` | `docs/07_商品采购仓储库存设计.md` |
+| M17 供应商 | 已完成（领域层） | `apps/api/src/modules/suppliers/`, `apps/api/prisma/` | `tasks/M17_供应商.md`, `docs/07_商品采购仓储库存设计.md` |
+| M18-M22/M25-M29 采购、到货、质检、批次、仓库、加工 | 待开始 | `apps/api/src/modules/` 对应供应链目录 | `docs/07_商品采购仓储库存设计.md` |
 | M23-M24 库存余额/流水 | 已完成 | `apps/api/src/modules/inventory/`, `apps/api/prisma/` | `tasks/M23_库存余额.md`, `tasks/M24_库存流水.md`, `docs/07_商品采购仓储库存设计.md` |
 | M30-M32 售后/退款/补发 | 已完成 | `apps/api/src/modules/aftersales/`, `apps/api/src/modules/refunds/`, `apps/api/prisma/` | `tasks/M30_售后.md`, `tasks/M31_退款.md`, `tasks/M32_补发.md` |
 | M33-M42 增长/内容/溯源/B2B | 待开始 | 对应业务模块 | `docs/09_会员营销内容溯源企业团购.md` |
