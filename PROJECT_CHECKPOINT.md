@@ -17,7 +17,7 @@
 | 当前仓库 | `C:\Users\19993\Desktop\山禾颐品\daima`，`origin = https://github.com/renleijianshi/shanheyipin.git` |
 | 分支与检查时 HEAD | `feature/v13-frontend-fusion`，`d49881b`；跟踪 `origin/feature/v13-frontend-fusion` |
 | 检查开始时工作树 | 干净；本次只更新此文档 |
-| 远程同步 | 2026-09-23 已为本仓库配置 `http://127.0.0.1:7897` Git 代理；开发分支与默认 `main` 均成功推送并通过 `git ls-remote` 核对为 `657f6e5`。后续每次提交仍须实际推送并核对；代理未运行或网络中断时不能宣称同步 |
+| 远程同步 | 2026-09-23 已为本仓库配置 `http://127.0.0.1:7897` Git 代理；开发分支与默认 `main` 均通过 `git ls-remote` 核对为 `205896e`。后续每次提交仍须实际推送并核对；代理未运行或网络中断时不能宣称同步 |
 | 代码规模证据 | 16 个 Prisma migration；API 22 个、miniapp 4 个、admin 2 个测试文件 |
 | 本机验证 | 依赖恢复后 `npm run check` 通过：lint、typecheck、98 项测试（28 个文件）、TypeScript build |
 | 验证边界 | 以上主要验证领域逻辑与编译；未验证真实 MySQL、HTTP 接口、微信开发者工具、端到端购物和生产部署 |
