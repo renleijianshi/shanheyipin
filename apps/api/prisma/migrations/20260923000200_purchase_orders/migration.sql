@@ -1,0 +1,40 @@
+CREATE TABLE `purchase_orders` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `public_id` VARCHAR(36) NOT NULL,
+  `purchase_no` VARCHAR(34) NOT NULL,
+  `supplier_id` BIGINT NOT NULL,
+  `supplier_name_snapshot` VARCHAR(120) NOT NULL,
+  `status` ENUM('DRAFT','APPROVED','ORDERED','PART_RECEIVED','RECEIVED','CLOSED','CANCELLED') NOT NULL DEFAULT 'DRAFT',
+  `expected_at` DATETIME(3) NULL,
+  `total_amount_cent` INT UNSIGNED NOT NULL DEFAULT 0,
+  `note` VARCHAR(500) NULL,
+  `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updated_at` DATETIME(3) NOT NULL,
+  UNIQUE INDEX `purchase_orders_public_id_key` (`public_id`),
+  UNIQUE INDEX `purchase_orders_purchase_no_key` (`purchase_no`),
+  INDEX `purchase_orders_supplier_id_created_at_idx` (`supplier_id`,`created_at`),
+  INDEX `purchase_orders_status_created_at_idx` (`status`,`created_at`),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `purchase_orders_supplier_id_fkey` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE `purchase_order_items` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `purchase_order_id` BIGINT NOT NULL,
+  `sku_id` BIGINT NOT NULL,
+  `sku_code_snapshot` VARCHAR(64) NOT NULL,
+  `sku_name_snapshot` VARCHAR(100) NOT NULL,
+  `quantity` INT UNSIGNED NOT NULL,
+  `received_quantity` INT UNSIGNED NOT NULL DEFAULT 0,
+  `unit_cost_cent` INT UNSIGNED NOT NULL,
+  `line_amount_cent` INT UNSIGNED NOT NULL,
+  `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  UNIQUE INDEX `purchase_order_items_purchase_order_id_sku_id_key` (`purchase_order_id`,`sku_id`),
+  INDEX `purchase_order_items_sku_id_idx` (`sku_id`),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `purchase_order_items_purchase_order_id_fkey` FOREIGN KEY (`purchase_order_id`) REFERENCES `purchase_orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `purchase_order_items_sku_id_fkey` FOREIGN KEY (`sku_id`) REFERENCES `product_skus` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `purchase_order_items_quantity_check` CHECK (`quantity` > 0),
+  CONSTRAINT `purchase_order_items_received_quantity_check` CHECK (`received_quantity` <= `quantity`),
+  CONSTRAINT `purchase_order_items_line_amount_check` CHECK (`line_amount_cent` = `quantity` * `unit_cost_cent`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
