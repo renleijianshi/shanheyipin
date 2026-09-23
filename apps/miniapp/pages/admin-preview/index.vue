@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
-import { onShow } from '@dcloudio/uni-app';
+import { onHide, onShow } from '@dcloudio/uni-app';
 import { readV19Content, saveV19Content, resetV19Content, type V19Content, type V19Product, type V19Story, type V19Trace } from '../../src/v19-content-store.js';
 
 const groups = [
@@ -14,33 +14,56 @@ const groups = [
 const state = ref<V19Content>(readV19Content());
 const active = ref('工作台');
 const editor = ref<'product' | 'story' | 'trace' | 'images' | ''>('');
-const productForm = reactive<V19Product>({ id: '', name: '', subtitle: '', category: 'seasonal', priceCent: 0, spec: '', summary: '', imageUrl: '', type: 'owned', status: '上架', selection: [], selectionTitle: '' });
+const productForm = reactive<V19Product & { origin: string; intro: string; detail: string }>({ id: '', name: '', subtitle: '', category: 'seasonal', priceCent: 0, spec: '', summary: '', imageUrl: '', origin: '', intro: '', detail: '', type: 'owned', status: '上架', selection: [], selectionTitle: '' });
 const storyForm = reactive<V19Story>({ id: '', title: '', type: '产地', origin: '', product: '', summary: '', body: '', coverUrl: '', status: '发布' });
 const traceForm = reactive<V19Trace>({ id: '', product: '', batchNo: '', origin: '', supplier: '', receiveDate: '', packDate: '', craft: '', quality: '', note: '', status: '启用' });
 const imageForm = reactive({ hero: '', persimmon: '', gift: '' });
+const imageErrors = reactive({ hero: false, persimmon: false, gift: false });
+const homeImageSlots = [
+  { key: 'hero', label: '首页首屏大图', note: '建议竖版 3:4 或 4:5' },
+  { key: 'persimmon', label: '舟曲吊柿商品图', note: '首页商品图，建议 4:5' },
+  { key: 'gift', label: '礼盒商品图', note: '首页商品图，建议 4:5' }
+] as const;
 const isContentPage = computed(() => ['首页图片', '自有商品', '山禾甄选', '本期甄选', '山野故事', '溯源内容'].includes(active.value));
 const visibleProducts = computed(() => state.value.products.filter(p => active.value === '自有商品' ? p.type === 'owned' : active.value === '山禾甄选' ? p.selection.includes('brand') : active.value === '本期甄选' ? p.selection.includes('season') : true));
 
 function refresh() { state.value = readV19Content(); }
-onShow(refresh);
+onShow(() => {
+  refresh();
+  // #ifdef H5
+  document.body.classList.add('v19-admin-preview');
+  // #endif
+});
+onHide(() => {
+  // #ifdef H5
+  document.body.classList.remove('v19-admin-preview');
+  // #endif
+});
 function persist(mutator: (content: V19Content) => void) { state.value = saveV19Content(mutator); }
 function open(item: string) { active.value = item; refresh(); }
 function beginProduct(kind: 'owned' | 'curated', selection?: 'brand' | 'season') {
-  Object.assign(productForm, { id: `product-${Date.now()}`, name: '', subtitle: '', category: 'seasonal', priceCent: 0, spec: '', summary: '', imageUrl: '', type: kind, status: '上架', selection: selection ? [selection] : [], selectionTitle: '' }); editor.value = 'product';
+  Object.assign(productForm, { id: `product-${Date.now()}`, name: '', subtitle: '', category: 'seasonal', priceCent: 0, spec: '', summary: '', imageUrl: '', origin: '', intro: '', detail: '', type: kind, status: '上架', selection: selection ? [selection] : [], selectionTitle: '' }); editor.value = 'product';
 }
-function saveProduct() { if (!productForm.name.trim()) return uni.showToast({ title: '请填写商品名称', icon: 'none' }); persist(c => { const index = c.products.findIndex(x => x.id === productForm.id); if (index < 0) c.products.unshift({ ...productForm, selection: [...productForm.selection] }); else c.products[index] = { ...productForm, selection: [...productForm.selection] }; }); editor.value = ''; }
+function saveProduct() {
+  if (!productForm.name.trim()) return uni.showToast({ title: '请填写商品名称', icon: 'none' });
+  const yuan = Number(productForm.priceCent);
+  if (!Number.isFinite(yuan) || yuan < 0 || Math.abs(yuan * 100 - Math.round(yuan * 100)) > 0.000001) return uni.showToast({ title: '售价请填写到分', icon: 'none' });
+  const draft = { ...productForm, priceCent: Math.round(yuan * 100), selection: [...productForm.selection] };
+  persist(c => { const index = c.products.findIndex(x => x.id === draft.id); if (index < 0) c.products.unshift(draft); else c.products[index] = draft; });
+  editor.value = '';
+}
 function beginStory() { Object.assign(storyForm, { id: `story-${Date.now()}`, title: '', type: '产地', origin: '', product: '', summary: '', body: '', coverUrl: '', status: '发布' }); editor.value = 'story'; }
 function saveStory() { if (!storyForm.title.trim() || !storyForm.summary.trim()) return uni.showToast({ title: '请填写标题和摘要', icon: 'none' }); persist(c => c.stories.unshift({ ...storyForm })); editor.value = ''; }
 function beginTrace() { Object.assign(traceForm, { id: `trace-${Date.now()}`, product: '', batchNo: '', origin: '', supplier: '', receiveDate: '', packDate: '', craft: '', quality: '', note: '', status: '启用' }); editor.value = 'trace'; }
 function saveTrace() { if (!traceForm.product.trim() || !traceForm.batchNo.trim() || !traceForm.origin.trim()) return uni.showToast({ title: '商品、批次、产地为必填项', icon: 'none' }); persist(c => c.traces.unshift({ ...traceForm })); editor.value = ''; }
-function editImages() { Object.assign(imageForm, state.value.homeImages); editor.value = 'images'; }
+function editImages() { Object.assign(imageForm, state.value.homeImages); Object.assign(imageErrors, { hero: false, persimmon: false, gift: false }); editor.value = 'images'; }
 function saveImages() { persist(c => { c.homeImages = { ...imageForm }; }); editor.value = ''; uni.showToast({ title: '首页图片设置已保存' }); }
 function toggleProduct(p: V19Product) { persist(c => { const item = c.products.find(x => x.id === p.id); if (item) item.status = item.status === '上架' ? '下架' : '上架'; }); }
 function toggleStory(p: V19Story) { persist(c => { const item = c.stories.find(x => x.id === p.id); if (item) item.status = item.status === '发布' ? '草稿' : '发布'; }); }
 function toggleTrace(p: V19Trace) { persist(c => { const item = c.traces.find(x => x.id === p.id); if (item) item.status = item.status === '启用' ? '停用' : '启用'; }); }
 function updateProductSelections(values: string[]) { productForm.selection = values.filter((value): value is 'brand' | 'season' => value === 'brand' || value === 'season'); }
 function clearDemo() { uni.showModal({ title: '恢复演示数据', content: '清除本设备保存的编辑内容并恢复 V19 默认预览数据？', success: ({ confirm }) => { if (confirm) { resetV19Content(); refresh(); } } }); }
-function goBack() { uni.navigateBack({ delta: 1 }); }
+function goBack() { uni.switchTab({ url: '/pages/home/index' }); }
 function placeholder(item: string) { return `${item}在 V19 原型中为功能结构占位，正式经营数据/API 尚未接入。`; }
 </script>
 
@@ -49,7 +72,7 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
     <view class="admin-banner"><button @tap="goBack">‹ 返回</button><view><text class="admin-brand">山禾颐品</text><text class="admin-subbrand">运营管理中心 · V19联动预览</text></view><text class="admin-avatar">管</text></view>
     <view class="preview-alert">本地预览模式 · 商品、故事、溯源和首页图片保存在当前设备，并同步给小程序前台。尚未连接线上 API。</view>
     <view class="admin-layout">
-      <scroll-view scroll-y class="admin-menu"><view v-for="group in groups" :key="group.name"><text class="group-title">{{ group.name }}</text><button v-for="item in group.items" :key="item" :class="{ active: active === item }" @tap="open(item)">{{ item }}</button></view></scroll-view>
+      <scroll-view scroll-x scroll-y class="admin-menu"><view class="admin-menu-inner"><view v-for="group in groups" :key="group.name"><text class="group-title">{{ group.name }}</text><button v-for="item in group.items" :key="item" :class="{ active: active === item }" @tap="open(item)">{{ item }}</button></view></view></scroll-view>
       <view class="admin-main">
         <view class="admin-heading"><text class="eyebrow">V19 WORKSPACE</text><text class="admin-title">{{ active }}</text><text class="admin-copy">后台编辑保存后，返回小程序前台即可查看效果。</text></view>
         <template v-if="active === '工作台'">
@@ -66,14 +89,83 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
     </view>
     <view v-if="editor" class="modal-mask" @tap="editor = ''"><scroll-view scroll-y class="editor-modal" @tap.stop>
       <view class="modal-title"><text>{{ editor === 'product' ? '商品内容' : editor === 'story' ? '山野故事' : editor === 'trace' ? '溯源记录' : '首页图片' }}</text><button @tap="editor = ''">×</button></view>
-      <template v-if="editor === 'product'"><label>商品名称<input v-model="productForm.name" placeholder="例如：舟曲吊柿分享装" /></label><label>副标题<input v-model="productForm.subtitle" /></label><label>分类<picker :range="['应季甄选','礼盒','山野好物']" @change="productForm.category = (['seasonal','gift','mountain'] as const)[$event.detail.value]!"><view class="picker-value">{{ productForm.category }}</view></picker></label><label>售价（元）<input v-model.number="productForm.priceCent" type="digit" placeholder="输入金额（元）" /></label><label>规格<input v-model="productForm.spec" /></label><label>简介<textarea v-model="productForm.summary" /></label><label>图片地址<input v-model="productForm.imageUrl" /></label><label>甄选栏目<checkbox-group @change="updateProductSelections($event.detail.value)"><label><checkbox value="brand" :checked="productForm.selection.includes('brand')" />山禾甄选</label><label><checkbox value="season" :checked="productForm.selection.includes('season')" />本期甄选</label></checkbox-group></label><button class="primary save-button" @tap="productForm.priceCent = Math.round(Number(productForm.priceCent) * 100); saveProduct()">保存商品</button></template>
+      <template v-if="editor === 'product'">
+        <view class="admin-form-grid">
+          <label>商品名称<input v-model="productForm.name" placeholder="例如：舟曲吊柿 · 分享装" /></label>
+          <label>商品类型<picker :range="['自有商品','山禾甄选']" @change="productForm.type = Number($event.detail.value) === 0 ? 'owned' : 'curated'"><view class="picker-value">{{ productForm.type === 'owned' ? '自有商品' : '山禾甄选' }}</view></picker></label>
+          <label>前台分类<picker :range="['应季甄选','礼盒','山野好物']" @change="productForm.category = (['seasonal','gift','mountain'] as const)[$event.detail.value]!"><view class="picker-value">{{ productForm.category === 'seasonal' ? '应季甄选' : productForm.category === 'gift' ? '礼盒' : '山野好物' }}</view></picker></label>
+          <label>产地<input v-model="productForm.origin" placeholder="例如：甘肃舟曲" /></label>
+          <label>售价（元）<input v-model.number="productForm.priceCent" type="digit" placeholder="例如：59.80" /></label>
+          <label>前台状态<picker :range="['上架','下架']" @change="productForm.status = Number($event.detail.value) === 0 ? '上架' : '下架'"><view class="picker-value">{{ productForm.status }}</view></picker></label>
+          <label>规格<input v-model="productForm.spec" placeholder="例如：500g" /></label>
+          <label>副标题<input v-model="productForm.subtitle" /></label>
+          <label class="form-full">一句话卖点<input v-model="productForm.summary" /></label>
+          <label class="form-full">商品介绍<textarea v-model="productForm.intro" placeholder="用户打开商品后首先看到的介绍" /></label>
+          <label class="form-full">详细说明 / 工艺 / 风味<textarea v-model="productForm.detail" placeholder="产地、制作方式、口感与保存方式" /></label>
+          <label class="form-full">封面图片 URL<input v-model="productForm.imageUrl" placeholder="https://..." /></label>
+          <label class="form-full">甄选栏目<checkbox-group @change="updateProductSelections($event.detail.value)"><label><checkbox value="brand" :checked="productForm.selection.includes('brand')" />山禾甄选</label><label><checkbox value="season" :checked="productForm.selection.includes('season')" />本期甄选</label></checkbox-group></label>
+        </view>
+        <button class="primary save-button" @tap="saveProduct">保存商品</button>
+      </template>
       <template v-else-if="editor === 'story'"><label>标题<input v-model="storyForm.title" /></label><label>类型<input v-model="storyForm.type" /></label><label>产地<input v-model="storyForm.origin" /></label><label>相关商品<input v-model="storyForm.product" /></label><label>摘要<input v-model="storyForm.summary" /></label><label>正文<textarea v-model="storyForm.body" /></label><label>封面图片地址<input v-model="storyForm.coverUrl" /></label><button class="primary save-button" @tap="saveStory">保存故事</button></template>
       <template v-else-if="editor === 'trace'"><label>商品<input v-model="traceForm.product" /></label><label>批次号<input v-model="traceForm.batchNo" /></label><label>产地<input v-model="traceForm.origin" /></label><label>供应商<input v-model="traceForm.supplier" /></label><label>收货日期<input v-model="traceForm.receiveDate" /></label><label>包装日期<input v-model="traceForm.packDate" /></label><label>加工工艺<input v-model="traceForm.craft" /></label><label>质检摘要<input v-model="traceForm.quality" /></label><label>消费者说明<textarea v-model="traceForm.note" /></label><button class="primary save-button" @tap="saveTrace">保存溯源</button></template>
-      <template v-else><label>首页首屏大图<input v-model="imageForm.hero" placeholder="图片链接" /></label><label>吊柿商品图<input v-model="imageForm.persimmon" placeholder="图片链接" /></label><label>礼盒商品图<input v-model="imageForm.gift" placeholder="图片链接" /></label><button class="primary save-button" @tap="saveImages">保存图片设置</button></template>
+      <template v-else>
+        <text class="image-help">修改只影响首页相应位置，保存后返回前台即可查看。</text>
+        <view v-for="slot in homeImageSlots" :key="slot.key" class="home-image-row">
+          <view class="home-image-preview"><image v-if="imageForm[slot.key] && !imageErrors[slot.key]" :src="imageForm[slot.key]" mode="aspectFill" @error="imageErrors[slot.key] = true" /><text v-else>{{ imageErrors[slot.key] ? '图片无法加载' : '暂无图片' }}</text></view>
+          <label><text class="image-label">{{ slot.label }}</text><text class="image-note">{{ slot.note }}</text><input v-model="imageForm[slot.key]" placeholder="https://..." @input="imageErrors[slot.key] = false" /></label>
+        </view>
+        <button class="primary save-button" @tap="saveImages">保存图片设置</button>
+      </template>
     </scroll-view></view>
   </view>
 </template>
 
 <style scoped>
 .admin-preview{min-height:100vh;padding-bottom:40rpx;background:#f3f1ea}.admin-banner{min-height:126rpx;padding:20rpx 30rpx;display:flex;align-items:center;gap:22rpx;color:#f7f3e8;background:#18362b}.admin-banner button{color:#fff;font-size:24rpx}.admin-brand,.admin-subbrand{display:block}.admin-brand{font-size:29rpx;font-weight:600;letter-spacing:2rpx}.admin-subbrand{margin-top:5rpx;color:#b9c7bf;font-size:19rpx}.admin-avatar{width:58rpx;height:58rpx;margin-left:auto;display:grid;place-items:center;border-radius:50%;color:#18362b;background:#e5c99e}.preview-alert{margin:20rpx 24rpx;padding:16rpx;border:1px solid #e9d6b2;border-radius:8rpx;color:#79572b;background:#fcf3df;font-size:20rpx;line-height:31rpx}.admin-layout{display:flex;align-items:flex-start;gap:18rpx}.admin-menu{width:190rpx;max-height:calc(100vh - 190rpx);flex:none}.group-title{display:block;padding:18rpx 14rpx 8rpx;color:#7b807a;font-size:18rpx}.admin-menu button{width:100%;padding:12rpx 14rpx;text-align:left;font-size:20rpx;line-height:1.4}.admin-menu button.active{border-radius:8rpx;color:white;background:#18362b}.admin-main{min-width:0;flex:1;padding-right:20rpx}.admin-heading{padding:20rpx 0}.eyebrow{display:block;color:#9b673e;font-size:18rpx;letter-spacing:3rpx}.admin-title{display:block;margin:6rpx 0;font-size:36rpx;font-weight:600}.admin-copy{color:#747a75;font-size:19rpx;line-height:1.5}.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:12rpx}.metric-card,.todo-card,.action-card,.record-card{padding:18rpx;border:1px solid #e6e1d5;border-radius:9rpx;background:#fffdf7}.metric-card{min-height:95rpx;display:flex;flex-direction:column;justify-content:space-between}.metric-card text:first-child,.record-copy{color:#747a75;font-size:18rpx}.metric-card text:last-child{font-size:28rpx;font-weight:600}.todo-card,.action-card{margin-top:16rpx}.card-title,.record-title{display:block;font-size:22rpx;font-weight:600}.todo-card button{width:100%;padding:16rpx 0;border-top:1px solid #eee9de;text-align:left;font-size:20rpx}.action-row{display:flex;flex-direction:column;gap:12rpx;color:#747a75;font-size:18rpx}.primary{padding:12rpx 18rpx;border-radius:8rpx;color:white;background:#18362b;font-size:20rpx}.record-card{margin-top:12rpx;display:flex;align-items:center;justify-content:space-between;gap:8rpx}.record-title{font-size:20rpx}.record-copy{display:block;margin-top:6rpx;line-height:1.4}.record-card button{flex:none;padding:10rpx;border:1px solid #ddd5c5;border-radius:7rpx;font-size:18rpx}.empty,.preview-note{display:block;margin-top:16rpx;color:#747a75;font-size:19rpx;line-height:1.5}.reset-button{margin:26rpx 0;color:#8b5e43;font-size:18rpx}.add-button{margin-bottom:10rpx}.modal-mask{position:fixed;inset:0;z-index:10;display:flex;align-items:flex-end;background:#0008}.editor-modal{width:100%;max-height:82vh;padding:28rpx 34rpx calc(30rpx + env(safe-area-inset-bottom));border-radius:20rpx 20rpx 0 0;background:#fffdf7;box-sizing:border-box}.modal-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:18rpx;font-size:30rpx;font-weight:600}.editor-modal>label{display:block;margin:14rpx 0;color:#454943;font-size:20rpx}.editor-modal input,.editor-modal textarea,.picker-value{width:100%;min-height:68rpx;margin-top:8rpx;padding:14rpx;box-sizing:border-box;border:1px solid #ded9cd;border-radius:8rpx;background:white;font-size:21rpx}.editor-modal textarea{min-height:130rpx}.save-button{width:100%;margin-top:18rpx}.editor-modal checkbox-group label{display:inline-block;margin-right:18rpx}
+</style>
+<style scoped>
+.admin-preview button { margin: 0; background: transparent; box-shadow: none; }
+.admin-preview button::after { border: 0; }
+.admin-preview .primary { color: white; background: #18362b; }
+.admin-menu button { background: transparent; }
+.admin-menu button.active { background: #2b5142; }
+.admin-banner button { padding: 0 14rpx; border: 1px solid #6c8778; border-radius: 7rpx; color: #f7f3e8; background: transparent; }
+.record-card button { background: transparent; }
+.todo-card button { background: transparent; }
+.admin-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18rpx; }
+.admin-form-grid label { min-width: 0; color: var(--v19-ink-700); font-size: 20rpx; }
+.admin-form-grid .form-full { grid-column: 1 / -1; }
+.image-help { display: block; padding: 14rpx; color: var(--v19-ink-700); background: var(--v19-brand-100); font-size: 19rpx; line-height: 1.5; }
+.home-image-row { display: grid; grid-template-columns: 150rpx minmax(0, 1fr); align-items: center; gap: 20rpx; padding: 18rpx 0; border-bottom: 1px solid var(--v19-line); }
+.home-image-preview { height: 130rpx; overflow: hidden; display: grid; place-items: center; border-radius: 8rpx; color: var(--v19-muted); background: var(--v19-paper); font-size: 18rpx; }
+.home-image-preview image { width: 100%; height: 100%; }
+.image-label, .image-note { display: block; }
+.image-label { font-size: 22rpx; font-weight: 600; }
+.image-note { margin-top: 4rpx; color: var(--v19-muted); font-size: 17rpx; }
+@media (min-width: 600px) {
+  .modal-mask { align-items: center; justify-content: center; }
+  .editor-modal { width: min(920px, calc(100vw - 48px)); max-height: calc(100vh - 64px); padding: 24px 28px; border-radius: 12px; }
+  .modal-title { font-size: 24px; }
+  .editor-modal label, .admin-form-grid label { font-size: 13px; }
+  .editor-modal input, .editor-modal textarea, .picker-value { min-height: 42px; padding: 9px 11px; font-size: 13px; }
+  .editor-modal textarea { min-height: 90px; }
+  .admin-form-grid { gap: 14px 18px; }
+  .home-image-row { grid-template-columns: 120px minmax(0, 1fr); gap: 18px; padding: 16px 0; }
+  .home-image-preview { height: 96px; font-size: 12px; }
+  .image-label { font-size: 14px; }
+  .image-note { font-size: 11px; }
+  .image-help { padding: 12px 14px; font-size: 12px; }
+  .save-button { max-width: 240px; min-height: 42px; margin: 20px 0 0 auto; font-size: 13px; }
+}
+@media (max-width: 599px) {
+  .admin-layout { display: block; }
+  .admin-menu { width: 100%; max-height: none; background: #18362b; }
+  .admin-menu-inner { display: flex; width: max-content; padding: 10rpx 20rpx; }
+  .admin-menu-inner > view { display: flex; align-items: center; }
+  .group-title { display: none; }
+  .admin-menu button { width: auto; min-height: 66rpx; margin: 0 5rpx; padding: 0 18rpx; flex: none; color: #d7e0db; white-space: nowrap; }
+  .admin-menu button.active { background: #355c4b; }
+  .admin-main { padding: 0 24rpx; }
+}
 </style>

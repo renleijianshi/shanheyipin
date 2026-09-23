@@ -26,3 +26,114 @@
 }
 
 html, body, #app { min-height: 100%; margin: 0; font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; }
+
+@media (min-width: 600px) {
+  body.v19-desktop-preview { background: #e7e4dc; }
+  body.v19-desktop-preview #app {
+    position: absolute;
+    top: 28px;
+    left: 50%;
+    width: 100vw;
+    height: calc(824px * var(--v19-preview-inverse));
+    overflow: hidden;
+    box-sizing: border-box;
+    border: calc(8px * var(--v19-preview-inverse)) solid #141814;
+    border-radius: calc(40px * var(--v19-preview-inverse));
+    background: var(--v19-canvas);
+    box-shadow: 0 16px 48px rgba(24, 54, 43, .16);
+    translate: -50% 0;
+    scale: var(--v19-preview-scale);
+    transform-origin: top center;
+  }
+  body.v19-desktop-preview uni-app,
+  body.v19-desktop-preview uni-page,
+  body.v19-desktop-preview uni-page-wrapper,
+  body.v19-desktop-preview uni-page-body { height: 100%; }
+  body.v19-desktop-preview .storefront-preview,
+  body.v19-desktop-preview .page-shell,
+  body.v19-desktop-preview .story-page,
+  body.v19-desktop-preview .trace-page { min-height: 100%; }
+  body.v19-desktop-preview .home-scroll { height: calc(742px * var(--v19-preview-inverse)); }
+  body.v19-desktop-preview uni-tabbar .uni-tabbar__bd,
+  body.v19-desktop-preview uni-tabbar .uni-placeholder { height: calc(66px * var(--v19-preview-inverse)) !important; }
+  body.v19-desktop-preview uni-tabbar .uni-tabbar__label {
+    font-size: calc(11px * var(--v19-preview-inverse)) !important;
+    line-height: 1.35 !important;
+  }
+  body.v19-desktop-preview uni-tabbar .uni-tabbar__label::before {
+    display: block;
+    margin-bottom: calc(2px * var(--v19-preview-inverse));
+    font-size: calc(20px * var(--v19-preview-inverse));
+    line-height: 1.1;
+  }
+  body.v19-desktop-preview uni-tabbar .uni-tabbar__item:nth-child(2) .uni-tabbar__label::before { content: '⌂'; }
+  body.v19-desktop-preview uni-tabbar .uni-tabbar__item:nth-child(3) .uni-tabbar__label::before { content: '▦'; }
+  body.v19-desktop-preview uni-tabbar .uni-tabbar__item:nth-child(4) .uni-tabbar__label::before { content: '◇'; }
+  body.v19-desktop-preview uni-tabbar .uni-tabbar__item:nth-child(5) .uni-tabbar__label::before { content: '▱'; }
+  body.v19-desktop-preview uni-tabbar .uni-tabbar__item:nth-child(6) .uni-tabbar__label::before { content: '○'; }
+  body.v19-desktop-preview.v19-admin-preview #app {
+    position: static;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+    box-shadow: none;
+    translate: none;
+    scale: 1;
+  }
+  body.v19-desktop-preview.v19-admin-preview uni-app,
+  body.v19-desktop-preview.v19-admin-preview uni-page,
+  body.v19-desktop-preview.v19-admin-preview uni-page-wrapper,
+  body.v19-desktop-preview.v19-admin-preview uni-page-body { height: auto; }
+  body.v19-desktop-preview.v19-admin-preview .admin-layout {
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    gap: 0;
+  }
+  body.v19-desktop-preview.v19-admin-preview .admin-banner { min-height: 74px; padding: 12px 28px; }
+  body.v19-desktop-preview.v19-admin-preview .admin-brand { font-size: 20px; letter-spacing: .04em; }
+  body.v19-desktop-preview.v19-admin-preview .admin-subbrand { font-size: 11px; }
+  body.v19-desktop-preview.v19-admin-preview .admin-avatar { width: 38px; height: 38px; font-size: 14px; }
+  body.v19-desktop-preview.v19-admin-preview .admin-banner button { min-height: 36px; padding: 0 12px; font-size: 12px; }
+  body.v19-desktop-preview.v19-admin-preview .preview-alert { margin: 16px 28px; padding: 10px 14px; font-size: 12px; line-height: 1.6; }
+  body.v19-desktop-preview.v19-admin-preview .admin-menu {
+    width: 232px;
+    max-height: none;
+    min-height: calc(100vh - 130px);
+    padding: 18px 14px;
+    background: var(--v19-brand-900);
+  }
+  body.v19-desktop-preview.v19-admin-preview .admin-menu .group-title {
+    padding: 14px 13px 7px;
+    color: #91a39a;
+    font-size: 11px;
+  }
+  body.v19-desktop-preview.v19-admin-preview .admin-menu button {
+    width: 100%;
+    min-height: 40px;
+    padding: 0 13px;
+    color: #d7e0db;
+    font-size: 13px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+  }
+  body.v19-desktop-preview.v19-admin-preview .admin-menu button::after { border: 0; }
+  body.v19-desktop-preview.v19-admin-preview .admin-menu button.active { background: #2b5142; }
+  body.v19-desktop-preview.v19-admin-preview .admin-main { padding: 30px 36px; }
+  body.v19-desktop-preview.v19-admin-preview .admin-heading { padding: 0 0 20px; }
+  body.v19-desktop-preview.v19-admin-preview .admin-title { font-size: 27px; }
+  body.v19-desktop-preview.v19-admin-preview .admin-copy { font-size: 13px; }
+  body.v19-desktop-preview.v19-admin-preview .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  body.v19-desktop-preview.v19-admin-preview .metric-card { min-height: 104px; padding: 16px; }
+  body.v19-desktop-preview.v19-admin-preview .metric-card uni-text:first-child { font-size: 12px; }
+  body.v19-desktop-preview.v19-admin-preview .metric-card uni-text:last-child { font-size: 24px; }
+  body.v19-desktop-preview.v19-admin-preview .todo-card,
+  body.v19-desktop-preview.v19-admin-preview .action-card { padding: 20px; }
+  body.v19-desktop-preview.v19-admin-preview .card-title { font-size: 18px; }
+  body.v19-desktop-preview.v19-admin-preview .todo-card button { min-height: 48px; padding: 10px 0; font-size: 14px; }
+  body.v19-desktop-preview.v19-admin-preview .record-title { font-size: 14px; }
+  body.v19-desktop-preview.v19-admin-preview .record-copy { font-size: 12px; }
+}

@@ -15,11 +15,11 @@
 | 项目 | 2026-09-23 实况 |
 | --- | --- |
 | 当前仓库 | `C:\Users\19993\Desktop\山禾颐品\daima`，`origin = https://github.com/renleijianshi/shanheyipin.git` |
-| 分支与本轮基线 | `feature/v13-frontend-fusion`，当前提交 `7e10d62`；与 `origin/feature/v13-frontend-fusion` 一致；`main` 保持在 `d73518a` |
-| 检查开始时工作树 | 开始时只有 `apps/miniapp/v19-preview.html` 未跟踪；本轮实现前后台本机预览联动并已纳入提交 |
-| 远程同步 | `7e10d62` 已推送至 `origin/feature/v13-frontend-fusion`，`git ls-remote` 核对一致；本轮未改 `main` |
+| 分支与本轮基线 | `feature/v13-frontend-fusion`，本轮修改前提交 `827bdc3`；提交和远端状态以当次 `git status -sb`、`git ls-remote` 为准；`main` 未参与本轮修改 |
+| 检查开始时工作树 | 本轮开始时干净；只修改 `apps/miniapp` 的 V19 页面与本交接文档 |
+| 远程同步 | 上一轮 `827bdc3` 已在跟踪分支；每次续写需重新核对本地 HEAD 与远端，不能将此行当作持续在线连接 |
 | 代码规模证据 | 16 个 Prisma migration；API 22 个、miniapp 4 个、admin 2 个测试文件 |
-| 本机验证 | 本轮 `npm run lint`、`npm run typecheck:uni --workspace @shanheyipin/miniapp` 通过；`UNI_INPUT_DIR=.` 下 Vite H5 build 通过；CLI 默认 H5 build 仍找错 manifest 根目录；微信端未验收 |
+| 本机验证 | 本轮 `npm run lint`、`npm run typecheck:uni --workspace @shanheyipin/miniapp` 通过；`UNI_INPUT_DIR=.` 下 Vite H5 build 通过；CLI 默认 H5 build 仍找错 manifest 根目录；微信构建因 `estree-walker` exports 错误受阻，真机未验收 |
 | 验证边界 | H5 浏览器已验证后台故事保存/列表显示/恢复默认流程；未在微信开发者工具验收，未验证真实商品/API、素材授权和生产部署 |
 
 本次参考的 V1 原始资料位于 `C:\Users\19993\Desktop\山禾颐品\小程序文件`：`00_项目总览_README.md`、`AGENTS.md`、`山禾颐品_Work执行总说明_v1.md`。它们定义产品范围和最初路线；其中“业务代码尚未开始”、旧启动包目录、Docker/Nginx 建议均是当时状态。当前有效部署与支付决策见 `docs/DECISIONS.md` 和 `docs/PROJECT_STATE.md`，实际完成度以下表及代码为准。
@@ -29,10 +29,10 @@
 | 应用 | 已有 | 尚缺 | 优先读取 |
 | --- | --- | --- | --- |
 | API | `apps/api/src/modules/` 下的业务服务、Prisma 仓储和迁移 | `src/index.ts` 仍是 bootstrap manifest 和健康函数；未见 NestJS 启动、Controller、路由、OpenAPI 或实际监听 `127.0.0.1:3200` 的代码 | `apps/api/src/index.ts`、目标模块 service/repository/test |
-| 微信小程序 | uni-app + Vue 3 V19 页面骨架与五栏导航；V12 分类/甄选契约；已接本机演示联动，后台可维护演示商品/甄选、故事、溯源和首页图片，前台可读取并维护本机购物车 | 未接线上 API/数据库，不能跨设备同步；V19 其余运营菜单仍为结构占位；外链图片授权/微信域名未确认；AppID 空；本轮 lint/typecheck 及 `UNI_INPUT_DIR=.` 下 H5 build 通过；默认 H5 CLI 的入口目录不匹配，微信端未验收 | `apps/miniapp/README.md`、`apps/miniapp/src/v19-content-store.ts`、`apps/miniapp/pages/admin-preview/index.vue`、`apps/miniapp/pages/home/index.vue` |
+| 微信小程序 | uni-app + Vue 3 V19 首页、分类、甄选、故事、商品详情片与五栏导航；H5 桌面手机画框；V12 分类/甄选契约；已接本机演示联动，后台可维护演示商品/甄选、故事、溯源和首页图片，前台可读取并维护本机购物车 | 未接线上 API/数据库，不能跨设备同步；V19 其余运营菜单仍为结构占位；外链礼盒原图失效，图片授权/微信域名未确认；后台图片尚不能本地上传；AppID 空；默认 H5 CLI 入口目录不匹配，微信构建因 `estree-walker` exports 错误受阻 | `apps/miniapp/README.md`、`apps/miniapp/src/v19-content-store.ts`、`apps/miniapp/pages/admin-preview/index.vue`、`apps/miniapp/pages/home/index.vue` |
 | Web 管理后台 | “小程序前端添加”四种内容入口的数据模型和校验函数 | `apps/admin/src/` 只有 TS 文件；没有 Vue/Vite/Element Plus 页面、登录界面、管理路由或 API 连接 | `apps/admin/src/miniapp-frontend-content-model.ts` |
 
-`prototype/index.html` 仍为独立演示原型。V19 已迁移至 uni-app；本轮把可操作内容接入本机预览 storage，后台保存后前台重新显示时会读取更新。它仍不是线上管理后台：没有登录/API/跨设备持久化；V19 原型的其他运营菜单也只是结构占位。外链图片授权和微信域名未确认。详见 `apps/miniapp/README.md`。lint/typecheck 和指定根目录后的 H5 build 通过；微信端尚未验收。
+`prototype/index.html` 仍为独立演示原型。V19 已迁移至 uni-app；本轮针对难看的宽屏布局与漏迁移内容，补了手机画框、真实主视觉、分类四件演示商品、甄选图文、故事切换、商品详情和后台表单。前后台通过本机 storage 联动。它仍不是线上管理后台：没有登录/API/跨设备持久化；V19 原型的其他运营菜单也只是结构占位。外链礼盒原图失效，授权和微信域名未确认。详见 `apps/miniapp/README.md`。lint/typecheck 和指定根目录后的 H5 build 通过；微信构建受依赖错误阻断，真机尚未验收。
 
 ## 4. 完成状态的口径
 

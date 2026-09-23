@@ -9,6 +9,6 @@ onLaunch(() => {
 <style>
 page { min-height: 100%; background: var(--v19-canvas); color: var(--v19-ink); }
 view, text, button { box-sizing: border-box; }
-button { margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; line-height: inherit; }
-button::after { border: 0; }
+button, uni-button { margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; line-height: inherit; }
+button::after, uni-button::after { border: 0; }
 </style>
