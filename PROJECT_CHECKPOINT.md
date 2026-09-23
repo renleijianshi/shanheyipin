@@ -32,7 +32,7 @@
 | 微信小程序 | 商品视图模型、V12 导航/分类/甄选契约、Catalog/Cart/Content/Trace Port 和控制器 | `apps/miniapp/src/` 只有 TS 文件；没有 uni-app 的 `pages.json`、Vue 页面、`App.vue`、实际路由、样式、平台构建或与 HTTP API 的适配器。不能在微信开发者工具中认定为已完成商城 | `apps/miniapp/src/index.ts`、`v12-ports.ts`、`v12-ui-model.ts`、`v12-catalog-controller.ts` |
 | Web 管理后台 | “小程序前端添加”四种内容入口的数据模型和校验函数 | `apps/admin/src/` 只有 TS 文件；没有 Vue/Vite/Element Plus 页面、登录界面、管理路由或 API 连接 | `apps/admin/src/miniapp-frontend-content-model.ts` |
 
-`prototype/index.html`、`prototype/app.js`、`prototype/styles.css` 是独立演示原型，不是正式小程序页面。本仓库文件名和本地提交历史中未发现 `山禾颐品_UI_V19_首页精简版.html`；若原件在仓库外，需给出路径再对照，不能把 V19 记为已融合。
+`prototype/index.html`、`prototype/app.js`、`prototype/styles.css` 是独立演示原型，不是正式小程序页面。本次在消费者预览侧增加“测试：进入后台”按钮，可切换到同页的运营后台演示；后台仍为演示数据、无真实登录/API 写入。由于 Codex 浏览器策略拒绝打开本地文件，本次未能在对话内展示预览；可在本机浏览器打开 `prototype/index.html` 检查。正式 uni-app / Vue 页面、管理后台框架仍未建立。本仓库文件名和本地提交历史中未发现 `山禾颐品_UI_V19_首页精简版.html`；若原件在仓库外，需给出路径再对照，不能把 V19 记为已融合。
 
 ## 4. 完成状态的口径
 
