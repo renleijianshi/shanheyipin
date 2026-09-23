@@ -1,179 +1,75 @@
-# 山禾颐品小程序开发断点
+# 山禾颐品｜代码现状与续开发断点
 
-## 1. 文档用途
+更新时间：2026-09-23。本文件供下次开发先读，记录的是**正式仓库实际代码**，不是 V1 规划的完成承诺。范围仅为 `C:\Users\19993\Desktop\山禾颐品\daima`。
 
-本文件是山禾颐品小程序的**唯一开发断点**，也是新的 AI / Worker / Codex 的续开发入口。
+## 1. 下次如何省 Token
 
-默认启动流程：
+1. 先读根目录 `AGENTS.md`、本文件；执行 `git status --short --branch` 和 `git log -3 --oneline`。
+2. 从第 5 节找到目标模块，只读对应 `tasks/Mxx_*.md`、1～3 份业务文档、所列源码与测试。需要改数据库时再读 `apps/api/prisma/schema.prisma` 的相关模型和对应 migration。
+3. 优先 `git grep` / `git diff` 定位。不要每次重扫全部 `apps/`、全部 `docs/` 或重新阅读 V1 全套。
+4. 完成一个模块后运行相关测试及 `npm run check`，检查 diff，再更新本文件中该模块状态、关键文件、缺口、测试结果和下一步。
+5. 本文件与代码冲突时以代码和 Git 为准；旧 `docs/TASKS.md`、`docs/PROJECT_STATE.md`、`docs/PROGRESS.md` 中部分“下一任务/同步”描述未及时更新。
 
-1. 先读取本文件；
-2. 执行 `git status`，再查看最近约 10 条 Git commit；
-3. 仅根据当前任务读取相关模块、相关测试、必要的 Prisma schema 和接口；
-4. 禁止默认全仓扫描；
-5. 仅在本文件与代码明显冲突、Git commit 不一致、迁移/编译问题跨模块、数据库 schema 发生重大变化、发现架构级问题，或用户明确要求时，才扩大扫描范围。
+## 2. 本次核验基线
 
-目标：以最少 Token 获取足够上下文。
+| 项目 | 2026-09-23 实况 |
+| --- | --- |
+| 当前仓库 | `C:\Users\19993\Desktop\山禾颐品\daima`，`origin = https://github.com/renleijianshi/shanheyipin.git` |
+| 分支与检查时 HEAD | `feature/v13-frontend-fusion`，`d49881b`；跟踪 `origin/feature/v13-frontend-fusion` |
+| 检查开始时工作树 | 干净；本次只更新此文档 |
+| 远程同步 | 本地远程跟踪记录与 HEAD 相同；本次没有成功实时验证 GitHub。2026-09-23 的 fetch 和推送试运行遇到 `github.com:443` 连接失败，不能据此宣称远程已同步 |
+| 代码规模证据 | 16 个 Prisma migration；API 22 个、miniapp 4 个、admin 2 个测试文件 |
+| 本机验证 | 依赖恢复后 `npm run check` 通过：lint、typecheck、98 项测试（28 个文件）、TypeScript build |
+| 验证边界 | 以上主要验证领域逻辑与编译；未验证真实 MySQL、HTTP 接口、微信开发者工具、端到端购物和生产部署 |
 
-## 2. 当前 Git 基线
+本次参考的 V1 原始资料位于 `C:\Users\19993\Desktop\山禾颐品\小程序文件`：`00_项目总览_README.md`、`AGENTS.md`、`山禾颐品_Work执行总说明_v1.md`。它们定义产品范围和最初路线；其中“业务代码尚未开始”、旧启动包目录、Docker/Nginx 建议均是当时状态。当前有效部署与支付决策见 `docs/DECISIONS.md` 和 `docs/PROJECT_STATE.md`，实际完成度以下表及代码为准。
 
-| 项目 | 当前事实 |
-|---|---|
-| 仓库 | `renleijianshi/shanheyipin` |
-| origin | `https://github.com/renleijianshi/shanheyipin.git` |
-| 当前分支 | `main` |
-| 本地 HEAD（本文件提交前） | `ec74e1e521b597bbec9e16ea5f18f0672b3d5817` |
-| HEAD 信息 | `docs: refresh interactive prototype status` |
-| 最后已记录的 `origin/main` | `d8deb4af53b7c914e08d5e690bd5e635b77c8bc2` |
-| 已记录同步差异 | 本地在本文件提交前领先 41 commits，未落后 |
-| GitHub 刷新状态 | 2026-09-21 20:05 UTC 尝试 `git fetch origin main`，因当前执行环境缺少 GitHub HTTPS 凭据失败；远程是否有之后的新提交尚未在本环境重新确认。 |
-| 文档生成时间 | 2026-09-21 20:05 UTC |
+## 3. 三个应用的真实完成度
 
-本文件提交后，应以最新 `HEAD` 为实际断点。GitHub 同步完成前，不能把本地领先状态误写为“已推送”。
+| 应用 | 已有 | 尚缺 | 优先读取 |
+| --- | --- | --- | --- |
+| API | `apps/api/src/modules/` 下的业务服务、Prisma 仓储和迁移 | `src/index.ts` 仍是 bootstrap manifest 和健康函数；未见 NestJS 启动、Controller、路由、OpenAPI 或实际监听 `127.0.0.1:3200` 的代码 | `apps/api/src/index.ts`、目标模块 service/repository/test |
+| 微信小程序 | 商品视图模型、V12 导航/分类/甄选契约、Catalog/Cart/Content/Trace Port 和控制器 | `apps/miniapp/src/` 只有 TS 文件；没有 uni-app 的 `pages.json`、Vue 页面、`App.vue`、实际路由、样式、平台构建或与 HTTP API 的适配器。不能在微信开发者工具中认定为已完成商城 | `apps/miniapp/src/index.ts`、`v12-ports.ts`、`v12-ui-model.ts`、`v12-catalog-controller.ts` |
+| Web 管理后台 | “小程序前端添加”四种内容入口的数据模型和校验函数 | `apps/admin/src/` 只有 TS 文件；没有 Vue/Vite/Element Plus 页面、登录界面、管理路由或 API 连接 | `apps/admin/src/miniapp-frontend-content-model.ts` |
 
-## 3. 当前已完成模块
+`prototype/index.html`、`prototype/app.js`、`prototype/styles.css` 是独立演示原型，不是正式小程序页面。本仓库文件名和本地提交历史中未发现 `山禾颐品_UI_V19_首页精简版.html`；若原件在仓库外，需给出路径再对照，不能把 V19 记为已融合。
 
-- M01 项目骨架
-- M02 数据库基础
-- M03 管理后台 RBAC
-- M04 微信登录抽象
-- M05 用户中心
-- M06 用户地址
-- M07 商品分类
-- M08 SPU 商品
-- M09 SKU 规格
-- M10 商品列表、搜索与详情
-- M11 购物车
-- M12 结算预览
-- M13 订单
-- M14 支付抽象
-- M15 支付回调抽象
-- M16 发货物流
-- M23 库存余额
-- M24 库存流水
-- M30 售后
-- M31 退款抽象
-- M32 补发
+## 4. 完成状态的口径
 
-共 21 个已完成模块。
+- **领域层已实现**：存在 service、必要的 Prisma 仓储/迁移、对应测试，表示代码基础已落地；不等于手机端可操作。
+- **模型/契约已实现**：仅有类型、映射或控制器，不等于真实页面/接口。
+- **未完成**：没有对应业务 service、正式页面或必要集成。
+- 目前不存在已经验收的 `小程序 → HTTP API → MySQL → 支付/物流` 端到端链路。真实微信/支付宝支付、退款和微信发货同步均按项目决策 Deferred。
 
-## 4. 当前已形成的业务能力
+## 5. 模块导航与剩余工作
 
-当前已支持的核心链路：
+| 模块 | 代码状态与证据 | 下次只读的入口 / 实际缺口 |
+| --- | --- | --- |
+| M01–M02 骨架、数据库 | workspace、共享类型、Prisma schema/迁移、基础 CI 已有；`npm run check` 可通过 | `package.json`、`packages/shared-types/src/`、`apps/api/prisma/`；数据库部署与真实连接尚未验收 |
+| M03 后台 RBAC | 权限领域代码、schema/migration、测试已有 | `apps/api/src/modules/admin/rbac.ts`、`apps/api/test/rbac.test.ts`；后台登录页面与 HTTP 鉴权链未落地 |
+| M04–M06 登录、用户、地址 | auth/users/addresses 服务、仓储、迁移和测试已有；M06 代码确实存在 | `apps/api/src/modules/{auth,users,addresses}/` 和对应测试；缺 HTTP 入口及小程序页面 |
+| M07–M09 分类、SPU、SKU | catalog 服务、仓储、迁移和测试已有；SKU 与 SPU 分离 | `apps/api/src/modules/catalog/`、`apps/api/test/{category,product,sku}-service.test.ts`；管理端 CRUD 页面和公开 HTTP 接口未落地 |
+| M10 商品发现/详情 | catalog 查询服务、公开商品视图模型和测试已有 | `catalog-query-service.ts`、`apps/miniapp/src/catalog-view-model.ts`；正式列表/详情 Vue 页面与网络适配器未落地 |
+| M11–M12 购物车、结算预览 | 服务、仓储/测试已有；结算只给预览、不锁库存 | `apps/api/src/modules/{cart,checkout}/`；缺小程序页面和 HTTP 路由 |
+| M13 订单 | 订单快照、幂等、状态等 service/repository/schema/test 已有 | `apps/api/src/modules/orders/`；订单代码未调用库存预占/取消释放，真实下单前必须补事务一致性与并发测试 |
+| M14–M15 支付抽象/回调 | PaymentOrder、Mock/Disabled Provider、Mock 验签与幂等逻辑、迁移/测试已有 | `apps/api/src/modules/payments/`；真实渠道 Deferred；缺 HTTP 接口和端到端验证 |
+| M16 发货物流 | shipment 服务、仓储、迁移/测试已有，Mock/Disabled 发货同步 | `apps/api/src/modules/shipping/`；实物出库与正式批次分配、真实微信同步未接通 |
+| M17–M22 供应商至仓库 | 未见独立业务模块与完成测试 | 从 `tasks/M17_供应商.md`、`docs/07_商品采购仓储库存设计.md` 开始；按 M17→M22 逐项建模 |
+| M23–M24 库存余额/流水 | `inventory` 服务、仓储、迁移/测试已有，含守恒与流水；部分批次/仓库是引用维度 | `apps/api/src/modules/inventory/`；待接订单预占/取消/支付/出库，正式批次与仓库管理仍属 M21–M22 |
+| M25–M29 盘点、损耗、包装、成品批次 | 未见独立业务模块与完成测试 | `tasks/M25_*.md` 至 `M29_*.md`、`docs/07_商品采购仓储库存设计.md`；不能直接手改库存代替流水 |
+| M30–M32 售后、退款、补发 | aftersales/refunds/reship service、仓储、迁移/测试已有；退款仅 Mock/Disabled | `apps/api/src/modules/{aftersales,refunds}/`；缺 HTTP/小程序操作流和全链路验收 |
+| M33–M36 优惠券、预售、会员、积分 | 未见独立业务模块 | 对应 `tasks/M33_*.md` 至 `M36_*.md`，再读 `docs/09_会员营销内容溯源企业团购.md` |
+| M37–M39 内容、溯源、一盒一码 | miniapp/admin 中仅有 Port、草稿类型与入口模型；无正式领域服务/持久化 | `apps/miniapp/src/v12-ports.ts`、`apps/admin/src/miniapp-frontend-content-model.ts`；不得把模型标为内容/溯源模块完成 |
+| M40–M42 企业团购、报价、多地址 | 未见独立业务模块 | 对应任务卡与 `docs/09_会员营销内容溯源企业团购.md` |
+| M43–M46 报表、安全验收、全链路测试、部署 | `.github/workflows/ci.yml` 有质量门禁；其余未完成 | `docs/10_运营后台数据报表.md`、`docs/11_安全合规部署运维.md`、`docs/12_测试验收与里程碑.md`；CI 的定时检查不是本地代码自动提交/推送 |
 
-`商品 → 购物车 → 结算 → 订单 → Mock 支付 → 支付回调 → 发货物流 → 售后 → 退款 / 补发`
+## 6. 下一步顺序
 
-这代表核心领域层、持久化层和单元测试能力；不代表整个微信小程序已完整上线运行。完整 HTTP API 接入、端到端验收和部署上线仍未完成。
+1. **先选一个小任务**：若目标是让小程序可见，优先完成 uni-app 运行骨架和首页，再做商品 HTTP 路由/网络适配；若按原 Mxx 依赖顺序继续后端，下一项是 M17 供应商。一次只做一个明确模块。
+2. 在开放真实下单前，必须补 M13 ↔ M23/M24 的库存原子预占、取消/超时释放和支付后待出库转换，并做并发/幂等验证。
+3. 后续逐步补 API HTTP 层、正式小程序页面与后台页面；不要把 `prototype/` 或 TS 模型算作正式 UI 完成。
+4. 每次变更先查 Git、改相关文件、测试、审 diff、提交；GitHub 连通时推送并核对远端提交。网络或权限失败须记录具体原因，不能写“已同步”。
 
-## 5. 库存系统当前能力
+## 7. 下次更新本文件的最小模板
 
-库存余额按批次维度维护以下数量：
-
-| 字段 | 含义 |
-|---|---|
-| `physical` | 物理库存 |
-| `available` | 可售库存 |
-| `locked` | 锁定库存 |
-| `outbound` | 待出库库存 |
-| `frozen` | 冻结库存 |
-| `defective` | 残次库存 |
-| `returnInspection` | 退货待检库存 |
-
-已具备：库存守恒、防止负库存、数据库行锁/并发保护、每次余额变化同事务生成库存流水、来源单据、前后数量快照、幂等保护、补发原子扣库存和补发成本记录。
-
-## 6. 支付与外部能力状态
-
-### 已实现
-
-- Mock Payment
-- Disabled Payment
-- Mock Refund
-- Disabled Refund
-- Mock Shipment Sync
-- Disabled Shipment Sync
-
-### 暂停
-
-- 真实微信支付
-- 真实支付宝支付
-- 真实退款渠道
-- 微信真实发货同步
-
-原因：现阶段先完成系统架构和业务闭环，待取得商户号与对应资质后再接真实渠道。后续 AI 不得擅自开始真实支付接入，除非用户明确要求。
-
-## 7. 尚未完成模块
-
-### M17–M22
-
-供应商、采购、到货、质检、正式批次和仓库业务。数据库中可能已为库存和批次提前存在基础数据结构，但正式业务模块尚未完成。
-
-### M25–M29
-
-盘点、损耗、包装 BOM、包装任务、成品批次。
-
-### M33–M36
-
-优惠券、预售、会员、积分。
-
-### M37–M39
-
-内容、溯源、一盒一码。
-
-### M40–M42
-
-企业团购、报价、多地址配送。
-
-### M43–M46
-
-报表、安全总检查、全链路验收、部署上线。
-
-## 8. 当前测试基线
-
-| 项目 | 结果 |
-|---|---|
-| 测试文件 | 25（按 `apps/**/test/*.test.ts` 当前计数） |
-| 历史最后一次已知结果 | 91 项测试通过；TypeScript 检查通过 |
-| 本次完整验证 | 未完成：`npm run check` 在 lint 首步失败，原因是压缩包自带的 Windows `node_modules/.bin/eslint` 在本 Linux 环境无执行权限（`Permission denied`）。这不是测试断言失败。 |
-| 本次验证时间 | 2026-09-21 20:05 UTC |
-
-在原 Windows 项目环境或重新安装依赖后的兼容环境中，应运行：`npm run check`。失败前不得将本次结果写成“全部通过”。
-
-## 9. 下一默认开发断点
-
-若用户未改变开发顺序，默认下一模块是 **M17 供应商管理**。本次未开发 M17。
-
-做 M17 时，优先只查看：
-
-- Prisma schema 中供应商、采购、仓库、批次的必要位置；
-- `supplier` / `purchasing` 相关模块；
-- 与库存和批次连接的必要接口；
-- 现有模块的编码模式；
-- 相关测试。
-
-不得为了做 M17 把所有 TypeScript 文件重新读取一遍。
-
-## 10. 每次开发结束后的断点更新规则
-
-每完成一个模块，必须更新本文件，至少记录：
-
-- 当前 HEAD commit；
-- 新完成模块；
-- 新增数据库结构；
-- 新增 API / Service / Repository；
-- 新增测试和当前测试数量；
-- 新风险或技术债；
-- 下一开发模块；
-- 是否已经 push GitHub。
-
-随后 commit，再 push GitHub。目标是让 GitHub 代码与 `PROJECT_CHECKPOINT.md` 永远处于同一进度。
-
-## 11. 当前同步待办
-
-本文件已在本地建立，但当前执行环境没有 GitHub HTTPS 凭据，尚未推送。下次在已登录 GitHub 的电脑或已配置安全凭据的环境中，应先执行：
-
-```bash
-git fetch origin main
-git rev-list --left-right --count origin/main...main
-git push origin main
-```
-
-仅当结果显示本地未落后且正常 push 成功后，才将此处更新为“GitHub 已同步”。禁止 `git push --force`、重写历史或覆盖远程提交。
+`日期 / 分支 / HEAD / 工作树`；`本次模块及改动文件`；`已验证命令与结果`；`剩余缺口`；`下一模块及入口文件`；`push 结果`。只改变化的段落，避免重写整篇。
