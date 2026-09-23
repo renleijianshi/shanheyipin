@@ -16,7 +16,7 @@ watch(() => props.product.coverObjectKey, () => { imageFailed.value = false; });
     <view class="product-sheet" role="dialog" aria-modal="true" aria-label="商品详情" @tap.stop>
       <view class="sheet-handle"></view>
       <button class="sheet-close" aria-label="关闭商品详情" @tap="emit('close')">×</button>
-      <scroll-view scroll-y class="sheet-scroll">
+      <view class="sheet-content">
         <view class="sheet-photo">
           <image v-if="product.coverObjectKey && !imageFailed" :src="product.coverObjectKey" mode="aspectFill" @error="imageFailed = true" />
           <text v-else>山禾颐品</text>
@@ -25,13 +25,13 @@ watch(() => props.product.coverObjectKey, () => { imageFailed.value = false; });
         <text class="sheet-title">{{ product.name }}</text>
         <text class="sheet-intro">{{ detail?.summary || product.subtitle }}</text>
         <view class="sheet-meta">
-          <view><text>产地</text><strong>{{ detail?.origin || '以商品资料为准' }}</strong></view>
-          <view><text>规格</text><strong>{{ detail?.spec || '详见商品说明' }}</strong></view>
+          <view><text>产地</text><text class="sheet-meta-value">{{ detail?.origin || '以商品资料为准' }}</text></view>
+          <view><text>规格</text><text class="sheet-meta-value">{{ detail?.spec || '详见商品说明' }}</text></view>
         </view>
         <text v-if="detail?.detail || detail?.intro" class="sheet-body">{{ detail?.detail || detail?.intro }}</text>
-      </scroll-view>
+      </view>
       <view class="sheet-footer">
-        <view><text>到手价</text><strong>¥{{ price }}</strong></view>
+        <view><text>到手价</text><text class="sheet-price">¥{{ price }}</text></view>
         <button @tap="emit('add', product.id)">加入购物车</button>
       </view>
     </view>
@@ -40,9 +40,9 @@ watch(() => props.product.coverObjectKey, () => { imageFailed.value = false; });
 
 <style scoped>
 .sheet-mask { position: fixed; inset: 0; z-index: 30; display: flex; align-items: flex-end; background: rgba(24, 28, 25, .46); }
-.product-sheet { width: 100%; max-width: 750rpx; height: min(68vh, 1180rpx); max-height: 72%; margin: 0 auto; padding-top: 10rpx; position: relative; display: flex; flex-direction: column; overflow: hidden; border-radius: 32rpx 32rpx 0 0; background: var(--v19-paper-light); box-shadow: 0 -16rpx 48rpx rgba(24, 54, 43, .12); }
+.product-sheet { width: 100%; max-width: 750rpx; height: 75vh; max-height: 78%; margin: 0 auto; padding-top: 10rpx; position: relative; display: flex; flex-direction: column; overflow: hidden; border-radius: 32rpx 32rpx 0 0; background: var(--v19-paper-light); box-shadow: 0 -16rpx 48rpx rgba(24, 54, 43, .12); }
 .sheet-handle { width: 72rpx; height: 8rpx; margin: 8rpx auto 12rpx; flex: none; border-radius: 8rpx; background: var(--v19-line-strong); }
-.sheet-scroll { height: 0; min-height: 0; padding: 10rpx 40rpx 24rpx; flex: 1; box-sizing: border-box; }
+.sheet-content { min-height: 0; padding: 10rpx 40rpx 24rpx; flex: 1; overflow: hidden; box-sizing: border-box; }
 .sheet-close { width: 64rpx; height: 64rpx; margin: 0; padding: 0; position: absolute; top: 24rpx; right: 24rpx; z-index: 1; border: 0; border-radius: 50%; color: var(--v19-ink); background: rgba(251, 248, 240, .94); font-size: 40rpx; line-height: 1; }
 .sheet-close::after, .sheet-footer button::after { border: 0; }
 .sheet-photo { height: 336rpx; margin-bottom: 26rpx; overflow: hidden; display: grid; place-items: center; border-radius: 16rpx; color: white; background: var(--v19-brand-800); font-size: 30rpx; }
@@ -55,10 +55,10 @@ watch(() => props.product.coverObjectKey, () => { imageFailed.value = false; });
 .sheet-meta { margin: 24rpx 0; padding: 20rpx 0; display: grid; grid-template-columns: 1fr 1fr; gap: 24rpx; border-top: 1px solid var(--v19-line); border-bottom: 1px solid var(--v19-line); }
 .sheet-meta view { display: flex; flex-direction: column; gap: 8rpx; }
 .sheet-meta text, .sheet-footer view text { color: var(--v19-muted); font-size: 21rpx; }
-.sheet-meta strong { color: var(--v19-ink); font-size: 24rpx; font-weight: 500; }
+.sheet-meta .sheet-meta-value { color: var(--v19-ink); font-size: 24rpx; font-weight: 500; }
 .sheet-footer { min-height: 122rpx; padding: 16rpx 40rpx calc(18rpx + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: space-between; gap: 20rpx; flex: none; border-top: 1px solid var(--v19-line); background: var(--v19-paper-light); }
 .sheet-footer view { display: flex; flex-direction: column; gap: 4rpx; }
-.sheet-footer view strong { color: var(--v19-orange); font-size: 44rpx; line-height: 1.2; }
+.sheet-footer .sheet-price { color: var(--v19-orange); font-size: 44rpx; line-height: 1.2; }
 .sheet-footer button { min-width: 292rpx; min-height: 92rpx; margin: 0; padding: 0 28rpx; border: 0; border-radius: 16rpx; color: white; background: var(--v19-brand-900); font-size: 30rpx; font-weight: 600; }
-@media (max-height: 620px) { .product-sheet { height: 82vh; } .sheet-photo { height: 260rpx; } }
+@media (max-height: 700px) { .product-sheet { height: 78vh; } .sheet-photo { height: 250rpx; } .sheet-body { -webkit-line-clamp: 3; } }
 </style>

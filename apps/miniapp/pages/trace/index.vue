@@ -20,22 +20,31 @@ function scanTraceCode() {
     }
   });
 }
+function goBack() { uni.navigateBack({ delta: 1, fail: () => uni.switchTab({ url: '/pages/home/index' }) }); }
 </script>
 
 <template>
-  <view class="trace-page">
-    <view class="trace-mark">溯</view>
-    <text class="eyebrow">TRACEABILITY</text>
-    <text class="trace-title">扫一扫包装上的溯源码</text>
-    <text class="trace-copy">正式版将从批次、供应商、收货与质检记录中读取可追溯信息。</text>
-    <button class="scan-button" @tap="scanTraceCode">扫一扫溯源</button>
-    <view v-if="scannedCode" class="trace-result"><text class="eyebrow">SCAN RESULT</text><text class="trace-code">{{ scannedCode }}</text><text class="trace-copy">{{ scanNote }}</text></view>
-    <view v-if="traces.length" class="trace-result"><text class="eyebrow">V19 TRACE PREVIEW</text><view v-for="item in traces" :key="item.id" class="trace-record"><text class="trace-code">{{ item.product }} · {{ item.batchNo }}</text><text class="trace-copy">产地：{{ item.origin }} · 供应：{{ item.supplier || '—' }}</text><text class="trace-copy">收货：{{ item.receiveDate || '—' }} · 包装：{{ item.packDate || '—' }}</text><text class="trace-copy">工艺：{{ item.craft || '—' }} · 质检：{{ item.quality || '—' }}</text><text class="trace-copy">{{ item.note }}</text></view></view>
-  </view>
+  <scroll-view scroll-y class="subpage-scroll">
+    <view class="trace-page">
+      <view class="subpage-header"><button class="back-button" @tap="goBack"><text>‹</text><text>返回</text></button><text class="subpage-title">扫码溯源</text></view>
+      <view class="trace-mark">溯</view>
+      <text class="eyebrow">TRACEABILITY</text>
+      <text class="trace-title">扫一扫包装上的溯源码</text>
+      <text class="trace-copy">正式版将从批次、供应商、收货与质检记录中读取可追溯信息。</text>
+      <button class="scan-button" @tap="scanTraceCode">扫一扫溯源</button>
+      <view v-if="scannedCode" class="trace-result"><text class="eyebrow">SCAN RESULT</text><text class="trace-code">{{ scannedCode }}</text><text class="trace-copy">{{ scanNote }}</text></view>
+      <view v-if="traces.length" class="trace-result"><text class="eyebrow">V19 TRACE PREVIEW</text><view v-for="item in traces" :key="item.id" class="trace-record"><text class="trace-code">{{ item.product }} · {{ item.batchNo }}</text><text class="trace-copy">产地：{{ item.origin }} · 供应：{{ item.supplier || '—' }}</text><text class="trace-copy">收货：{{ item.receiveDate || '—' }} · 包装：{{ item.packDate || '—' }}</text><text class="trace-copy">工艺：{{ item.craft || '—' }} · 质检：{{ item.quality || '—' }}</text><text class="trace-copy">{{ item.note }}</text></view></view>
+      <view class="bottom-space"></view>
+    </view>
+  </scroll-view>
 </template>
 
 <style scoped>
-.trace-page { min-height: 100vh; padding: 90rpx 44rpx; background: var(--v19-canvas); text-align: center; }
+.trace-page { min-height: 100%; padding: 24rpx 44rpx 40rpx; background: var(--v19-canvas); text-align: center; }
+.subpage-header { min-height: 82rpx; margin: 0 0 46rpx -4rpx; display: flex; align-items: center; gap: 18rpx; text-align: left; }
+.back-button { min-width: 118rpx; height: 68rpx; padding: 0 14rpx; display: flex; align-items: center; gap: 6rpx; border: 1px solid var(--v19-line); border-radius: 12rpx; color: var(--v19-brand-900); background: var(--v19-paper-light); font-size: 23rpx; }
+.back-button text:first-child { font-size: 38rpx; line-height: 1; }
+.subpage-title { color: var(--v19-ink); font-size: 28rpx; font-weight: 600; }
 .trace-mark { width: 112rpx; height: 112rpx; margin: 0 auto 28rpx; display: grid; place-items: center; border: 1px solid var(--v19-line-strong); border-radius: 50%; color: var(--v19-brand-900); font-size: 48rpx; }
 .eyebrow { display: block; color: var(--v19-copper); font-size: 20rpx; letter-spacing: 3rpx; }
 .trace-title { display: block; margin: 18rpx 0 14rpx; font-size: 37rpx; font-weight: 600; }
@@ -44,4 +53,5 @@ function scanTraceCode() {
 .trace-result { margin-top: 46rpx; padding: 28rpx; border: 1px solid var(--v19-line); border-radius: 12rpx; text-align: left; }
 .trace-record { padding: 18rpx 0; border-top: 1px solid var(--v19-line); }
 .trace-code { display: block; margin: 14rpx 0; font-size: 24rpx; overflow-wrap: anywhere; }
+.bottom-space { height: 30rpx; }
 </style>

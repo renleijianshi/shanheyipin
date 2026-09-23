@@ -9,6 +9,7 @@
   --v19-orange: #d86f2c;
   --v19-orange-soft: #f8e6d8;
   --v19-copper: #a97745;
+  --v19-gold-light: #cfb58e;
   --v19-ink: #1e211f;
   --v19-ink-700: #484d49;
   --v19-muted: #747a75;
@@ -26,6 +27,8 @@
 }
 
 html, body, #app { min-height: 100%; margin: 0; font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; }
+.tab-page-scroll { height: calc(100vh - 50px - env(safe-area-inset-bottom)); }
+.subpage-scroll { height: 100vh; }
 
 @media (min-width: 600px) {
   body.v19-desktop-preview { background: #e7e4dc; }
@@ -54,6 +57,8 @@ html, body, #app { min-height: 100%; margin: 0; font-family: "PingFang SC", "Mic
   body.v19-desktop-preview .story-page,
   body.v19-desktop-preview .trace-page { min-height: 100%; }
   body.v19-desktop-preview .home-scroll { height: calc(742px * var(--v19-preview-inverse)); }
+  body.v19-desktop-preview .tab-page-scroll { height: calc(742px * var(--v19-preview-inverse)); }
+  body.v19-desktop-preview .subpage-scroll { height: 100%; }
   body.v19-desktop-preview uni-tabbar .uni-tabbar__bd,
   body.v19-desktop-preview uni-tabbar .uni-placeholder { height: calc(66px * var(--v19-preview-inverse)) !important; }
   body.v19-desktop-preview uni-tabbar .uni-tabbar__label {

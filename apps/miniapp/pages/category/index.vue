@@ -32,21 +32,26 @@ onShow(refresh);
 </script>
 
 <template>
-  <view class="page-shell">
-    <view class="page-heading"><text class="eyebrow">DISCOVER</text><text class="page-title">分类</text></view>
-    <scroll-view scroll-x class="category-tabs">
-      <button v-for="tab in V12_CATEGORY_TABS" :key="tab.key" :class="{ active: activeCategory === tab.key }" @tap="activeCategory = tab.key">{{ tab.label }}</button>
+  <view>
+    <scroll-view scroll-y class="tab-page-scroll">
+      <view class="page-shell">
+        <view class="page-heading"><text class="eyebrow">DISCOVER</text><text class="page-title">分类</text></view>
+        <scroll-view scroll-x class="category-tabs">
+          <button v-for="tab in V12_CATEGORY_TABS" :key="tab.key" :class="{ active: activeCategory === tab.key }" @tap="activeCategory = tab.key">{{ tab.label }}</button>
+        </scroll-view>
+        <text class="category-note">后台按商品分类标签归档；“全部商品”汇总所有已上架商品。</text>
+        <view class="products-grid">
+          <ProductTile v-for="(product, index) in products" :key="product.id" :product="product" :tone="productTones[index % productTones.length]!" @select="selectedProduct = $event" />
+        </view>
+        <view class="bottom-space"></view>
+      </view>
     </scroll-view>
-    <text class="category-note">后台按商品分类标签归档；“全部商品”汇总所有已上架商品。</text>
-    <view class="products-grid">
-      <ProductTile v-for="(product, index) in products" :key="product.id" :product="product" :tone="productTones[index % productTones.length]!" @select="selectedProduct = $event" />
-    </view>
     <ProductSheet v-if="selectedProduct" :product="selectedProduct" @close="selectedProduct = null" @add="addProduct" />
   </view>
 </template>
 
 <style scoped>
-.page-shell { min-height: 100vh; padding: 40rpx; background: var(--v19-canvas); }
+.page-shell { min-height: 100%; padding: 40rpx; background: var(--v19-canvas); }
 .page-heading { padding: 20rpx 0 30rpx; }
 .eyebrow { display: block; color: var(--v19-copper); font-size: 20rpx; letter-spacing: 3rpx; }
 .page-title { display: block; margin-top: 8rpx; font-size: 48rpx; font-weight: 600; }
@@ -58,4 +63,5 @@ onShow(refresh);
 .category-note { display: block; margin: 26rpx 0 34rpx; color: var(--v19-muted); font-size: 22rpx; line-height: 36rpx; }
 .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40rpx 24rpx; }
 .preview-note { padding: 36rpx 0; color: var(--v19-muted); font-size: 20rpx; }
+.bottom-space { height: 36rpx; }
 </style>

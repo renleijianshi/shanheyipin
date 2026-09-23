@@ -5,8 +5,8 @@
     { "path": "pages/selection/index", "style": { "navigationStyle": "custom" } },
     { "path": "pages/cart/index", "style": { "navigationStyle": "custom" } },
     { "path": "pages/profile/index", "style": { "navigationStyle": "custom" } },
-    { "path": "pages/story/index", "style": { "navigationBarTitleText": "山野故事" } },
-    { "path": "pages/trace/index", "style": { "navigationBarTitleText": "扫码溯源" } },
+    { "path": "pages/story/index", "style": { "navigationStyle": "custom", "navigationBarTitleText": "山野故事" } },
+    { "path": "pages/trace/index", "style": { "navigationStyle": "custom", "navigationBarTitleText": "扫码溯源" } },
     { "path": "pages/admin-preview/index", "style": { "navigationStyle": "custom" } }
   ],
   "globalStyle": {

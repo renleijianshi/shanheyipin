@@ -30,11 +30,11 @@ function formatPrice(cents: number, maxCents: number): string {
 <style scoped>
 .product-tile { width: 100%; min-width: 0; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: stretch; border: 0; border-radius: 0; background: transparent; box-shadow: none; text-align: left; }
 .product-tile::after { border: 0; }
-.product-image { aspect-ratio: 4 / 5; position: relative; overflow: hidden; border: 1px solid rgba(24,54,43,.06); border-radius: 10rpx; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12rpx; color: rgba(255,255,255,.92); background: linear-gradient(155deg,#9f7651,#543d2e); }
+.product-image { aspect-ratio: 4 / 5; position: relative; overflow: hidden; border: 1px solid var(--v19-line); border-radius: 10rpx; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12rpx; color: var(--v19-paper-light); background: var(--v19-brand-800); }
 .product-cover { position: absolute; inset: 0; width: 100%; height: 100%; }
-.product-image.gift { color: var(--v19-paper-light); background: linear-gradient(180deg,rgba(31,38,28,.25),rgba(31,38,28,.82)),url('https://image.nzpm.cn/uploads/20250112/3f08487db3f72132d1214d8c44ba4616.jpg') center/cover no-repeat; }
-.product-image.wheat { color: var(--v19-ink); background: linear-gradient(145deg,#e4d0a8,#ad8f5d); }
-.product-image.season { background: linear-gradient(145deg,#7b8b6b,#394d3d); }
+.product-image.gift { color: var(--v19-paper-light); background: var(--v19-brand-900); }
+.product-image.wheat { color: var(--v19-ink); background: var(--v19-paper); }
+.product-image.season { background: var(--v19-brand-700); }
 .image-mark { font-family: STSong, "Songti SC", serif; font-size: 28rpx; letter-spacing: 5rpx; }
 .image-caption { font-size: 18rpx; opacity: .72; }
 .product-name { display: -webkit-box; margin-top: 18rpx; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; font-size: 28rpx; line-height: 42rpx; font-weight: 600; }

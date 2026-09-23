@@ -26,15 +26,16 @@ const copy = {
 </script>
 
 <template>
-  <view class="page-shell">
-    <view class="selection-top"><text class="eyebrow">SHANHE SELECTION</text>
-      <view class="selection-tabs"><button v-for="tab in V12_SELECTION_TABS" :key="tab.key" :class="{ active: activeSelection === tab.key }" @tap="activeSelection = tab.key">{{ tab.label }}</button></view>
-    </view>
-    <view class="selection-intro"><text class="eyebrow">{{ copy[activeSelection].eyebrow }}</text><text class="selection-title">{{ copy[activeSelection].title }}</text><text class="selection-body">{{ copy[activeSelection].body }}</text></view>
-    <view v-for="(product,index) in products" :key="product.id" class="editorial-item">
-      <view class="editorial-photo" :class="['photo-'+index,'photo-'+activeSelection]"><image v-if="product.coverObjectKey" :src="product.coverObjectKey" mode="aspectFill" /><text>{{ product.tags[0] }}</text></view>
-      <view class="editorial-copy"><text class="eyebrow">{{ product.subtitle }}</text><text class="editorial-title">{{ product.name }}</text><text class="editorial-body">{{ description(product.id) }}</text><view class="selection-points"><text v-for="tag in product.tags" :key="tag">{{ tag }}</text></view></view>
-    </view>
+  <scroll-view scroll-y class="tab-page-scroll">
+    <view class="page-shell">
+      <view class="selection-top"><text class="eyebrow">SHANHE SELECTION</text>
+        <view class="selection-tabs"><button v-for="tab in V12_SELECTION_TABS" :key="tab.key" :class="{ active: activeSelection === tab.key }" @tap="activeSelection = tab.key">{{ tab.label }}</button></view>
+      </view>
+      <view class="selection-intro"><text class="eyebrow">{{ copy[activeSelection].eyebrow }}</text><text class="selection-title">{{ copy[activeSelection].title }}</text><text class="selection-body">{{ copy[activeSelection].body }}</text></view>
+      <view v-for="(product,index) in products" :key="product.id" class="editorial-item">
+        <view class="editorial-photo" :class="['photo-'+index,'photo-'+activeSelection]"><image v-if="product.coverObjectKey" :src="product.coverObjectKey" mode="aspectFill" /><text>{{ product.tags[0] }}</text></view>
+        <view class="editorial-copy"><text class="eyebrow">{{ product.subtitle }}</text><text class="editorial-title">{{ product.name }}</text><text class="editorial-body">{{ description(product.id) }}</text><view class="selection-points"><text v-for="tag in product.tags" :key="tag">{{ tag }}</text></view></view>
+      </view>
     <view v-if="activeSelection === 'brand'" class="editorial-item">
       <view class="editorial-photo gaolan-photo"><image src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80" mode="aspectFill" /><text>甘肃 · 皋兰</text></view>
       <view class="editorial-copy"><text class="eyebrow">甘肃 · 皋兰</text><text class="editorial-title">皋兰禾尚头挂面</text><text class="editorial-subline">本地麦香 · 筋道耐煮 · 家常面食</text><text class="editorial-body">禾尚头小麦是皋兰具有地域特色的小麦。做成挂面或长寿面一类面食时，我们更看重它自然的麦香、筋道口感和日常食用属性。山禾甄选会把这类真正扎根本地餐桌的东西放进来，而不是只追求稀有或猎奇。</text><view class="selection-points"><text>皋兰本地</text><text>麦香清楚</text><text>家常耐吃</text></view></view>
@@ -43,12 +44,13 @@ const copy = {
       <view class="editorial-photo seasonal-photo"><image src="https://n.sinaimg.cn/sinacn10107/36/w1024h612/20190407/d066-hvhrcxm5250136.jpg" mode="aspectFill" /><text>山野 · 时令</text></view>
       <view class="editorial-copy"><text class="eyebrow">山野 · 时令</text><text class="editorial-title">山野时令好物</text><text class="editorial-subline">跟着季节更新 · 不长期固定上架</text><text class="editorial-body">有些山野风物最好的时候很短，所以它们不适合被做成常年固定 SKU。这里会根据季节、产量、风味和供应稳定性更新：什么时候好吃，什么时候上；季节过去，就暂时下架。</text><view class="selection-points"><text>应季而选</text><text>来源清楚</text><text>少量更新</text></view></view>
     </view>
-    <view class="selection-note">甄选页呈现内容与入选理由，不显示价格或加购操作。</view>
-  </view>
+      <view class="selection-note">甄选页呈现内容与入选理由，不显示价格或加购操作。</view>
+    </view>
+  </scroll-view>
 </template>
 
 <style scoped>
-.page-shell { min-height: 100vh; padding: 36rpx 40rpx 60rpx; background: var(--v19-canvas); }
+.page-shell { min-height: 100%; padding: 36rpx 40rpx 60rpx; background: var(--v19-canvas); }
 .eyebrow { display: block; color: var(--v19-copper); font-size: 20rpx; line-height: 32rpx; letter-spacing: 3rpx; }
 .selection-top { padding: 18rpx 0 30rpx; }
 .selection-tabs { margin-top: 16rpx; display: flex; gap: 44rpx; border-bottom: 1px solid var(--v19-line); }
@@ -60,11 +62,11 @@ const copy = {
 .selection-title { display: block; margin: 12rpx 0; font-size: 39rpx; line-height: 56rpx; font-weight: 600; }
 .selection-body { display: block; color: var(--v19-ink-700); font-size: 25rpx; line-height: 42rpx; }
 .editorial-item { padding: 24rpx 0 40rpx; border-bottom: 1px solid var(--v19-line); }
-.editorial-photo { height: 390rpx; padding: 24rpx; position: relative; overflow: hidden; display: flex; align-items: flex-end; border-radius: 12rpx; color: white; background: linear-gradient(145deg,#a88a63,#405343); font-size: 22rpx; }
+.editorial-photo { height: 390rpx; padding: 24rpx; position: relative; overflow: hidden; display: flex; align-items: flex-end; border-radius: 12rpx; color: var(--v19-white); background: var(--v19-paper); font-size: 22rpx; }
 .editorial-photo image { position: absolute; inset: 0; width: 100%; height: 100%; }
 .editorial-photo text { position: relative; z-index: 1; text-shadow: 0 1px 5px #0009; }
-.editorial-photo.photo-1 { background: linear-gradient(145deg,#bea26d,#766142); }
-.editorial-photo.photo-season { background: linear-gradient(145deg,#859272,#374b3d); }
+.editorial-photo.photo-1 { background: var(--v19-brand-700); }
+.editorial-photo.photo-season { background: var(--v19-brand-800); }
 .editorial-copy { padding: 22rpx 0; }
 .editorial-title { display: block; margin: 8rpx 0 10rpx; font-size: 36rpx; font-weight: 600; }
 .editorial-subline { display: block; margin: 0 0 12rpx; color: var(--v19-muted); font-size: 21rpx; line-height: 34rpx; }

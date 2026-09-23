@@ -123,7 +123,7 @@ function addProductToCart() { if (!selectedProduct.value) return; addV19CartItem
 .admin-test-entry { min-height: 56rpx; padding: 0 13rpx; border: 1px solid var(--v19-line-strong); border-radius: 8rpx; color: var(--v19-brand-900); background: var(--v19-paper-light); font-size: 19rpx; white-space: nowrap; }
 .hero { height: 780rpx; margin: 0 40rpx; position: relative; overflow: hidden; display: flex; align-items: flex-end; border-radius: var(--v19-r-md); color: white; background-color: var(--v19-brand-900); background-size: cover; background-position: center; }
 .hero-copy { width: 100%; padding: 54rpx 48rpx; position: relative; z-index: 1; }
-.hero-eyebrow { color: #f0d7b7; }
+.hero-eyebrow { color: var(--v19-gold-light); }
 .hero-title { display: block; margin: 16rpx 0 20rpx; font-size: 62rpx; line-height: 1.28; font-weight: 600; letter-spacing: 2rpx; }
 .hero-summary { display: block; max-width: 500rpx; color: rgba(255,255,255,.88); font-size: 28rpx; line-height: 44rpx; }
 .hero-cta { min-height: 88rpx; margin-top: 36rpx; padding: 0 32rpx; display: flex; align-items: center; gap: 18rpx; border-radius: 16rpx; color: var(--v19-brand-900); background: var(--v19-paper-light); font-size: 26rpx; font-weight: 600; }

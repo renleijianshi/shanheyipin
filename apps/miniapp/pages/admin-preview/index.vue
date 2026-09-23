@@ -26,6 +26,25 @@ const homeImageSlots = [
 ] as const;
 const isContentPage = computed(() => ['首页图片', '自有商品', '山禾甄选', '本期甄选', '山野故事', '溯源内容'].includes(active.value));
 const visibleProducts = computed(() => state.value.products.filter(p => active.value === '自有商品' ? p.type === 'owned' : active.value === '山禾甄选' ? p.selection.includes('brand') : active.value === '本期甄选' ? p.selection.includes('season') : true));
+const report = computed(() => {
+  const products = state.value.products;
+  const total = products.length || 1;
+  const categoryRows = [
+    { label: '应季甄选', key: 'seasonal' },
+    { label: '礼盒', key: 'gift' },
+    { label: '山野好物', key: 'mountain' }
+  ].map(item => ({ ...item, count: products.filter(product => product.category === item.key).length }));
+  const maxCategory = Math.max(1, ...categoryRows.map(item => item.count));
+  return {
+    total: products.length,
+    live: products.filter(product => product.status === '上架').length,
+    owned: products.filter(product => product.type === 'owned').length,
+    curated: products.filter(product => product.selection.length > 0).length,
+    stories: state.value.stories.filter(story => story.status === '发布').length,
+    activeTraces: state.value.traces.filter(trace => trace.status === '启用').length,
+    categoryRows: categoryRows.map(item => ({ ...item, percent: Math.round(item.count / maxCategory * 100), share: Math.round(item.count / total * 100) }))
+  };
+});
 
 function refresh() { state.value = readV19Content(); }
 onShow(() => {
@@ -78,6 +97,27 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
         <template v-if="active === '工作台'">
           <view class="metric-grid"><view class="metric-card"><text>前台商品</text><text>{{ state.products.filter(x => x.status === '上架').length }}</text></view><view class="metric-card"><text>已发布故事</text><text>{{ state.stories.filter(x => x.status === '发布').length }}</text></view><view class="metric-card"><text>启用溯源</text><text>{{ state.traces.filter(x => x.status === '启用').length }}</text></view><view class="metric-card"><text>演示订单</text><text>—</text></view></view>
           <view class="todo-card"><text class="card-title">小程序前台内容</text><button @tap="open('首页图片')">管理首页图片 ›</button><button @tap="open('自有商品')">管理商品与甄选 ›</button><button @tap="open('山野故事')">管理山野故事 ›</button><button @tap="open('溯源内容')">管理批次溯源 ›</button></view>
+          <button class="report-link" @tap="open('数据报表')">查看内容与商品报表 <text>→</text></button>
+        </template>
+        <template v-else-if="active === '数据报表'">
+          <view class="report-lead"><text class="eyebrow">LOCAL PREVIEW DATA</text><text>只统计本机已保存的商品、故事与溯源演示资料。</text></view>
+          <view class="report-kpis">
+            <view class="report-kpi"><text class="report-kpi-title">在售商品</text><view class="report-kpi-value">{{ report.live }}<text class="report-kpi-denominator"> / {{ report.total }}</text></view><text class="report-hint">已上架 / 商品总数</text></view>
+            <view class="report-kpi"><text class="report-kpi-title">自有商品</text><view class="report-kpi-value">{{ report.owned }}</view><text class="report-hint">自有商品目录</text></view>
+            <view class="report-kpi"><text class="report-kpi-title">甄选内容</text><view class="report-kpi-value">{{ report.curated }}</view><text class="report-hint">已加入甄选栏目</text></view>
+            <view class="report-kpi"><text class="report-kpi-title">已发布故事</text><view class="report-kpi-value">{{ report.stories }}</view><text class="report-hint">启用溯源 {{ report.activeTraces }} 条</text></view>
+          </view>
+          <view class="report-grid">
+            <view class="report-panel"><view class="report-panel-head"><text>商品分类结构</text><text>{{ report.total }} 件</text></view>
+              <view v-for="row in report.categoryRows" :key="row.key" class="report-bar-row"><view class="report-bar-label"><text>{{ row.label }}</text><text>{{ row.count }} 件 · {{ row.share }}%</text></view><view class="report-track"><view :class="['report-fill', row.key]" :style="{ width: `${row.percent}%` }"></view></view></view>
+            </view>
+            <view class="report-panel report-status-panel"><view class="report-panel-head"><text>内容发布状态</text><text>本地预览</text></view>
+              <view class="report-status-row"><text class="status-dot live"></text><view><text class="report-status-name">商品上架</text><text class="report-status-caption">前台可见</text></view><text class="report-status-count">{{ report.live }}</text></view>
+              <view class="report-status-row"><text class="status-dot story"></text><view><text class="report-status-name">故事发布</text><text class="report-status-caption">故事页可见</text></view><text class="report-status-count">{{ report.stories }}</text></view>
+              <view class="report-status-row"><text class="status-dot trace"></text><view><text class="report-status-name">溯源启用</text><text class="report-status-caption">前台演示可见</text></view><text class="report-status-count">{{ report.activeTraces }}</text></view>
+            </view>
+          </view>
+          <view class="report-notice"><text>订单金额、销售趋势和转化率尚无线上订单/API 数据，接通后台后再展示真实经营报表。</text></view>
         </template>
         <template v-else-if="active === '首页图片'"><view class="action-card"><text>可保存首页主视觉、吊柿商品图和礼盒图地址；留空时使用页面默认视觉。</text><button class="primary" @tap="editImages">编辑首页图片</button></view></template>
         <template v-else-if="['自有商品','山禾甄选','本期甄选','商品中心'].includes(active)"><view class="action-row"><button class="primary" @tap="beginProduct(active === '自有商品' ? 'owned' : 'curated', active === '山禾甄选' ? 'brand' : active === '本期甄选' ? 'season' : undefined)">{{ active === '自有商品' ? '上传自有商品' : active === '商品中心' ? '新增商品' : '添加甄选内容' }}</button><text>保存后前台立即读取；甄选内容页不展示价格。</text></view><view v-for="p in visibleProducts" :key="p.id" class="record-card"><view><text class="record-title">{{ p.name }}</text><text class="record-copy">{{ p.subtitle }} · {{ p.status }} · {{ p.category }}</text></view><button @tap="toggleProduct(p)">{{ p.status === '上架' ? '下架' : '上架' }}</button></view><text v-if="!visibleProducts.length" class="empty">暂无内容</text></template>
@@ -126,6 +166,42 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
 </style>
 <style scoped>
 .admin-preview button { margin: 0; background: transparent; box-shadow: none; }
+.admin-preview { color: var(--v19-ink); background: var(--v19-canvas); }
+.admin-banner { color: var(--v19-canvas); background: var(--v19-brand-900); }
+.admin-avatar { color: var(--v19-brand-900); background: var(--v19-gold-light); }
+.preview-alert { border-color: var(--v19-line); color: var(--v19-brand-900); background: var(--v19-paper); }
+.metric-card, .todo-card, .action-card, .record-card { border-color: var(--v19-line); background: var(--v19-paper-light); }
+.admin-title, .card-title, .record-title { color: var(--v19-ink); }
+.admin-menu { background: var(--v19-brand-900); }
+.admin-menu button.active, .admin-preview .primary { background: var(--v19-brand-900); }
+.report-link { width: 100%; min-height: 54px; margin-top: 18px !important; padding: 0 16px !important; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--v19-line) !important; border-radius: 9px !important; color: var(--v19-brand-900); background: var(--v19-paper-light) !important; font-size: 14px; }
+.report-lead { margin: 4px 0 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; border-left: 3px solid var(--v19-copper); color: var(--v19-muted); background: var(--v19-paper); font-size: 13px; line-height: 1.55; }
+.report-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.report-kpi { min-height: 112px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--v19-line); border-radius: 10px; background: var(--v19-paper-light); }
+.report-kpi-title { color: var(--v19-muted); font-size: 12px; }
+.report-kpi-value { margin: 8px 0; color: var(--v19-brand-900); font-size: 26px; line-height: 1.1; }
+.report-kpi-denominator { color: var(--v19-muted); font-size: 13px; }
+.report-hint { color: var(--v19-muted); font-size: 11px; }
+.report-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
+.report-panel { min-width: 0; padding: 18px; border: 1px solid var(--v19-line); border-radius: 10px; background: var(--v19-paper-light); }
+.report-panel-head { margin-bottom: 16px; display: flex; justify-content: space-between; gap: 10px; color: var(--v19-ink); font-size: 14px; font-weight: 600; }
+.report-panel-head text:last-child { color: var(--v19-muted); font-size: 11px; font-weight: 400; }
+.report-bar-row { margin-top: 14px; }
+.report-bar-label { margin-bottom: 7px; display: flex; justify-content: space-between; gap: 10px; color: var(--v19-ink-700); font-size: 12px; }
+.report-bar-label text:last-child { color: var(--v19-muted); }
+.report-track { height: 8px; overflow: hidden; border-radius: 8px; background: var(--v19-brand-100); }
+.report-fill { height: 100%; border-radius: inherit; background: var(--v19-brand-700); transition: width .2s ease; }
+.report-fill.gift { background: var(--v19-copper); }
+.report-fill.mountain { background: var(--v19-brand-800); }
+.report-status-row { min-height: 55px; display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 11px; border-top: 1px solid var(--v19-line); }
+.report-status-row view { display: flex; flex-direction: column; gap: 3px; }
+.report-status-name { color: var(--v19-ink); font-size: 12px; }
+.report-status-caption { color: var(--v19-muted); font-size: 10px; }
+.report-status-count { color: var(--v19-brand-900); font-size: 18px; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--v19-brand-700); }
+.status-dot.story { background: var(--v19-copper); }
+.status-dot.trace { background: var(--v19-warning); }
+.report-notice { margin-top: 14px; padding: 13px 15px; border: 1px solid var(--v19-line); border-radius: 9px; color: var(--v19-muted); background: var(--v19-paper); font-size: 11px; line-height: 1.6; }
 .admin-preview button::after { border: 0; }
 .admin-preview button { transition: background-color .16s ease, color .16s ease, transform .16s ease; }
 .admin-preview button:active { transform: translateY(1rpx); }
@@ -152,6 +228,10 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
 .image-label { font-size: 22rpx; font-weight: 600; }
 .image-note { margin-top: 4rpx; color: var(--v19-muted); font-size: 17rpx; }
 @media (min-width: 600px) {
+  .report-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+  .report-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .report-kpi { min-height: 132px; padding: 18px; }
+  .report-kpi-value { font-size: 32px; }
   .editor-modal { height: min(86vh, 760px); }
   .modal-mask { align-items: center; justify-content: center; }
   .editor-modal { width: min(920px, calc(100vw - 48px)); max-height: calc(100vh - 64px); padding: 24px 28px; border-radius: 12px; }
