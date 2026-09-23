@@ -15,9 +15,9 @@
 | 项目 | 2026-09-23 实况 |
 | --- | --- |
 | 当前仓库 | `C:\Users\19993\Desktop\山禾颐品\daima`，`origin = https://github.com/renleijianshi/shanheyipin.git` |
-| 分支与检查时 HEAD | `feature/v13-frontend-fusion`；开始本次 V19 页面工作时为 `19ee256`，本次提交后补充新 HEAD |
+| 分支与检查时 HEAD | `feature/v13-frontend-fusion`，`04b2828`；跟踪 `origin/feature/v13-frontend-fusion` |
 | 检查开始时工作树 | 本次任务开始前工作树干净；本次新增 V19 uni-app 页面、标准工程入口与迁移说明 |
-| 远程同步 | 2026-09-23 已为本仓库配置 `http://127.0.0.1:7897` Git 代理；开发分支与默认 `main` 均通过 `git ls-remote` 核对为 `205896e`。后续每次提交仍须实际推送并核对；代理未运行或网络中断时不能宣称同步 |
+| 远程同步 | 本次 `04b2828` 已推送 `feature/v13-frontend-fusion` 与 `main`；`git ls-remote` 两个分支都核对为 `04b2828353081b40ff4117dadcaed11dcfa092a5`。 |
 | 代码规模证据 | 16 个 Prisma migration；API 22 个、miniapp 4 个、admin 2 个测试文件 |
 | 本机验证 | 本次 `npm run lint`、`npm run typecheck:uni --workspace @shanheyipin/miniapp` 通过；Node 22 下直接以 Vite 编译 H5 通过；`build:mp-weixin` 仍失败 |
 | 验证边界 | 本次未运行全仓测试；未在微信开发者工具验收，未验证真实商品/API、素材授权、购物车端到端或生产部署 |
