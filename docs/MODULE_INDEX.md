@@ -22,7 +22,8 @@
 | M18 采购 | 已完成（领域层） | `apps/api/src/modules/procurement/`, `apps/api/prisma/` | `tasks/M18_采购.md`, `docs/07_商品采购仓储库存设计.md` |
 | M19 到货 | 已完成（领域层） | `apps/api/src/modules/procurement/`, `apps/api/prisma/` | `tasks/M19_到货.md`, `docs/07_商品采购仓储库存设计.md` |
 | M20 质检 | 已完成（领域层） | `apps/api/src/modules/procurement/`, `apps/api/prisma/` | `tasks/M20_质检.md`, `docs/07_商品采购仓储库存设计.md` |
-| 小程序 V19 页面 | 进行中（V19 页面与本机后台联动预览已实现；线上 API/管理后台未接） | `apps/miniapp/pages/`, `apps/miniapp/src/v19-content-store.ts` | `apps/miniapp/README.md`, `apps/miniapp/src/v12-ui-model.ts`, `apps/miniapp/src/v12-ports.ts` |
+| 小程序 V19 页面 | 进行中（首页、分类、甄选、商品详情、购物车、我的、地址、故事、溯源均有正式 uni-app 页面并统一主要视觉；本机后台预览可联动，线上 API 未接） | `apps/miniapp/pages/`, `apps/miniapp/src/v19-content-store.ts` | `apps/miniapp/README.md`, `DESIGN.md`, `apps/miniapp/src/v12-ui-model.ts`, `apps/miniapp/src/v12-ports.ts` |
+| 独立运营后台 UI | 进行中（Vue/Vite 工作台、商品列表/编辑、分类界面已建立；服务端管理 HTTP API 与认证尚未实现） | `apps/admin/web/`, `apps/admin/src/` | `apps/admin/README.md`, `DESIGN.md`, `docs/06_API设计规范.md` |
 | M21-M22/M25-M29 批次、仓库、加工 | 待开始 | `apps/api/src/modules/` 对应供应链目录 | `docs/07_商品采购仓储库存设计.md` |
 | M23-M24 库存余额/流水 | 已完成 | `apps/api/src/modules/inventory/`, `apps/api/prisma/` | `tasks/M23_库存余额.md`, `tasks/M24_库存流水.md`, `docs/07_商品采购仓储库存设计.md` |
 | M30-M32 售后/退款/补发 | 已完成 | `apps/api/src/modules/aftersales/`, `apps/api/src/modules/refunds/`, `apps/api/prisma/` | `tasks/M30_售后.md`, `tasks/M31_退款.md`, `tasks/M32_补发.md` |

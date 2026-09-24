@@ -57,7 +57,8 @@
 - `2026-09-23`：为分类、甄选、购物车、我的、故事、溯源补内部滚动；故事和溯源增加可见返回入口；详情抽屉改为固定 75vh 并固定显示价格/加入购物车；后台增加本地商品与内容报表；收敛商品占位色至 V19 配色。
 - `2026-09-24`：建立 V19 语义颜色、间距、字号、圆角、动效和后台导航 token；优化商品图缺失时的品牌占位、分类空状态、详情说明区滚动（购买栏固定）、后台侧栏滑动提示和商品编辑表单样式。详见根目录 `DESIGN.md`。
 - `2026-09-24`：将语义 token 与品牌层级延伸到甄选、购物车、山野故事、扫码溯源和收货地址；购物车明确标示暂不支持真实结算、溯源记录分区呈现批次/产地/收货/包装/质检信息；故事及甄选无发布内容时显示明确空状态，地址和步进操作扩大触控区域。仅调整展示与反馈，不改变本机预览数据流程。
-- 验证：`npm run lint`、`npm run typecheck:uni --workspace @shanheyipin/miniapp`、`npm test -- apps/miniapp/test`（4 个测试文件、8 项测试）通过；设置 `UNI_INPUT_DIR=.` 后 Vite H5 构建通过。package script 默认入口目录不匹配导致直接 CLI build 报错，仍需修正统一启动脚本。微信构建/真机尚未验收。
+- `2026-09-24`：修正仓库 TypeScript 项目配置，将已被 V19 内容层引入的根级 `preview-products.ts` 明确纳入 miniapp project 并配置页面类型映射，令根 `npm run typecheck` 可以完成。
+- 验证：`npm run lint`、`npm run typecheck:uni --workspace @shanheyipin/miniapp`、`npm test -- apps/miniapp/test`（4 个测试文件、8 项测试）通过；设置 `UNI_INPUT_DIR=.` 后 Vite H5 构建通过。`npm run build:mp-weixin` 仍在加载 `vite.config.mts` 时因 `estree-walker` package exports 兼容失败；manifest AppID 仍为空，微信真机尚未验收。
 
 ## 本机运行
 
