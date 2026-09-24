@@ -1,6 +1,6 @@
 # MODULE_INDEX
 
-> 2026-09-24 上线审计：下表“已完成”表示既有代码层实现，不等同于产品上线验收。前后台/HTTP/数据库/真机差距以 `docs/LAUNCH_READINESS_PLAN.md` 为准。后台认证/RBAC、商品/SPU/SKU/分类与公开 catalog HTTP 已装配；小程序首页/分类/详情已接公开 catalog client，真实 MySQL 联调未完成；订单库存预占仍未接通。
+> 2026-09-25 更新：下表“已完成”表示对应层代码实现，不等同于产品上线验收。商品分类/详情和山野志文章切片已在隔离 MySQL、API、后台与 H5 实际联调；M37 视频/专题、微信真机及生产部署未验收。详情见 `docs/PROJECT_STATE.md` 与 `docs/LAUNCH_READINESS_PLAN.md`。
 
 | 模块 | 状态 | 主要位置 | 相关文档 |
 |---|---|---|---|
@@ -24,12 +24,13 @@
 | M18 采购 | 已完成（领域层） | `apps/api/src/modules/procurement/`, `apps/api/prisma/` | `tasks/M18_采购.md`, `docs/07_商品采购仓储库存设计.md` |
 | M19 到货 | 已完成（领域层） | `apps/api/src/modules/procurement/`, `apps/api/prisma/` | `tasks/M19_到货.md`, `docs/07_商品采购仓储库存设计.md` |
 | M20 质检 | 已完成（领域层） | `apps/api/src/modules/procurement/`, `apps/api/prisma/` | `tasks/M20_质检.md`, `docs/07_商品采购仓储库存设计.md` |
-| 小程序 V19 页面 | 进行中（首页/分类/详情已接公开商品 HTTP 和 SKU 资料；本机 API 不可用时显示错误，不回退样例商品；甄选/故事/溯源/购物车/账户地址显示未开放；MySQL 联调、素材域名和真机未验收） | `apps/miniapp/pages/`, `apps/miniapp/src/public-catalog-port.ts`, `public-media-url.ts` | `apps/miniapp/README.md`, `DESIGN.md`, `docs/LAUNCH_READINESS_PLAN.md` |
-| 独立运营后台 UI | 进行中（工作台、商品/SPU/SKU/分类界面、管理 HTTP、会话和 RBAC 已实现；真实 MySQL 登录/写操作未验收；本机预览只读且标注演示） | `apps/admin/web/`, `apps/api/src/modules/admin/` | `apps/admin/README.md`, `docs/LAUNCH_READINESS_PLAN.md` |
+| 小程序 V19 页面 | 进行中（首页/分类/详情与山野故事列表/正文读取隔离内测 API；首页底部“山禾好物”模块和请求已删除；甄选/溯源/交易未开放；微信真机与生产域名未验） | `apps/miniapp/pages/`, `apps/miniapp/src/public-catalog-port.ts`, `apps/miniapp/src/public-content-port.ts` | `apps/miniapp/README.md`, `DESIGN.md`, `docs/LAUNCH_READINESS_PLAN.md` |
+| 独立运营后台 UI | 进行中（商品管理在隔离 MySQL 可写联调；文章草稿/发布/撤回按服务端 RBAC 接通；视频/专题及其他运营模块待接） | `apps/admin/web/`, `apps/api/src/modules/admin/`, `apps/api/src/modules/content/` | `apps/admin/README.md`, `docs/LAUNCH_READINESS_PLAN.md` |
 | M21-M22/M25-M29 批次、仓库、加工 | 待开始 | `apps/api/src/modules/` 对应供应链目录 | `docs/07_商品采购仓储库存设计.md` |
 | M23-M24 库存余额/流水 | 已完成 | `apps/api/src/modules/inventory/`, `apps/api/prisma/` | `tasks/M23_库存余额.md`, `tasks/M24_库存流水.md`, `docs/07_商品采购仓储库存设计.md` |
 | M30-M32 售后/退款/补发 | 已完成 | `apps/api/src/modules/aftersales/`, `apps/api/src/modules/refunds/`, `apps/api/prisma/` | `tasks/M30_售后.md`, `tasks/M31_退款.md`, `tasks/M32_补发.md` |
-| M33-M42 增长/内容/溯源/B2B | 待开始 | 对应业务模块 | `docs/09_会员营销内容溯源企业团购.md` |
+| M33-M36 / M38-M42 增长、溯源与 B2B | 待开始 | 对应业务模块 | `docs/09_会员营销内容溯源企业团购.md` |
+| M37 山野志内容 | 进行中：文章后台、RBAC、公开列表/详情与持久化已在内测库联调；视频上传/播放和专题未接，桌面故事管理布局未验 | `apps/api/src/modules/content/`, `apps/admin/web/components/StoriesWorkspace.vue`, `apps/miniapp/pages/story/` | `tasks/M37_山野志内容.md`, `docs/09_会员营销内容溯源企业团购.md` |
 | M43-M46 报表/安全/测试/部署 | 待开始 | `apps/api/src/analytics`, `infra/`, `.github/` | `docs/10_运营后台数据报表.md`, `docs/11_安全合规部署运维.md`, `docs/12_测试验收与里程碑.md` |
 
 读取规则：先按模块定位本表，只读对应任务、1-3 份文档和相关代码/测试。

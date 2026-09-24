@@ -13,6 +13,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      '/media': { target: 'http://127.0.0.1:3200', changeOrigin: true },
       '/api': { target: 'http://127.0.0.1:3200', changeOrigin: true }
     }
   }

@@ -57,6 +57,7 @@ function formatPrice(cents: number): string {
             </button>
           </view>
           <text class="sheet-body">{{ detail.content }}</text>
+          <image v-for="photo in detail.images" :key="photo.objectKey" class="detail-image" :src="resolvePublicMediaUrl(photo.objectKey)" :alt="photo.altText || product.name" mode="widthFix" />
         </template>
         <view v-else class="sheet-state">商品详情尚未加载。</view>
       </scroll-view>
@@ -96,6 +97,7 @@ function formatPrice(cents: number): string {
 .sku-specs { color: var(--color-text-secondary); font-size: 18rpx; }
 .sku-price { color: var(--color-accent); font-size: 20rpx; font-weight: 600; }
 .sheet-body { display: block; white-space: pre-line; }
+.detail-image { display: block; width: 100%; height: auto; margin-top: 20rpx; border-radius: var(--radius-control); }
 .sheet-meta { margin: 10rpx 0 6rpx; padding: 12rpx 0; display: grid; grid-template-columns: 1fr 1fr; gap: 24rpx; border-top: 1px solid var(--v19-line); border-bottom: 1px solid var(--v19-line); }
 .sheet-meta view { display: flex; flex-direction: column; gap: 8rpx; }
 .sheet-meta text, .sheet-footer view text { color: var(--v19-muted); font-size: var(--type-caption); }

@@ -25,9 +25,12 @@ export interface ProductInput {
 export interface Product extends ProductInput {
   readonly id: string;
   readonly publicId: string;
+  readonly archivedAt?: string | null;
 }
 
 export interface ProductListQuery {
+  readonly archived?: boolean;
+  readonly keyword?: string;
   readonly page: number;
   readonly pageSize: number;
   readonly status?: ProductStatus;
@@ -40,6 +43,7 @@ export interface ProductListResult {
 }
 
 export interface ProductRepository {
+  setArchived(id: string, archived: boolean): Promise<Product>;
   findCategory(id: string): Promise<{ readonly id: string; readonly status: 'ENABLED' | 'DISABLED' } | null>;
   create(input: ProductInput): Promise<Product>;
   update(id: string, input: ProductInput): Promise<Product>;
@@ -61,10 +65,18 @@ export class AdminProductService {
 
   async update(id: string, input: ProductInput): Promise<Product> {
     validateId(id, 'product');
-    if (!(await this.products.findById(id))) throw new Error('Product not found');
+    const existing = await this.products.findById(id);
+    if (!existing) throw new Error('Product not found');
+    if (existing.archivedAt) throw new Error('Invalid operation: restore archived product before editing');
     const valid = validateProduct(input);
     await this.assertCategory(valid);
     return this.products.update(id, valid);
+  }
+
+  async setArchived(id: string, archived: boolean): Promise<Product> {
+    validateId(id, 'product');
+    if (!(await this.products.findById(id))) throw new Error('Product not found');
+    return this.products.setArchived(id, archived);
   }
 
   async get(id: string): Promise<Product> {
@@ -75,6 +87,7 @@ export class AdminProductService {
   }
 
   async list(query: ProductListQuery): Promise<ProductListResult> {
+    if (query.keyword !== undefined && query.keyword.length > 100) throw new Error('Invalid product search keyword');
     if (!Number.isInteger(query.page) || query.page < 1) throw new Error('Invalid product page');
     if (!Number.isInteger(query.pageSize) || query.pageSize < 1 || query.pageSize > 100) {
       throw new Error('Invalid product page size');

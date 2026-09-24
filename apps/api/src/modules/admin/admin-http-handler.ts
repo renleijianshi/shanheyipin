@@ -7,8 +7,12 @@ import type { AdminProductService, ProductInput, ProductStatus } from '../catalo
 import type { PublicCatalogService } from '../catalog/catalog-query-service.js';
 import type { PublicCategoryService } from '../catalog/category-service.js';
 import type { AdminSkuService, SkuInput, SkuSaleStatus } from '../catalog/sku-service.js';
+import type { LocalMediaStore } from '../catalog/local-media-store.js';
+import type { AdminStoryService, StoryContentType, StoryInput, StoryStatus } from '../content/story-service.js';
 
 export interface AdminHttpServices {
+  readonly media?: LocalMediaStore;
+  readonly stories?: AdminStoryService;
   readonly auth: AdminAuthService;
   readonly products: AdminProductService;
   readonly categories: AdminCategoryService;
@@ -33,9 +37,17 @@ export function createAdminHttpHandler(services: AdminHttpServices) {
     response.setHeader('X-Content-Type-Options', 'nosniff');
     try {
       const url = new URL(request.url ?? '/', 'http://127.0.0.1');
+      if (url.pathname.startsWith('/media/') && request.method === 'GET' && services.media) {
+        const file = await services.media.read(decodeURIComponent(url.pathname.slice('/media/'.length)));
+        if (!file) { send(response, 404, { code: 404, message: 'Not found', data: null, requestId }); return; }
+        response.setHeader('Content-Type', file.contentType);
+        response.setHeader('Cache-Control', 'public, max-age=3600');
+        response.writeHead(200).end(file.data); return;
+      }
       if (request.method === 'OPTIONS') { response.writeHead(204, { Allow: 'GET, POST, PUT, PATCH, DELETE, OPTIONS' }).end(); return; }
       if (url.pathname === '/health' && request.method === 'GET') { send(response, 200, { code: 0, message: 'ok', data: { service: 'api', status: 'ok' }, requestId }); return; }
       if (await handlePublicCatalog(request, response, url, services, requestId)) return;
+      if (await handlePublicStories(request, response, url, services.stories, requestId)) return;
       if (!url.pathname.startsWith('/api/v1/admin/')) { send(response, 404, { code: 404, message: 'Not found', data: null, requestId }); return; }
 
       const token = bearerToken(request.headers.authorization);
@@ -46,6 +58,12 @@ export function createAdminHttpHandler(services: AdminHttpServices) {
       }
       const principal = await services.auth.authenticate(token);
       if (!principal) { send(response, 401, { code: 401, message: '需要管理账号授权', data: null, requestId }); return; }
+      if (url.pathname === '/api/v1/admin/media' && request.method === 'POST') {
+        requireAnyPermission(principal, ['catalog.product.write', 'content.story.write']);
+        if (!services.media) throw new Error('Media storage not configured');
+        const body = await readBody(request, 7_000_000);
+        send(response, 201, { code: 0, message: 'ok', data: await services.media.upload(requiredText(body.base64)), requestId }); return;
+      }
       if (url.pathname === '/api/v1/admin/auth/logout' && request.method === 'POST') {
         await services.auth.logout(token); send(response, 200, { code: 0, message: 'ok', data: null, requestId }); return;
       }
@@ -63,6 +81,7 @@ export function createAdminHttpHandler(services: AdminHttpServices) {
       if (path[0] === 'products') { await handleProducts(request, response, url, path, principal, services.products, services.skus, requestId); return; }
       if (path[0] === 'skus') { await handleSkus(request, response, url, path, principal, services.skus, requestId); return; }
       if (path[0] === 'categories') { await handleCategories(request, response, path, principal, services.categories, requestId); return; }
+      if (path[0] === 'stories') { await handleStories(request, response, url, path, principal, services.stories, requestId); return; }
       send(response, 404, { code: 404, message: 'Not found', data: null, requestId });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Internal server error';
@@ -70,6 +89,71 @@ export function createAdminHttpHandler(services: AdminHttpServices) {
       const safeMessage = status >= 500 ? '服务器暂时无法处理请求' : message;
       send(response, status, { code: status, message: safeMessage, data: null, requestId });
     }
+  };
+}
+
+async function handlePublicStories(request: IncomingMessage, response: ServerResponse, url: URL, stories: AdminStoryService | undefined, requestId: string): Promise<boolean> {
+  if (request.method !== 'GET' || !stories) return false;
+  if (url.pathname === '/api/v1/stories') {
+    send(response, 200, { code: 0, message: 'ok', data: (await stories.listPublished()).map(story => toPublicStory(story)), requestId }); return true;
+  }
+  const match = url.pathname.match(/^\/api\/v1\/stories\/([^/]+)$/);
+  if (!match?.[1]) return false;
+  const story = await stories.getPublished(decodeURIComponent(match[1]));
+  if (!story) { send(response, 404, { code: 404, message: 'Not found', data: null, requestId }); return true; }
+  send(response, 200, { code: 0, message: 'ok', data: toPublicStory(story, true), requestId }); return true;
+}
+
+function toPublicStory(story: NonNullable<Awaited<ReturnType<AdminStoryService['getPublished']>>>, includeBody = false) {
+  return {
+    id: story.publicId, contentType: story.contentType, title: story.title, summary: story.summary,
+    coverObjectKey: story.coverObjectKey, publishedAt: story.publishedAt, relatedProduct: story.relatedProduct,
+    ...(includeBody ? { body: story.body } : {})
+  };
+}
+
+async function handleStories(request: IncomingMessage, response: ServerResponse, url: URL, path: string[], principal: AdminSessionPrincipal, stories: AdminStoryService | undefined, requestId: string): Promise<void> {
+  if (!stories) throw new Error('Story service not configured');
+  const id = path[1];
+  if (!id && request.method === 'GET') {
+    requirePermission(principal, 'content.story.read');
+    const data = await stories.listAdmin({
+      page: positiveInteger(url.searchParams.get('page'), 1),
+      pageSize: positiveInteger(url.searchParams.get('pageSize'), 20),
+      ...(url.searchParams.has('keyword') ? { keyword: url.searchParams.get('keyword')!.trim() } : {}),
+      ...(url.searchParams.has('status') ? { status: storyStatus(url.searchParams.get('status')) } : {}),
+      ...(url.searchParams.has('contentType') ? { contentType: storyContentType(url.searchParams.get('contentType')) } : {})
+    });
+    send(response, 200, { code: 0, message: 'ok', data, requestId }); return;
+  }
+  if (!id && request.method === 'POST') {
+    requirePermission(principal, 'content.story.write');
+    send(response, 201, { code: 0, message: 'ok', data: await stories.create(await storyInput(await readBody(request))), requestId }); return;
+  }
+  if (id && path.length === 2 && request.method === 'GET') {
+    requirePermission(principal, 'content.story.read');
+    send(response, 200, { code: 0, message: 'ok', data: await stories.get(id), requestId }); return;
+  }
+  if (id && path.length === 2 && (request.method === 'PUT' || request.method === 'PATCH')) {
+    requirePermission(principal, 'content.story.write');
+    send(response, 200, { code: 0, message: 'ok', data: await stories.update(id, await storyInput(await readBody(request))), requestId }); return;
+  }
+  if (id && path.length === 3 && path[2] === 'publish' && request.method === 'POST') {
+    requirePermission(principal, 'content.story.write');
+    send(response, 200, { code: 0, message: 'ok', data: await stories.publish(id), requestId }); return;
+  }
+  if (id && path.length === 3 && path[2] === 'withdraw' && request.method === 'POST') {
+    requirePermission(principal, 'content.story.write');
+    send(response, 200, { code: 0, message: 'ok', data: await stories.withdraw(id), requestId }); return;
+  }
+  send(response, 404, { code: 404, message: 'Not found', data: null, requestId });
+}
+
+async function storyInput(body: Record<string, unknown>): Promise<StoryInput> {
+  return {
+    contentType: storyContentType(body.contentType), title: requiredText(body.title), summary: requiredText(body.summary),
+    body: requiredText(body.body), coverObjectKey: requiredText(body.coverObjectKey),
+    relatedProductPublicId: nullableText(body.relatedProductPublicId), sortOrder: numberValue(body.sortOrder)
   };
 }
 
@@ -108,7 +192,7 @@ async function handleProducts(
     const pageSize = positiveInteger(url.searchParams.get('pageSize'), 20);
     const status = url.searchParams.get('status') as ProductStatus | null;
     const categoryId = url.searchParams.get('categoryId') ?? undefined;
-    const data = await products.list({ page, pageSize, ...(status ? { status } : {}), ...(categoryId ? { categoryId } : {}) });
+    const data = await products.list({ page, pageSize, archived: url.searchParams.get('archived') === 'true', keyword: url.searchParams.get('keyword')?.trim() ?? '', ...(status ? { status } : {}), ...(categoryId ? { categoryId } : {}) });
     send(response, 200, { code: 0, message: 'ok', data, requestId }); return;
   }
   if (!id && request.method === 'POST') {
@@ -119,6 +203,11 @@ async function handleProducts(
   if (id && path.length === 2 && request.method === 'GET') {
     requirePermission(principal, 'catalog.product.read');
     send(response, 200, { code: 0, message: 'ok', data: await products.get(id), requestId }); return;
+  }
+  if (id && ((path.length === 2 && request.method === 'DELETE') || (path.length === 3 && path[2] === 'restore' && request.method === 'POST'))) {
+    requirePermission(principal, 'catalog.product.write');
+    const data = await products.setArchived(id, request.method === 'DELETE');
+    send(response, 200, { code: 0, message: 'ok', data, requestId }); return;
   }
   if (id && path[2] === 'skus' && path.length === 3 && request.method === 'GET') {
     requirePermission(principal, 'catalog.product.read');
@@ -210,12 +299,12 @@ async function skuInput(body: Record<string, unknown>, productId: string): Promi
   };
 }
 
-async function readBody(request: IncomingMessage): Promise<Record<string, unknown>> {
+async function readBody(request: IncomingMessage, maxBytes = MAX_BODY_BYTES): Promise<Record<string, unknown>> {
   const chunks: Buffer[] = []; let size = 0;
   for await (const chunk of request) {
     const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
     size += buffer.length;
-    if (size > MAX_BODY_BYTES) throw new Error('Request body too large');
+    if (size > maxBytes) throw new Error('Invalid request: body too large');
     chunks.push(buffer);
   }
   if (!size) return {};
@@ -231,6 +320,9 @@ function bearerToken(value: string | undefined): string | null {
 function requirePermission(principal: AdminSessionPrincipal, permission: string): void {
   if (!isAdminAuthorized({ status: 'active', permissions: principal.permissions }, [permission])) throw new Error('Permission denied');
 }
+function requireAnyPermission(principal: AdminSessionPrincipal, permissions: readonly string[]): void {
+  if (!permissions.some(permission => isAdminAuthorized({ status: 'active', permissions: principal.permissions }, [permission]))) throw new Error('Permission denied');
+}
 function positiveInteger(value: string | null, fallback: number): number {
   if (value === null) return fallback;
   const parsed = Number(value);
@@ -242,6 +334,8 @@ function nullableText(value: unknown): string | null { if (value === null || val
 function numberValue(value: unknown): number { if (typeof value !== 'number' || !Number.isFinite(value)) throw new Error('Invalid number field'); return value; }
 function categoryStatus(value: unknown): 'ENABLED' | 'DISABLED' { if (value !== 'ENABLED' && value !== 'DISABLED') return invalid('Invalid category status'); return value; }
 function productStatus(value: unknown): ProductStatus { if (value !== 'DRAFT' && value !== 'ON_SALE' && value !== 'OFF_SALE') return invalid('Invalid product status'); return value; }
+function storyStatus(value: unknown): StoryStatus { if (value !== 'DRAFT' && value !== 'PUBLISHED' && value !== 'WITHDRAWN') return invalid('Invalid story status'); return value; }
+function storyContentType(value: unknown): StoryContentType { if (value !== 'ORIGIN' && value !== 'CRAFT' && value !== 'PEOPLE' && value !== 'PRODUCT_KNOWLEDGE' && value !== 'USAGE' && value !== 'STORAGE' && value !== 'BRAND' && value !== 'GIFTING') return invalid('Invalid story content type'); return value; }
 function isRecord(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === 'object' && !Array.isArray(value); }
 function invalid(message: string): never { throw new Error(message); }
 function send(response: ServerResponse, status: number, body: unknown): void { response.writeHead(status).end(JSON.stringify(body)); }

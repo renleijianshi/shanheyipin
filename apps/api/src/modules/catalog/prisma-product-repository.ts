@@ -35,9 +35,11 @@ export class PrismaProductRepository implements ProductRepository {
     return this.prisma.$transaction(async (tx) => {
       const productId = BigInt(id);
       await tx.$queryRaw`SELECT id FROM products WHERE id = ${productId} FOR UPDATE`;
-      if (!(await tx.product.findUnique({ where: { id: productId }, select: { id: true } }))) {
+      const current = await tx.product.findUnique({ where: { id: productId }, select: { id: true, archivedAt: true } });
+      if (!current) {
         throw new Error('Product not found');
       }
+      if (current.archivedAt) throw new Error('Invalid operation: restore archived product before editing');
       await requireValidCategory(tx, input);
       await tx.productMedia.deleteMany({ where: { productId } });
       await tx.productTag.deleteMany({ where: { productId } });
@@ -53,9 +55,10 @@ export class PrismaProductRepository implements ProductRepository {
   }
 
   async list(query: ProductListQuery): Promise<ProductListResult> {
-    const where: Prisma.ProductWhereInput = {};
+    const where: Prisma.ProductWhereInput = { archivedAt: query.archived ? { not: null } : null };
     if (query.status !== undefined) where.status = query.status;
     if (query.categoryId !== undefined) where.categoryId = BigInt(query.categoryId);
+    if (query.keyword) where.OR = [{ name: { contains: query.keyword } }, { publicId: { contains: query.keyword } }, { origin: { contains: query.keyword } }];
     const [rows, total] = await this.prisma.$transaction([
       this.prisma.product.findMany({
         where, include: productInclude,
@@ -65,6 +68,19 @@ export class PrismaProductRepository implements ProductRepository {
       this.prisma.product.count({ where })
     ]);
     return { items: rows.map(toProduct), total };
+  }
+
+  async setArchived(id: string, archived: boolean): Promise<Product> {
+    return this.prisma.$transaction(async tx => {
+      const productId = BigInt(id);
+      await tx.$queryRaw`SELECT id FROM products WHERE id = ${productId} FOR UPDATE`;
+      const row = await tx.product.findUnique({ where: { id: productId } });
+      if (!row) throw new Error('Product not found');
+      return toProduct(await tx.product.update({ where: { id: productId }, data: {
+        archivedAt: archived ? row.archivedAt ?? new Date() : null,
+        status: archived || row.archivedAt ? 'OFF_SALE' : row.status
+      }, include: productInclude }));
+    });
   }
 }
 
@@ -101,6 +117,7 @@ function toUpdateData(input: ProductInput): Prisma.ProductUpdateInput {
 function toProduct(row: ProductRecord): Product {
   return {
     id: row.id.toString(), publicId: row.publicId, categoryId: row.categoryId.toString(),
+    archivedAt: row.archivedAt?.toISOString() ?? null,
     name: row.name, subtitle: row.subtitle, productType: row.productType,
     content: row.content, origin: row.origin, sortOrder: row.sortOrder, status: row.status,
     media: row.media.map((item) => ({

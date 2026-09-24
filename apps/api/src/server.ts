@@ -11,12 +11,17 @@ import { PublicCatalogService } from './modules/catalog/catalog-query-service.js
 import { PrismaCatalogQueryRepository } from './modules/catalog/prisma-catalog-query-repository.js';
 import { AdminSkuService } from './modules/catalog/sku-service.js';
 import { PrismaSkuRepository } from './modules/catalog/prisma-sku-repository.js';
+import { LocalMediaStore } from './modules/catalog/local-media-store.js';
+import { AdminStoryService } from './modules/content/story-service.js';
+import { PrismaStoryRepository } from './modules/content/prisma-story-repository.js';
 
 try { process.loadEnvFile(); } catch { /* environment may be supplied by the process manager */ }
 
 const prisma = new PrismaClient();
 const handler = createAdminHttpHandler({
+  ...(process.env.MEDIA_STORAGE_DIR ? { media: new LocalMediaStore(process.env.MEDIA_STORAGE_DIR) } : {}),
   auth: new AdminAuthService(new PrismaAdminAuthRepository(prisma)),
+  stories: new AdminStoryService(new PrismaStoryRepository(prisma)),
   products: new AdminProductService(new PrismaProductRepository(prisma)),
   categories: new AdminCategoryService(new PrismaCategoryRepository(prisma)),
   skus: new AdminSkuService(new PrismaSkuRepository(prisma)),

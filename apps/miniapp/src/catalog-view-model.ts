@@ -15,6 +15,7 @@ export interface ProductCardView {
 }
 
 export interface ProductDetailView extends ProductCardView {
+  readonly images: readonly { readonly objectKey: string; readonly altText: string | null }[];
   readonly content: string;
   readonly origin: string | null;
   readonly selectedSkuId: string;
@@ -61,6 +62,7 @@ export function toProductDetailView(product: PublicProductDetail): ProductDetail
   if (!selectedSku) throw new Error('Product detail requires an on-sale SKU');
   return {
     ...toProductCardView(product),
+    images: product.media.filter(media => media.type === 'IMAGE').map(media => ({ objectKey: media.objectKey, altText: media.altText })),
     content: product.content,
     origin: product.origin,
     selectedSkuId: selectedSku.id,

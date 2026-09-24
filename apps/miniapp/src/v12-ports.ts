@@ -45,14 +45,20 @@ export interface CartPort {
 export interface StorySummary {
   readonly id: string;
   readonly title: string;
-  readonly type: 'ORIGIN' | 'PERSON' | 'CRAFT' | 'BRAND' | 'VIDEO';
-  readonly origin: string | null;
+  readonly contentType: 'ORIGIN' | 'CRAFT' | 'PEOPLE' | 'PRODUCT_KNOWLEDGE' | 'USAGE' | 'STORAGE' | 'BRAND' | 'GIFTING';
   readonly summary: string;
   readonly coverObjectKey: string | null;
+  readonly publishedAt: string | null;
+  readonly relatedProduct: { readonly publicId: string; readonly name: string; readonly coverObjectKey: string | null } | null;
+}
+
+export interface StoryDetail extends StorySummary {
+  readonly body: string;
 }
 
 export interface ContentPort {
   listStories(): Promise<readonly StorySummary[]>;
+  getStory(publicId: string): Promise<StoryDetail>;
 }
 
 export interface TraceSummary {

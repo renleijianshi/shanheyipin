@@ -1,0 +1,21 @@
+CREATE TABLE `stories` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `public_id` VARCHAR(36) NOT NULL,
+  `content_type` ENUM('ORIGIN', 'CRAFT', 'PEOPLE', 'PRODUCT_KNOWLEDGE', 'USAGE', 'STORAGE', 'BRAND', 'GIFTING') NOT NULL,
+  `title` VARCHAR(120) NOT NULL,
+  `summary` VARCHAR(300) NOT NULL,
+  `body` LONGTEXT NOT NULL,
+  `cover_object_key` VARCHAR(255) NOT NULL,
+  `related_product_id` BIGINT NULL,
+  `status` ENUM('DRAFT', 'PUBLISHED', 'WITHDRAWN') NOT NULL DEFAULT 'DRAFT',
+  `sort_order` INT UNSIGNED NOT NULL DEFAULT 0,
+  `published_at` DATETIME(3) NULL,
+  `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updated_at` DATETIME(3) NOT NULL,
+  UNIQUE INDEX `stories_public_id_key` (`public_id`),
+  INDEX `stories_status_sort_order_published_at_idx` (`status`, `sort_order`, `published_at`),
+  INDEX `stories_content_type_status_idx` (`content_type`, `status`),
+  INDEX `stories_related_product_id_idx` (`related_product_id`),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `stories_related_product_id_fkey` FOREIGN KEY (`related_product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

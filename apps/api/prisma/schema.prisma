@@ -48,6 +48,23 @@ enum ProductMediaType {
   VIDEO
 }
 
+enum StoryContentType {
+  ORIGIN
+  CRAFT
+  PEOPLE
+  PRODUCT_KNOWLEDGE
+  USAGE
+  STORAGE
+  BRAND
+  GIFTING
+}
+
+enum StoryStatus {
+  DRAFT
+  PUBLISHED
+  WITHDRAWN
+}
+
 enum SkuSaleStatus {
   DRAFT
   ON_SALE
@@ -320,18 +337,41 @@ model Product {
   origin      String?        @db.VarChar(100)
   sortOrder   Int            @default(0) @map("sort_order") @db.UnsignedInt
   status      ProductStatus  @default(DRAFT)
+  archivedAt  DateTime?      @map("archived_at")
   category    Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   media       ProductMedia[]
   tags        ProductTag[]
   skus        ProductSku[]
   specs       ProductSpec[]
   orderItems  OrderItem[]
+  stories     Story[]
   createdAt   DateTime       @default(now()) @map("created_at")
   updatedAt   DateTime       @updatedAt @map("updated_at")
 
   @@index([categoryId, status, sortOrder])
   @@index([status, sortOrder])
   @@map("products")
+}
+
+model Story {
+  id                    BigInt           @id @default(autoincrement())
+  publicId              String           @unique @default(uuid()) @map("public_id") @db.VarChar(36)
+  contentType           StoryContentType @map("content_type")
+  title                 String           @db.VarChar(120)
+  summary               String           @db.VarChar(300)
+  body                  String           @db.LongText
+  coverObjectKey        String           @map("cover_object_key") @db.VarChar(255)
+  relatedProductId      BigInt?          @map("related_product_id")
+  status                StoryStatus      @default(DRAFT)
+  sortOrder             Int              @default(0) @map("sort_order") @db.UnsignedInt
+  publishedAt           DateTime?        @map("published_at")
+  relatedProduct        Product?         @relation(fields: [relatedProductId], references: [id], onDelete: SetNull)
+  createdAt             DateTime         @default(now()) @map("created_at")
+  updatedAt             DateTime         @updatedAt @map("updated_at")
+
+  @@index([status, sortOrder, publishedAt])
+  @@index([contentType, status])
+  @@map("stories")
 }
 
 model ProductSku {

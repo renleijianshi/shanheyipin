@@ -9,6 +9,7 @@ import { V12_CATEGORY_TABS, filterCatalogProducts, type V12CategoryKey } from '@
 import type { StorefrontProductSummary } from '@miniapp-model/v12-ports.js';
 
 const catalog = createPublicCatalogPort();
+const internalTest = import.meta.env.VITE_INTERNAL_TEST === 'true';
 const activeCategory = ref<V12CategoryKey>('all');
 const allProducts = ref<StorefrontProductSummary[]>([]);
 const selectedProduct = ref<StorefrontProductSummary | null>(null);
@@ -77,6 +78,7 @@ onShow(onPageShow);
           <button v-for="tab in V12_CATEGORY_TABS" :key="tab.key" :class="{ active: activeCategory === tab.key }" @tap="activeCategory = tab.key">{{ tab.label }}</button>
         </scroll-view>
         <text class="category-note">从山野好物到当季滋味，慢慢挑一份喜欢的风物。</text>
+        <text v-if="internalTest" class="test-label">内部测试 · 暂不开放交易</text>
         <view v-if="catalogLoading" class="catalog-state" aria-live="polite">正在读取后台已发布商品…</view>
         <view v-else-if="catalogError" class="catalog-state catalog-error" role="status"><text>{{ catalogError }}</text><button @tap="refreshCatalog">重试</button></view>
         <view v-else-if="products.length" class="products-grid">
@@ -109,5 +111,6 @@ onShow(onPageShow);
 .empty-title { color: var(--color-text-primary); font-size: var(--type-title); font-weight: 600; }
 .empty-copy { margin-top: var(--space-1); color: var(--color-text-secondary); font-size: var(--type-body); line-height: var(--leading-body); }
 .preview-note { padding: 36rpx 0; color: var(--v19-muted); font-size: 20rpx; }
+.test-label { display: block; margin: -16rpx 0 26rpx; color: var(--color-text-secondary); font-size: 20rpx; }
 .bottom-space { height: 36rpx; }
 </style>

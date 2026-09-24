@@ -1,6 +1,7 @@
 export interface AdminProduct {
   readonly id: string;
   readonly publicId: string;
+  readonly archivedAt?: string | null;
   readonly name: string;
   readonly subtitle: string | null;
   readonly productType: 'STANDARD' | 'BUNDLE';
@@ -44,7 +45,7 @@ export function setAdminPreviewSession(enabled: boolean): void {
 }
 
 export function isAdminPreviewSession(): boolean {
-  return import.meta.env.DEV && sessionStorage.getItem('shanhe.admin.previewMode') === 'true';
+  return import.meta.env.DEV && import.meta.env.VITE_INTERNAL_TEST !== 'true' && sessionStorage.getItem('shanhe.admin.previewMode') === 'true';
 }
 
 export async function getAdminData<T>(path: string, signal?: AbortSignal): Promise<T> {

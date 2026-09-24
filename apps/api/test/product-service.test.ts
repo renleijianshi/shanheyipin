@@ -26,6 +26,11 @@ const baseInput = {
 function createRepository(categoryStatus: 'ENABLED' | 'DISABLED' = 'ENABLED'): ProductRepository {
   let current: Product | null = null;
   return {
+    setArchived: async (id, archived) => {
+      if (!current || current.id !== id) throw new Error('Product not found');
+      current = { ...current, archivedAt: archived ? new Date().toISOString() : null, status: 'OFF_SALE' };
+      return current;
+    },
     findCategory: async (id) => id === '1' ? { id, status: categoryStatus } : null,
     create: async (input) => {
       current = { id: '1', publicId: 'product-public-id', ...input };
@@ -41,6 +46,15 @@ function createRepository(categoryStatus: 'ENABLED' | 'DISABLED' = 'ENABLED'): P
 }
 
 describe('AdminProductService', () => {
+  it('archives without deleting product data and restores it as off sale', async () => {
+    const service = new AdminProductService(createRepository());
+    const created = await service.create({ ...baseInput, status: 'ON_SALE' });
+    const archived = await service.setArchived(created.id, true);
+    expect(archived).toMatchObject({ id: created.id, publicId: created.publicId, status: 'OFF_SALE', content: created.content });
+    expect(archived.archivedAt).toBeTruthy();
+    await expect(service.update(created.id, { ...baseInput, status: 'ON_SALE' })).rejects.toThrow('restore');
+    expect(await service.setArchived(created.id, false)).toMatchObject({ archivedAt: null, status: 'OFF_SALE' });
+  });
   it('normalizes SPU main data, media and unique tags', async () => {
     const service = new AdminProductService(createRepository());
     const product = await service.create(baseInput);
