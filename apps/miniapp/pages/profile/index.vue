@@ -76,7 +76,7 @@ function openAdminPreview() {
 .profile-title { letter-spacing: .02em; }
 .profile-copy { margin-top: 24rpx; }
 .profile-section-title { margin-top: 38rpx; margin-bottom: 18rpx; }
-.profile-menu { border-radius: 18rpx; box-shadow: 0 12rpx 30rpx rgba(24,54,43,.07); }
+.profile-menu { border-radius: var(--radius-feature); box-shadow: var(--shadow-soft); }
 .profile-menu-row { min-height: 116rpx; padding-left: 24rpx; padding-right: 24rpx; transition: background-color .16s ease; }
 .profile-menu-icon { width: 62rpx; height: 62rpx; border: 1px solid rgba(24,54,43,.06); background: linear-gradient(145deg, #eef3ee, #e4ece5); }
 .profile-menu-title { font-size: 26rpx; }

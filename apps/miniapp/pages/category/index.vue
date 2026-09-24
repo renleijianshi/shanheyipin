@@ -39,10 +39,11 @@ onShow(refresh);
         <scroll-view scroll-x class="category-tabs">
           <button v-for="tab in V12_CATEGORY_TABS" :key="tab.key" :class="{ active: activeCategory === tab.key }" @tap="activeCategory = tab.key">{{ tab.label }}</button>
         </scroll-view>
-        <text class="category-note">后台按商品分类标签归档；“全部商品”汇总所有已上架商品。</text>
-        <view class="products-grid">
+        <text class="category-note">从山野好物到当季滋味，慢慢挑一份喜欢的风物。</text>
+        <view v-if="products.length" class="products-grid">
           <ProductTile v-for="(product, index) in products" :key="product.id" :product="product" :tone="productTones[index % productTones.length]!" @select="selectedProduct = $event" />
         </view>
+        <view v-else class="catalog-empty"><text class="empty-title">这一类暂时没有商品</text><text class="empty-copy">换个分类看看山禾的当季风物。</text></view>
         <view class="bottom-space"></view>
       </view>
     </scroll-view>
@@ -51,17 +52,20 @@ onShow(refresh);
 </template>
 
 <style scoped>
-.page-shell { min-height: 100%; padding: 40rpx; background: var(--v19-canvas); }
+.page-shell { min-height: 100%; padding: 40rpx; background: var(--color-canvas); }
 .page-heading { padding: 20rpx 0 30rpx; }
 .eyebrow { display: block; color: var(--v19-copper); font-size: 20rpx; letter-spacing: 3rpx; }
-.page-title { display: block; margin-top: 8rpx; font-size: 48rpx; font-weight: 600; }
-.category-tabs { width: 100%; white-space: nowrap; border-bottom: 1px solid var(--v19-line); }
-.category-tabs button { min-height: 92rpx; margin: 0 36rpx 0 0; padding: 0; position: relative; display: inline-flex; align-items: center; border: 0; border-radius: 0; color: var(--v19-muted); background: transparent; font-size: 25rpx; }
+.page-title { display: block; margin-top: 8rpx; color: var(--color-text-primary); font-size: 48rpx; font-weight: 600; }
+.category-tabs { width: 100%; white-space: nowrap; border-bottom: 1px solid var(--color-border); }
+.category-tabs button { min-height: 92rpx; margin: 0 36rpx 0 0; padding: 0; position: relative; display: inline-flex; align-items: center; border: 0; border-radius: 0; color: var(--color-text-secondary); background: transparent; font-size: 25rpx; transition: color var(--motion-quick) ease-out; }
 .category-tabs button::after { border: 0; }
-.category-tabs button.active { color: var(--v19-brand-900); font-weight: 600; }
+.category-tabs button.active { color: var(--color-brand); font-weight: 600; }
 .category-tabs button.active::after { height: 4rpx; position: absolute; right: 0; bottom: -1px; left: 0; background: var(--v19-brand-900); content: ''; }
 .category-note { display: block; margin: 26rpx 0 34rpx; color: var(--v19-muted); font-size: 22rpx; line-height: 36rpx; }
-.products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40rpx 24rpx; }
+.products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5) var(--space-3); }
+.catalog-empty { min-height: 340rpx; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.empty-title { color: var(--color-text-primary); font-size: var(--type-title); font-weight: 600; }
+.empty-copy { margin-top: var(--space-1); color: var(--color-text-secondary); font-size: var(--type-body); line-height: var(--leading-body); }
 .preview-note { padding: 36rpx 0; color: var(--v19-muted); font-size: 20rpx; }
 .bottom-space { height: 36rpx; }
 </style>

@@ -91,7 +91,7 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
     <view class="admin-banner"><button @tap="goBack">‹ 返回</button><view><text class="admin-brand">山禾颐品</text><text class="admin-subbrand">运营管理中心 · V19联动预览</text></view><text class="admin-avatar">管</text></view>
     <view class="preview-alert">本地预览模式 · 商品、故事、溯源和首页图片保存在当前设备，并同步给小程序前台。尚未连接线上 API。</view>
     <view class="admin-layout">
-      <scroll-view scroll-x scroll-y class="admin-menu"><view class="admin-menu-inner"><view class="menu-brand"><text class="menu-brand-mark">禾</text><view><text class="menu-brand-title">管理导航</text><text class="menu-brand-caption">SHANHE CONSOLE</text></view></view><view v-for="group in groups" :key="group.name" class="menu-group"><text class="group-title">{{ group.name }}</text><button v-for="item in group.items" :key="item" :class="{ active: active === item }" @tap="open(item)"><text class="menu-item-dot"></text><text>{{ item }}</text><text v-if="active === item" class="menu-item-current">当前</text></button></view></view></scroll-view>
+      <scroll-view scroll-x scroll-y class="admin-menu"><view class="admin-menu-inner"><view class="menu-brand"><text class="menu-brand-mark">禾</text><view><text class="menu-brand-title">管理导航</text><text class="menu-brand-caption">SHANHE CONSOLE</text></view></view><view v-for="group in groups" :key="group.name" class="menu-group"><text class="group-title">{{ group.name }}</text><button v-for="item in group.items" :key="item" :class="{ active: active === item }" @tap="open(item)"><text class="menu-item-dot"></text><text>{{ item }}</text><text v-if="active === item" class="menu-item-current">当前</text></button></view></view></scroll-view><text class="nav-swipe-cue">滑动查看更多 ›</text>
       <view class="admin-main" :class="{ 'is-workbench': active === '工作台' }">
         <view class="admin-heading"><text class="eyebrow">V19 WORKSPACE</text><text class="admin-title">{{ active }}</text><text class="admin-copy">后台编辑保存后，返回小程序前台即可查看效果。</text></view>
         <template v-if="active === '工作台'">
@@ -109,7 +109,7 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
           </view>
           <view class="report-grid">
             <view class="report-panel"><view class="report-panel-head"><text>商品分类结构</text><text>{{ report.total }} 件</text></view>
-              <view v-for="row in report.categoryRows" :key="row.key" class="report-bar-row"><view class="report-bar-label"><text>{{ row.label }}</text><text>{{ row.count }} 件 · {{ row.share }}%</text></view><view class="report-track"><view :class="['report-fill', row.key]" :style="{ width: `${row.percent}%` }"></view></view></view>
+              <view v-for="row in report.categoryRows" :key="row.key" class="report-bar-row"><view class="report-bar-label"><text>{{ row.label }}</text><text>{{ row.count }} 件 · {{ row.share }}%</text></view><view class="report-track"><view :class="['report-fill', row.key]" :style="{ transform: `scaleX(${row.percent / 100})` }"></view></view></view>
             </view>
             <view class="report-panel report-status-panel"><view class="report-panel-head"><text>内容发布状态</text><text>本地预览</text></view>
               <view class="report-status-row"><text class="status-dot live"></text><view><text class="report-status-name">商品上架</text><text class="report-status-caption">前台可见</text></view><text class="report-status-count">{{ report.live }}</text></view>
@@ -175,7 +175,7 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
 .admin-menu { background: var(--v19-brand-900); }
 .admin-menu button.active, .admin-preview .primary { background: var(--v19-brand-900); }
 .report-link { width: 100%; min-height: 54px; margin-top: 18px !important; padding: 0 16px !important; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--v19-line) !important; border-radius: 9px !important; color: var(--v19-brand-900); background: var(--v19-paper-light) !important; font-size: 14px; }
-.report-lead { margin: 4px 0 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; border-left: 3px solid var(--v19-copper); color: var(--v19-muted); background: var(--v19-paper); font-size: 13px; line-height: 1.55; }
+.report-lead { margin: 4px 0 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--v19-copper); color: var(--v19-muted); background: var(--v19-paper); font-size: 13px; line-height: 1.55; }
 .report-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .report-kpi { min-height: 112px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--v19-line); border-radius: 10px; background: var(--v19-paper-light); }
 .report-kpi-title { color: var(--v19-muted); font-size: 12px; }
@@ -190,7 +190,7 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
 .report-bar-label { margin-bottom: 7px; display: flex; justify-content: space-between; gap: 10px; color: var(--v19-ink-700); font-size: 12px; }
 .report-bar-label text:last-child { color: var(--v19-muted); }
 .report-track { height: 8px; overflow: hidden; border-radius: 8px; background: var(--v19-brand-100); }
-.report-fill { height: 100%; border-radius: inherit; background: var(--v19-brand-700); transition: width .2s ease; }
+.report-fill { width: 100%; height: 100%; border-radius: inherit; background: var(--v19-brand-700); transform: scaleX(0); transform-origin: left center; transition: transform var(--motion-standard) ease-out; }
 .report-fill.gift { background: var(--v19-copper); }
 .report-fill.mountain { background: var(--v19-brand-800); }
 .report-status-row { min-height: 55px; display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 11px; border-top: 1px solid var(--v19-line); }
@@ -227,7 +227,7 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
 .image-label, .image-note { display: block; }
 .image-label { font-size: 22rpx; font-weight: 600; }
 .image-note { margin-top: 4rpx; color: var(--v19-muted); font-size: 17rpx; }
-.admin-main { max-width: 1360px; margin-right: auto; margin-left: auto; padding: 0 24px; box-sizing: border-box; }
+.admin-main { max-width: 1360px; margin-right: auto; margin-left: auto; padding: 0 var(--admin-content-gap); box-sizing: border-box; }
 .is-workbench .admin-heading { padding: 30px 0 24px; text-align: center; }
 .is-workbench .admin-heading .eyebrow { letter-spacing: .16em; }
 .is-workbench .admin-heading .admin-title { margin: 8px 0; font-size: 30px; }
@@ -245,7 +245,8 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
 .selection-option { min-height: 44px; margin: 0 !important; padding: 0 14px; display: inline-flex !important; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--v19-line); border-radius: 8px; color: var(--v19-ink-700); background: var(--v19-paper-light); font-size: 13px !important; }
 .selection-option checkbox { transform: scale(.86); }
 .admin-layout { gap: 22px; }
-.admin-menu { width: 224px; height: calc(100vh - 190px); max-height: 860px; min-height: 540px; overflow-y: auto; border: 1px solid rgba(255,255,255,.08); border-radius: 0 14px 14px 0; box-shadow: 8px 10px 28px rgba(24,54,43,.12); }
+.nav-swipe-cue { display: none; }
+.admin-menu { width: var(--admin-sidebar-width); height: calc(100vh - 190px); max-height: 860px; min-height: 540px; overflow-y: auto; border: 1px solid rgba(255,255,255,.08); border-radius: 0 14px 14px 0; box-shadow: 8px 10px 28px rgba(24,54,43,.12); }
 .admin-menu-inner { padding: 16px 12px 20px; }
 .menu-brand { min-height: 66px; margin: 0 4px 14px; padding: 0 10px 14px; display: flex; align-items: center; gap: 11px; border-bottom: 1px solid rgba(255,255,255,.14); }
 .menu-brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid rgba(229,201,158,.55); border-radius: 11px; color: var(--v19-gold-light); font-family: STSong, "Songti SC", serif; font-size: 19px; }
@@ -254,14 +255,14 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
 .menu-brand-caption { margin-top: 4px; color: #9fb1a6; font-size: 9px; letter-spacing: .12em; }
 .menu-group { margin: 0 0 7px; }
 .group-title { padding: 12px 12px 7px; color: #b2c0b8; font-size: 11px; letter-spacing: .12em; }
-.admin-menu button { min-height: 40px; margin: 2px 0; padding: 0 11px; display: flex; align-items: center; gap: 10px; border-radius: 8px; color: #e1e8e3; text-align: left; font-size: 13px; transition: background-color .16s ease, color .16s ease; }
+.admin-menu button { min-height: var(--admin-nav-item-height); margin: 2px 0; padding: 0 11px; display: flex; align-items: center; gap: 10px; border-radius: 8px; color: #e1e8e3; text-align: left; font-size: 13px; transition: background-color var(--motion-quick) ease-out, color var(--motion-quick) ease-out; }
 .menu-item-dot { width: 6px; height: 6px; flex: none; border-radius: 50%; background: rgba(217,228,220,.38); }
 .menu-item-current { margin-left: auto; padding: 3px 6px; border-radius: 999px; color: #f2d9b2; background: rgba(229,201,158,.13); font-size: 9px; }
-.admin-menu button.active { color: #fffaf0; background: linear-gradient(100deg, #355c4b, #294a3d); box-shadow: inset 3px 0 #d4b27e; }
+.admin-menu button.active { color: #fffaf0; background: #315543; box-shadow: inset 3px 0 #d4b27e; }
 .admin-menu button.active .menu-item-dot { background: #e5c99e; box-shadow: 0 0 0 3px rgba(229,201,158,.14); }
 .admin-menu button:not(.active):active { background: rgba(255,255,255,.08); }
 @media (min-width: 600px) {
-  .admin-menu { width: 224px; }
+  .admin-menu { width: var(--admin-sidebar-width); }
   .report-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
   .report-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
   .report-kpi { min-height: 132px; padding: 18px; }
@@ -282,16 +283,33 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
   .save-button { max-width: 240px; min-height: 42px; margin: 20px 0 0 auto; font-size: 13px; }
 }
 @media (max-width: 599px) {
-  .admin-layout { display: block; }
-  .admin-menu { width: 100%; height: 86rpx; min-height: 0; max-height: none; overflow: hidden; border: 0; border-radius: 0; box-shadow: none; background: #18362b; }
+  .admin-layout { position: relative; display: block; }
+  .admin-menu { width: 100%; height: 92rpx; min-height: 0; max-height: none; overflow: hidden; border: 0; border-radius: 0; box-shadow: none; background: #18362b; }
   .admin-menu-inner { display: flex; width: max-content; padding: 10rpx 20rpx; }
   .menu-brand { display: none; }
   .menu-group { display: flex; align-items: center; margin: 0; }
   .admin-menu-inner > view { display: flex; align-items: center; }
   .group-title { display: none; }
-  .admin-menu button { width: auto; min-height: 66rpx; margin: 0 5rpx; padding: 0 18rpx; flex: none; color: #d7e0db; white-space: nowrap; }
+  .admin-menu button { width: auto; min-height: 92rpx; margin: 0 5rpx; padding: 0 18rpx; flex: none; color: #d7e0db; white-space: nowrap; }
   .menu-item-dot, .menu-item-current { display: none; }
+  .nav-swipe-cue { padding-left: 28rpx; position: absolute; top: 0; right: 0; z-index: 2; display: flex; align-items: center; height: 92rpx; color: #e0e8e2; background: linear-gradient(90deg, rgba(24,54,43,0), #18362b 28%); font-size: 18rpx; pointer-events: none; }
   .admin-menu button.active { background: #355c4b; }
   .admin-main { padding: 0 24rpx; }
+  .record-card { padding: 20rpx; }
+  .record-card button { min-height: 88rpx; padding: 0 16rpx; font-size: 21rpx; }
+}
+.record-card { padding: 18px 20px; border-color: var(--color-border); border-radius: var(--radius-surface); background: var(--color-surface); }
+.record-card > view { min-width: 0; flex: 1; }
+.record-title { color: var(--color-text-primary); font-size: 24rpx; line-height: 1.45; }
+.record-copy { color: var(--color-text-secondary); font-size: 20rpx; line-height: var(--leading-body); }
+.record-card button { min-width: 76px; min-height: 40px; padding: 0 12px; border-color: var(--color-border); border-radius: var(--radius-control); color: var(--color-brand); font-size: 12px; }
+.action-card { color: var(--color-text-secondary); line-height: var(--leading-body); }
+.editor-modal { background: var(--color-surface); }
+.editor-modal input, .editor-modal textarea, .picker-value { border-color: var(--color-border); border-radius: var(--radius-control); }
+.editor-modal input:focus, .editor-modal textarea:focus { border-color: var(--color-brand); outline: 2px solid rgba(43,87,71,.16); }
+.empty { min-height: 180px; padding: 24px; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--color-border); border-radius: var(--radius-surface); color: var(--color-text-secondary); background: var(--color-surface); text-align: center; }
+@media (min-width: 600px) {
+  .record-title { font-size: 14px; }
+  .record-copy { font-size: 12px; }
 }
 </style>

@@ -24,6 +24,42 @@
   --v19-r-sm: 8px;
   --v19-r-md: 12px;
   --v19-r-lg: 16px;
+
+  /* Semantic aliases shared by the storefront and local admin preview. */
+  --color-brand: var(--v19-brand-900);
+  --color-brand-soft: var(--v19-brand-100);
+  --color-canvas: var(--v19-canvas);
+  --color-surface: var(--v19-paper-light);
+  --color-surface-muted: var(--v19-paper);
+  --color-text-primary: var(--v19-ink);
+  --color-text-secondary: var(--v19-muted);
+  --color-border: var(--v19-line);
+  --color-accent: var(--v19-orange);
+  --color-accent-soft: var(--v19-orange-soft);
+  --color-success: var(--v19-success);
+  --color-warning: var(--v19-warning);
+  --color-danger: var(--v19-danger);
+  --space-1: 8rpx;
+  --space-2: 16rpx;
+  --space-3: 24rpx;
+  --space-4: 32rpx;
+  --space-5: 48rpx;
+  --space-6: 64rpx;
+  --type-caption: 22rpx;
+  --type-body: 26rpx;
+  --type-title: 34rpx;
+  --type-display: 56rpx;
+  --leading-tight: 1.25;
+  --leading-body: 1.5;
+  --radius-control: 8rpx;
+  --radius-surface: 12rpx;
+  --radius-feature: 16rpx;
+  --motion-quick: 160ms;
+  --motion-standard: 220ms;
+  --shadow-soft: 0 8rpx 24rpx rgba(24, 54, 43, .07);
+  --admin-sidebar-width: 232px;
+  --admin-nav-item-height: 40px;
+  --admin-content-gap: 24px;
 }
 
 html, body, #app { min-height: 100%; margin: 0; font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; }
@@ -94,7 +130,7 @@ html, body, #app { min-height: 100%; margin: 0; font-family: "PingFang SC", "Mic
   body.v19-desktop-preview.v19-admin-preview uni-page-body { height: auto; }
   body.v19-desktop-preview.v19-admin-preview .admin-layout {
     display: grid;
-    grid-template-columns: 232px minmax(0, 1fr);
+    grid-template-columns: var(--admin-sidebar-width) minmax(0, 1fr);
     gap: 0;
   }
   body.v19-desktop-preview.v19-admin-preview .admin-banner { min-height: 74px; padding: 12px 28px; }
@@ -117,7 +153,7 @@ html, body, #app { min-height: 100%; margin: 0; font-family: "PingFang SC", "Mic
   }
   body.v19-desktop-preview.v19-admin-preview .admin-menu button {
     width: 100%;
-    min-height: 40px;
+    min-height: var(--admin-nav-item-height);
     padding: 0 13px;
     color: #d7e0db;
     font-size: 13px;
