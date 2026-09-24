@@ -1,7 +1,18 @@
 <script setup lang="ts">
-const entries = ['我的订单', '收货地址', '我的收藏', '优惠权益', '客服与售后', '关于山禾颐品'];
+const entries = [
+  { id: 'orders', title: '我的订单', description: '查看订单状态与配送进度', icon: '▤' },
+  { id: 'address', title: '收货地址', description: '管理收件人与配送地址', icon: '⌖' },
+  { id: 'favorites', title: '我的收藏', description: '收藏的山野风物', icon: '♡' },
+  { id: 'benefits', title: '优惠权益', description: '会员与活动权益', icon: '◇' },
+  { id: 'service', title: '客服与售后', description: '获取订单与商品帮助', icon: '◌' },
+  { id: 'about', title: '关于山禾颐品', description: '认识山禾与产地风物', icon: 'i' }
+];
 
-function notConnected() {
+function openEntry(id: string) {
+  if (id === 'address') {
+    uni.navigateTo({ url: '/pages/address/index' });
+    return;
+  }
   uni.showToast({ title: '该功能页面尚未接入', icon: 'none' });
 }
 
@@ -13,23 +24,51 @@ function openAdminPreview() {
 <template>
   <scroll-view scroll-y class="tab-page-scroll">
     <view class="page-shell">
-      <view class="profile-hero"><text class="eyebrow">MY SHANHE</text><text class="profile-title">晚上好，山友</text><text class="profile-copy">把山川好物慢慢带回家。</text></view>
-      <view class="profile-menu"><button v-for="entry in entries" :key="entry" @tap="notConnected">{{ entry }}<text>›</text></button></view>
-      <button class="admin-test-entry" @tap="openAdminPreview">后台预览 <text>↗</text></button>
-      <text class="preview-note">页面示例 · 账户和会员数据尚未连接</text>
+      <view class="profile-hero">
+        <view class="profile-identity"><view class="profile-avatar">禾</view><view><text class="eyebrow">MY SHANHE</text><text class="profile-title">晚上好，山友</text></view></view>
+        <text class="profile-copy">把山川好物，慢慢带回家。</text>
+        <view class="profile-hero-mark">山禾颐品 · 山野相逢</view>
+      </view>
+      <view class="profile-section-title"><text>我的服务</text><text>PERSONAL CENTER</text></view>
+      <view class="profile-menu">
+        <button v-for="entry in entries" :key="entry.id" class="profile-menu-row" :class="{ 'address-row': entry.id === 'address' }" @tap="openEntry(entry.id)">
+          <view class="profile-menu-icon">{{ entry.icon }}</view>
+          <view class="profile-menu-copy"><text class="profile-menu-title">{{ entry.title }}</text><text class="profile-menu-description">{{ entry.description }}</text></view>
+          <text v-if="entry.id === 'address'" class="profile-manage">管理</text><text v-else class="profile-arrow">›</text>
+        </button>
+      </view>
+      <button class="admin-test-entry" @tap="openAdminPreview"><view><text class="admin-entry-title">运营管理预览</text><text class="admin-entry-copy">查看前后台内容联动效果</text></view><text class="admin-entry-arrow">↗</text></button>
+      <text class="preview-note">账户、订单与会员信息尚未接入线上服务</text>
     </view>
   </scroll-view>
 </template>
 
 <style scoped>
 .page-shell { min-height: 100%; background: var(--v19-canvas); }
-.profile-hero { padding: 56rpx 40rpx 66rpx; color: var(--v19-canvas); background: var(--v19-brand-900); }
-.eyebrow { color: var(--v19-gold-light); font-size: 20rpx; letter-spacing: 3rpx; }
-.profile-title { display: block; margin: 12rpx 0; font-size: 43rpx; font-weight: 600; }
-.profile-copy { color: rgba(247,243,232,.74); font-size: 24rpx; }
-.profile-menu { margin: 34rpx 40rpx 0; border-top: 1px solid var(--v19-line); }
-.profile-menu button { width: 100%; min-height: 108rpx; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--v19-line); text-align: left; font-size: 27rpx; }
-.profile-menu button text { color: var(--v19-muted); font-size: 32rpx; }
-.admin-test-entry { min-height: 84rpx; margin: 42rpx 40rpx 12rpx; padding: 0 24rpx; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--v19-line-strong); border-radius: 12rpx; color: var(--v19-brand-900); background: var(--v19-paper-light); font-size: 25rpx; font-weight: 600; }
-.preview-note { display: block; margin: 0 40rpx; color: var(--v19-muted); font-size: 20rpx; }
+.profile-hero { min-height: 290rpx; padding: 48rpx 40rpx 38rpx; position: relative; overflow: hidden; color: var(--v19-canvas); background: var(--v19-brand-900); }
+.profile-hero::after { width: 310rpx; height: 310rpx; position: absolute; right: -110rpx; bottom: -200rpx; border: 1px solid rgba(207,181,142,.35); border-radius: 50%; box-shadow: 0 0 0 28rpx rgba(207,181,142,.06), 0 0 0 58rpx rgba(207,181,142,.04); content: ''; }
+.profile-identity { display: flex; align-items: center; gap: 20rpx; }
+.profile-avatar { width: 84rpx; height: 84rpx; display: grid; place-items: center; border: 1px solid rgba(207,181,142,.55); border-radius: 50%; color: var(--v19-gold-light); background: rgba(255,255,255,.06); font-family: STSong, "Songti SC", serif; font-size: 37rpx; }
+.eyebrow { display: block; color: var(--v19-gold-light); font-size: 19rpx; letter-spacing: 3rpx; }
+.profile-title { display: block; margin-top: 6rpx; font-size: 39rpx; font-weight: 600; }
+.profile-copy { display: block; margin: 22rpx 0 0 104rpx; color: rgba(247,243,232,.78); font-size: 23rpx; }
+.profile-hero-mark { margin: 32rpx 0 0 104rpx; color: rgba(207,181,142,.72); font-size: 18rpx; letter-spacing: 2rpx; }
+.profile-section-title { margin: 34rpx 40rpx 16rpx; display: flex; align-items: baseline; justify-content: space-between; color: var(--v19-ink); font-size: 27rpx; font-weight: 600; }
+.profile-section-title text:last-child { color: var(--v19-muted-2); font-size: 16rpx; font-weight: 400; letter-spacing: 2rpx; }
+.profile-menu { margin: 0 28rpx; overflow: hidden; border: 1px solid var(--v19-line); border-radius: 16rpx; background: var(--v19-paper-light); box-shadow: 0 8rpx 26rpx rgba(24,54,43,.04); }
+.profile-menu-row { width: 100%; min-height: 112rpx; padding: 16rpx 22rpx; display: flex; align-items: center; gap: 18rpx; border-bottom: 1px solid var(--v19-line); text-align: left; }
+.profile-menu-row:last-child { border-bottom: 0; }
+.profile-menu-row.address-row { background: linear-gradient(90deg, rgba(232,239,234,.65), transparent 70%); }
+.profile-menu-icon { width: 58rpx; height: 58rpx; flex: none; display: grid; place-items: center; border-radius: 50%; color: var(--v19-brand-800); background: var(--v19-brand-100); font-size: 28rpx; }
+.profile-menu-copy { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 5rpx; }
+.profile-menu-title { color: var(--v19-ink); font-size: 25rpx; font-weight: 600; }
+.profile-menu-description { color: var(--v19-muted); font-size: 19rpx; }
+.profile-arrow { color: var(--v19-muted-2); font-size: 34rpx; }
+.profile-manage { padding: 8rpx 15rpx; border: 1px solid var(--v19-line); border-radius: 999rpx; color: var(--v19-brand-800); background: var(--v19-paper-light); font-size: 18rpx; }
+.admin-test-entry { width: calc(100% - 56rpx); min-height: 96rpx; margin: 28rpx auto 14rpx; padding: 0 22rpx; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--v19-line); border-radius: 14rpx; color: var(--v19-brand-900); background: var(--v19-paper); text-align: left; }
+.admin-entry-title, .admin-entry-copy { display: block; }
+.admin-entry-title { font-size: 23rpx; font-weight: 600; }
+.admin-entry-copy { margin-top: 5rpx; color: var(--v19-muted); font-size: 18rpx; font-weight: 400; }
+.admin-entry-arrow { color: var(--v19-copper); font-size: 28rpx; }
+.preview-note { display: block; margin: 0 40rpx 24rpx; color: var(--v19-muted); font-size: 18rpx; text-align: center; }
 </style>

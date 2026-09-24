@@ -92,7 +92,7 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
     <view class="preview-alert">本地预览模式 · 商品、故事、溯源和首页图片保存在当前设备，并同步给小程序前台。尚未连接线上 API。</view>
     <view class="admin-layout">
       <scroll-view scroll-x scroll-y class="admin-menu"><view class="admin-menu-inner"><view v-for="group in groups" :key="group.name"><text class="group-title">{{ group.name }}</text><button v-for="item in group.items" :key="item" :class="{ active: active === item }" @tap="open(item)">{{ item }}</button></view></view></scroll-view>
-      <view class="admin-main">
+      <view class="admin-main" :class="{ 'is-workbench': active === '工作台' }">
         <view class="admin-heading"><text class="eyebrow">V19 WORKSPACE</text><text class="admin-title">{{ active }}</text><text class="admin-copy">后台编辑保存后，返回小程序前台即可查看效果。</text></view>
         <template v-if="active === '工作台'">
           <view class="metric-grid"><view class="metric-card"><text>前台商品</text><text>{{ state.products.filter(x => x.status === '上架').length }}</text></view><view class="metric-card"><text>已发布故事</text><text>{{ state.stories.filter(x => x.status === '发布').length }}</text></view><view class="metric-card"><text>启用溯源</text><text>{{ state.traces.filter(x => x.status === '启用').length }}</text></view><view class="metric-card"><text>演示订单</text><text>—</text></view></view>
@@ -143,7 +143,7 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
           <label class="form-full">商品介绍<textarea v-model="productForm.intro" placeholder="用户打开商品后首先看到的介绍" /></label>
           <label class="form-full">详细说明 / 工艺 / 风味<textarea v-model="productForm.detail" placeholder="产地、制作方式、口感与保存方式" /></label>
           <label class="form-full">封面图片 URL<input v-model="productForm.imageUrl" placeholder="https://..." /></label>
-          <label class="form-full">甄选栏目<checkbox-group @change="updateProductSelections($event.detail.value)"><label><checkbox value="brand" :checked="productForm.selection.includes('brand')" />山禾甄选</label><label><checkbox value="season" :checked="productForm.selection.includes('season')" />本期甄选</label></checkbox-group></label>
+          <label class="form-full">甄选栏目<checkbox-group class="selection-options" @change="updateProductSelections($event.detail.value)"><label class="selection-option"><checkbox value="brand" :checked="productForm.selection.includes('brand')" />山禾甄选</label><label class="selection-option"><checkbox value="season" :checked="productForm.selection.includes('season')" />本期甄选</label></checkbox-group></label>
         </view>
         <button class="primary save-button" @tap="saveProduct">保存商品</button>
       </template>
@@ -227,6 +227,23 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
 .image-label, .image-note { display: block; }
 .image-label { font-size: 22rpx; font-weight: 600; }
 .image-note { margin-top: 4rpx; color: var(--v19-muted); font-size: 17rpx; }
+.admin-main { max-width: 1360px; margin-right: auto; margin-left: auto; padding: 0 24px; box-sizing: border-box; }
+.is-workbench .admin-heading { padding: 30px 0 24px; text-align: center; }
+.is-workbench .admin-heading .eyebrow { letter-spacing: .16em; }
+.is-workbench .admin-heading .admin-title { margin: 8px 0; font-size: 30px; }
+.is-workbench .admin-copy { font-size: 13px; }
+.is-workbench .metric-grid { max-width: 1080px; margin: 0 auto; gap: 14px; }
+.is-workbench .metric-card { min-height: 126px; padding: 18px; align-items: center; justify-content: center; gap: 14px; border-radius: 12px; text-align: center; }
+.is-workbench .metric-card text:first-child { font-size: 13px; }
+.is-workbench .metric-card text:last-child { color: var(--v19-brand-900); font-size: 30px; }
+.is-workbench .todo-card { max-width: 1080px; margin: 22px auto 0; padding: 22px 28px; border-radius: 12px; }
+.is-workbench .card-title { margin-bottom: 10px; text-align: center; }
+.is-workbench .todo-card button { min-height: 54px; padding: 12px 0; display: flex; align-items: center; justify-content: center; border-top: 1px solid var(--v19-line); color: var(--v19-ink-700); font-size: 14px; text-align: center; }
+.is-workbench .report-link { max-width: 1080px; margin: 16px auto 0 !important; }
+.reset-button { width: fit-content; min-height: 40px; margin: 26px auto; padding: 0 15px; display: block; border: 1px solid var(--v19-line); border-radius: 8px; color: var(--v19-muted); background: var(--v19-paper-light); font-size: 12px; }
+.selection-options { margin-top: 8px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.selection-option { min-height: 44px; margin: 0 !important; padding: 0 14px; display: inline-flex !important; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--v19-line); border-radius: 8px; color: var(--v19-ink-700); background: var(--v19-paper-light); font-size: 13px !important; }
+.selection-option checkbox { transform: scale(.86); }
 @media (min-width: 600px) {
   .report-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
   .report-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }

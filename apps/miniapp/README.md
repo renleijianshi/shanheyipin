@@ -1,6 +1,6 @@
 # V19 小程序页面迁移说明
 
-更新时间：2026-09-23
+更新时间：2026-09-24
 
 ## 采用的来源
 
@@ -19,12 +19,14 @@
 - 首页下方故事展示模块已按用户要求移除，快捷入口仍可打开故事列表；分类商品详情抽屉固定约四分之三屏，不在抽屉内滚动，保留图片、产地、规格、详情、价格和加入购物车；甄选页显示本地/本期内容与时令卡片；后台表单使用独立滚动面板。
 - 分类、甄选、购物车、我的页使用匹配手机框与底栏高度的内部滚动区；故事与扫码溯源页面提供自定义返回按钮及内部滚动区。商品图片缺失时采用 V19 森林绿/暖纸色/铜色占位配色。
 - 后台预览新增“数据报表”，只统计本机演示商品、故事和溯源内容；真实订单、销售额和转化率尚未接入，不显示模拟经营数字。
+- “我的”页改为个人服务卡片布局；“收货地址”进入本机预览地址簿，支持新增、编辑、删除和默认地址，数据保存在当前设备，尚未连接 M06 地址 API。
+- 后台工作台的标题、指标卡和内容入口在主内容区居中；商品编辑的甄选勾选项采用对齐的选项卡样式，恢复演示数据入口改为次要按钮。
 
 ## 主要代码入口
 
 - 页面路由与原生 tabBar：`pages.json`
 - 首页（故事快捷入口；首页下方故事模块已移除）：`pages/home/index.vue`
-- 分类、甄选、购物车、我的：`pages/category/index.vue`、`pages/selection/index.vue`、`pages/cart/index.vue`、`pages/profile/index.vue`
+- 分类、甄选、购物车、我的、收货地址：`pages/category/index.vue`、`pages/selection/index.vue`、`pages/cart/index.vue`、`pages/profile/index.vue`、`pages/address/index.vue`
 - 故事、溯源、后台预览：`pages/story/index.vue`、`pages/trace/index.vue`、`pages/admin-preview/index.vue`
 - 共用商品卡和详情片、设计 token、预览商品：`components/ProductTile.vue`、`components/ProductSheet.vue`、`styles/tokens.css`、`preview-products.ts`
 - V19 本地预览数据和前后台联动：`src/v19-content-store.ts`
@@ -33,10 +35,12 @@
 ## 目前仍是预览的内容
 
 - 目前共用本机 uni-app storage，不是线上数据库或 API；不同设备/用户之间不会同步。购物车、商品详情和溯源仍是演示流程，不能创建真实订单或验证线上批次。图片及演示商品信息来源 V19 HTML，未作为正式商品/授权素材。
+- 收货地址也只保存在本机预览 storage；正式使用前需接 M06 地址 API、登录用户及下单地址快照。
 - V19 的订单、售后、会员、营销、采购、仓储、加工、财务、权限等菜单在原 HTML 中也是结构占位；当前保留导航并说明尚待管理后台和对应 API 实现。
 - 当前本机 V19 视觉预览使用原 HTML 中的外部演示图片 URL；礼盒原图链接已失效，页面显示回退图。图片不是已确认授权的正式素材，也未核对微信下载域名。正式上线前必须换成授权素材和对象存储键；后台图片管理目前支持 URL 编辑，尚未提供本地上传。
 - manifest 的微信 AppID 为空；本版本不能发布。
 - 2026-09-23 的验证：Vue/TS 类型检查、仓库 ESLint 通过；指定 `UNI_INPUT_DIR=.` 后 Vite H5 编译通过。直接执行 `npm run build:h5` 仍因 CLI 默认寻找不存在的 `src/manifest.json` 失败；`build:mp-weixin` 在加载 Vite 配置时因 `estree-walker` 包 exports 报错，微信端未能完成构建和真机验收。
+- 2026-09-24 的验证：`npm run typecheck:uni --workspace @shanheyipin/miniapp` 通过；设置 `UNI_INPUT_DIR=.` 后 H5 构建通过；浏览器已实际查看“我的”、收货地址空状态/新增表单及后台工作台/商品编辑勾选项。真实地址 API 和微信真机仍未验收。
 
 ## 下次续写顺序
 
