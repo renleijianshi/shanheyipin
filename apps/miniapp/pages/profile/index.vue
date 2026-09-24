@@ -71,4 +71,17 @@ function openAdminPreview() {
 .admin-entry-copy { margin-top: 5rpx; color: var(--v19-muted); font-size: 18rpx; font-weight: 400; }
 .admin-entry-arrow { color: var(--v19-copper); font-size: 28rpx; }
 .preview-note { display: block; margin: 0 40rpx 24rpx; color: var(--v19-muted); font-size: 18rpx; text-align: center; }
+.profile-hero { min-height: 300rpx; padding: 48rpx 40rpx 36rpx; background: radial-gradient(ellipse at 94% 5%, rgba(229,201,158,.12), transparent 42%), linear-gradient(145deg, #18362b, #214537 78%, #294b3e); }
+.profile-avatar { width: 88rpx; height: 88rpx; border: 1px solid rgba(229,201,158,.7); background: linear-gradient(145deg, rgba(255,255,255,.13), rgba(255,255,255,.035)); box-shadow: 0 0 0 7rpx rgba(255,255,255,.035), 0 10rpx 24rpx rgba(0,0,0,.12); }
+.profile-title { letter-spacing: .02em; }
+.profile-copy { margin-top: 24rpx; }
+.profile-section-title { margin-top: 38rpx; margin-bottom: 18rpx; }
+.profile-menu { border-radius: 18rpx; box-shadow: 0 12rpx 30rpx rgba(24,54,43,.07); }
+.profile-menu-row { min-height: 116rpx; padding-left: 24rpx; padding-right: 24rpx; transition: background-color .16s ease; }
+.profile-menu-icon { width: 62rpx; height: 62rpx; border: 1px solid rgba(24,54,43,.06); background: linear-gradient(145deg, #eef3ee, #e4ece5); }
+.profile-menu-title { font-size: 26rpx; }
+.profile-menu-description { margin-top: 1rpx; }
+.profile-menu-row.address-row .profile-menu-icon { color: #8b673f; background: linear-gradient(145deg, #f5efe4, #eee4d2); }
+.admin-test-entry { min-height: 104rpx; border-radius: 16rpx; box-shadow: 0 8rpx 24rpx rgba(24,54,43,.045); }
+.admin-entry-arrow { width: 42rpx; height: 42rpx; display: grid; place-items: center; border-radius: 50%; color: var(--v19-brand-900); background: var(--v19-brand-100); }
 </style>

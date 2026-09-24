@@ -91,7 +91,7 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
     <view class="admin-banner"><button @tap="goBack">‹ 返回</button><view><text class="admin-brand">山禾颐品</text><text class="admin-subbrand">运营管理中心 · V19联动预览</text></view><text class="admin-avatar">管</text></view>
     <view class="preview-alert">本地预览模式 · 商品、故事、溯源和首页图片保存在当前设备，并同步给小程序前台。尚未连接线上 API。</view>
     <view class="admin-layout">
-      <scroll-view scroll-x scroll-y class="admin-menu"><view class="admin-menu-inner"><view v-for="group in groups" :key="group.name"><text class="group-title">{{ group.name }}</text><button v-for="item in group.items" :key="item" :class="{ active: active === item }" @tap="open(item)">{{ item }}</button></view></view></scroll-view>
+      <scroll-view scroll-x scroll-y class="admin-menu"><view class="admin-menu-inner"><view class="menu-brand"><text class="menu-brand-mark">禾</text><view><text class="menu-brand-title">管理导航</text><text class="menu-brand-caption">SHANHE CONSOLE</text></view></view><view v-for="group in groups" :key="group.name" class="menu-group"><text class="group-title">{{ group.name }}</text><button v-for="item in group.items" :key="item" :class="{ active: active === item }" @tap="open(item)"><text class="menu-item-dot"></text><text>{{ item }}</text><text v-if="active === item" class="menu-item-current">当前</text></button></view></view></scroll-view>
       <view class="admin-main" :class="{ 'is-workbench': active === '工作台' }">
         <view class="admin-heading"><text class="eyebrow">V19 WORKSPACE</text><text class="admin-title">{{ active }}</text><text class="admin-copy">后台编辑保存后，返回小程序前台即可查看效果。</text></view>
         <template v-if="active === '工作台'">
@@ -244,7 +244,24 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
 .selection-options { margin-top: 8px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
 .selection-option { min-height: 44px; margin: 0 !important; padding: 0 14px; display: inline-flex !important; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--v19-line); border-radius: 8px; color: var(--v19-ink-700); background: var(--v19-paper-light); font-size: 13px !important; }
 .selection-option checkbox { transform: scale(.86); }
+.admin-layout { gap: 22px; }
+.admin-menu { width: 224px; height: calc(100vh - 190px); max-height: 860px; min-height: 540px; overflow-y: auto; border: 1px solid rgba(255,255,255,.08); border-radius: 0 14px 14px 0; box-shadow: 8px 10px 28px rgba(24,54,43,.12); }
+.admin-menu-inner { padding: 16px 12px 20px; }
+.menu-brand { min-height: 66px; margin: 0 4px 14px; padding: 0 10px 14px; display: flex; align-items: center; gap: 11px; border-bottom: 1px solid rgba(255,255,255,.14); }
+.menu-brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid rgba(229,201,158,.55); border-radius: 11px; color: var(--v19-gold-light); font-family: STSong, "Songti SC", serif; font-size: 19px; }
+.menu-brand-title, .menu-brand-caption { display: block; }
+.menu-brand-title { color: #f7f3e8; font-size: 14px; font-weight: 600; letter-spacing: .08em; }
+.menu-brand-caption { margin-top: 4px; color: #9fb1a6; font-size: 9px; letter-spacing: .12em; }
+.menu-group { margin: 0 0 7px; }
+.group-title { padding: 12px 12px 7px; color: #b2c0b8; font-size: 11px; letter-spacing: .12em; }
+.admin-menu button { min-height: 40px; margin: 2px 0; padding: 0 11px; display: flex; align-items: center; gap: 10px; border-radius: 8px; color: #e1e8e3; text-align: left; font-size: 13px; transition: background-color .16s ease, color .16s ease; }
+.menu-item-dot { width: 6px; height: 6px; flex: none; border-radius: 50%; background: rgba(217,228,220,.38); }
+.menu-item-current { margin-left: auto; padding: 3px 6px; border-radius: 999px; color: #f2d9b2; background: rgba(229,201,158,.13); font-size: 9px; }
+.admin-menu button.active { color: #fffaf0; background: linear-gradient(100deg, #355c4b, #294a3d); box-shadow: inset 3px 0 #d4b27e; }
+.admin-menu button.active .menu-item-dot { background: #e5c99e; box-shadow: 0 0 0 3px rgba(229,201,158,.14); }
+.admin-menu button:not(.active):active { background: rgba(255,255,255,.08); }
 @media (min-width: 600px) {
+  .admin-menu { width: 224px; }
   .report-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
   .report-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
   .report-kpi { min-height: 132px; padding: 18px; }
@@ -266,11 +283,14 @@ function placeholder(item: string) { return `${item}在 V19 原型中为功能�
 }
 @media (max-width: 599px) {
   .admin-layout { display: block; }
-  .admin-menu { width: 100%; height: 86rpx; max-height: none; overflow: hidden; background: #18362b; }
+  .admin-menu { width: 100%; height: 86rpx; min-height: 0; max-height: none; overflow: hidden; border: 0; border-radius: 0; box-shadow: none; background: #18362b; }
   .admin-menu-inner { display: flex; width: max-content; padding: 10rpx 20rpx; }
+  .menu-brand { display: none; }
+  .menu-group { display: flex; align-items: center; margin: 0; }
   .admin-menu-inner > view { display: flex; align-items: center; }
   .group-title { display: none; }
   .admin-menu button { width: auto; min-height: 66rpx; margin: 0 5rpx; padding: 0 18rpx; flex: none; color: #d7e0db; white-space: nowrap; }
+  .menu-item-dot, .menu-item-current { display: none; }
   .admin-menu button.active { background: #355c4b; }
   .admin-main { padding: 0 24rpx; }
 }
