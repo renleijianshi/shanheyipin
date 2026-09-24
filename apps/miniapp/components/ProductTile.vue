@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { StorefrontProductSummary } from '@miniapp-model/v12-ports.js';
+import { resolvePublicMediaUrl } from '../src/public-media-url.js';
 
 const props = defineProps<{ product: StorefrontProductSummary; tone?: 'persimmon' | 'gift' | 'wheat' | 'season' }>();
 const emit = defineEmits<{ select: [product: StorefrontProductSummary] }>();
 const imageFailed = ref(false);
+const imageUrl = computed(() => resolvePublicMediaUrl(props.product.coverObjectKey));
 watch(() => props.product.coverObjectKey, () => { imageFailed.value = false; });
 
 function formatPrice(cents: number, maxCents: number): string {
@@ -17,10 +19,10 @@ function formatPrice(cents: number, maxCents: number): string {
 <template>
   <button class="product-tile" @tap="emit('select', product)">
     <view class="product-image" :class="tone || 'season'">
-      <image v-if="product.coverObjectKey && !imageFailed" class="product-cover" :src="product.coverObjectKey" mode="aspectFill" @error="imageFailed = true" />
-      <view v-if="!product.coverObjectKey || imageFailed" class="image-fallback">
-        <text class="image-origin">SHANHE · ZHOUQU</text>
-        <text class="image-mark">{{ product.name.includes('礼盒') ? '山禾礼盒' : '舟曲风物' }}</text>
+      <image v-if="imageUrl && !imageFailed" class="product-cover" :src="imageUrl" mode="aspectFill" @error="imageFailed = true" />
+      <view v-if="!imageUrl || imageFailed" class="image-fallback">
+        <text class="image-origin">山禾颐品</text>
+        <text class="image-mark">{{ product.name.includes('礼盒') ? '山禾礼盒' : '山禾风物' }}</text>
         <text class="image-caption">产品实拍图待接入</text>
       </view>
     </view>

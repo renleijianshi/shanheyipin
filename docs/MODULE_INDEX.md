@@ -1,6 +1,6 @@
 # MODULE_INDEX
 
-> 2026-09-24 上线审计：下表“已完成”表示既有代码层实现，不等同于产品上线验收。前后台/HTTP/数据库/真机差距以 `docs/LAUNCH_READINESS_PLAN.md` 为准。当前 HTTP 入口主要装配管理员认证、catalog 与概览；订单库存预占仍未接通。
+> 2026-09-24 上线审计：下表“已完成”表示既有代码层实现，不等同于产品上线验收。前后台/HTTP/数据库/真机差距以 `docs/LAUNCH_READINESS_PLAN.md` 为准。后台认证/RBAC、商品/SPU/SKU/分类与公开 catalog HTTP 已装配；小程序首页/分类/详情已接公开 catalog client，真实 MySQL 联调未完成；订单库存预占仍未接通。
 
 | 模块 | 状态 | 主要位置 | 相关文档 |
 |---|---|---|---|
@@ -24,8 +24,8 @@
 | M18 采购 | 已完成（领域层） | `apps/api/src/modules/procurement/`, `apps/api/prisma/` | `tasks/M18_采购.md`, `docs/07_商品采购仓储库存设计.md` |
 | M19 到货 | 已完成（领域层） | `apps/api/src/modules/procurement/`, `apps/api/prisma/` | `tasks/M19_到货.md`, `docs/07_商品采购仓储库存设计.md` |
 | M20 质检 | 已完成（领域层） | `apps/api/src/modules/procurement/`, `apps/api/prisma/` | `tasks/M20_质检.md`, `docs/07_商品采购仓储库存设计.md` |
-| 小程序 V19 页面 | 进行中（首页、分类、甄选、商品详情、购物车、我的、地址、故事、溯源均有正式 uni-app 页面并统一主要视觉；本机后台预览可联动，线上 API 未接） | `apps/miniapp/pages/`, `apps/miniapp/src/v19-content-store.ts` | `apps/miniapp/README.md`, `DESIGN.md`, `apps/miniapp/src/v12-ui-model.ts`, `apps/miniapp/src/v12-ports.ts` |
-| 独立运营后台 UI | 进行中（工作台、商品/SPU/SKU/分类界面及 HTTP、认证已实现；缺 MySQL 联调，订单/履约/供应链等管理视图与接口待补；本机账号只读预览） | `apps/admin/web/`, `apps/api/src/modules/admin/` | `apps/admin/README.md`, `docs/LAUNCH_READINESS_PLAN.md` |
+| 小程序 V19 页面 | 进行中（首页/分类/详情已接公开商品 HTTP 和 SKU 资料；本机 API 不可用时显示错误，不回退样例商品；甄选/故事/溯源/购物车/账户地址显示未开放；MySQL 联调、素材域名和真机未验收） | `apps/miniapp/pages/`, `apps/miniapp/src/public-catalog-port.ts`, `public-media-url.ts` | `apps/miniapp/README.md`, `DESIGN.md`, `docs/LAUNCH_READINESS_PLAN.md` |
+| 独立运营后台 UI | 进行中（工作台、商品/SPU/SKU/分类界面、管理 HTTP、会话和 RBAC 已实现；真实 MySQL 登录/写操作未验收；本机预览只读且标注演示） | `apps/admin/web/`, `apps/api/src/modules/admin/` | `apps/admin/README.md`, `docs/LAUNCH_READINESS_PLAN.md` |
 | M21-M22/M25-M29 批次、仓库、加工 | 待开始 | `apps/api/src/modules/` 对应供应链目录 | `docs/07_商品采购仓储库存设计.md` |
 | M23-M24 库存余额/流水 | 已完成 | `apps/api/src/modules/inventory/`, `apps/api/prisma/` | `tasks/M23_库存余额.md`, `tasks/M24_库存流水.md`, `docs/07_商品采购仓储库存设计.md` |
 | M30-M32 售后/退款/补发 | 已完成 | `apps/api/src/modules/aftersales/`, `apps/api/src/modules/refunds/`, `apps/api/prisma/` | `tasks/M30_售后.md`, `tasks/M31_退款.md`, `tasks/M32_补发.md` |

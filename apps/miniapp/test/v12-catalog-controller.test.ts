@@ -5,6 +5,7 @@ import type { StorefrontProductDetail } from '../src/v12-ports.js';
 
 const product: StorefrontProductDetail = {
   id: '8a9a0fea-44bc-4fa2-9d76-2137596ed108',
+  categoryCode: 'seasonal',
   name: '舟曲吊柿', subtitle: '自然霜降，软糯清甜',
   coverObjectKey: 'products/zhouqu/cover.webp', tags: ['柿饼'],
   minSalePriceCent: 5980, maxSalePriceCent: 5980, presaleEnabled: false,

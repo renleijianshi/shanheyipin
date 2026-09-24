@@ -9,5 +9,5 @@
     "types": ["@dcloudio/types"]
   },
   "references": [{ "path": "../../packages/shared-types" }],
-  "include": ["src/**/*.ts", "preview-products.ts"]
+  "include": ["src/**/*.ts", "preview-products.ts", "env.d.ts"]
 }

@@ -3,6 +3,7 @@ import { toProductCardView, toProductDetailView } from '../src/catalog-view-mode
 
 const summary = {
   id: '8a9a0fea-44bc-4fa2-9d76-2137596ed108',
+  categoryCode: 'seasonal',
   name: '舟曲吊柿', subtitle: '自然霜降，软糯清甜',
   coverObjectKey: 'products/zhouqu/cover.webp', tags: ['柿饼', '送礼'],
   minSalePriceCent: 5980, maxSalePriceCent: 16800, presaleEnabled: false

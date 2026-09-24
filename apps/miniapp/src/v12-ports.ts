@@ -8,7 +8,7 @@ export type StorefrontCategory = 'seasonal' | 'gift' | 'mountain';
 export type SelectionChannel = 'brand' | 'season';
 
 export interface StorefrontPresentation {
-  readonly storefrontCategory: StorefrontCategory;
+  readonly storefrontCategory: StorefrontCategory | null;
   readonly selectionChannels: readonly SelectionChannel[];
 }
 

@@ -8,6 +8,7 @@ export interface AppManifest {
 
 export interface PublicProductSummary {
   readonly id: string;
+  readonly categoryCode: string;
   readonly name: string;
   readonly subtitle: string | null;
   readonly coverObjectKey: string;

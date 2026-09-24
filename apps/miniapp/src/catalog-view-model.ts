@@ -2,6 +2,7 @@ import type {
   PublicProductDetail,
   PublicProductSummary
 } from '@shanheyipin/shared-types';
+import type { StorefrontProductSummary } from './v12-ports.js';
 
 export interface ProductCardView {
   readonly id: string;
@@ -22,8 +23,25 @@ export interface ProductDetailView extends ProductCardView {
   readonly skuOptions: readonly {
     readonly id: string;
     readonly name: string;
+    readonly salePriceCent: number;
+    readonly marketPriceCent: number | null;
+    readonly weightGram: number;
     readonly specsText: string;
   }[];
+}
+
+const STOREFRONT_CATEGORY_BY_CODE = {
+  seasonal: 'seasonal',
+  gift: 'gift',
+  mountain: 'mountain'
+} as const;
+
+export function toStorefrontProductSummary(product: PublicProductSummary): StorefrontProductSummary {
+  return {
+    ...product,
+    storefrontCategory: STOREFRONT_CATEGORY_BY_CODE[product.categoryCode as keyof typeof STOREFRONT_CATEGORY_BY_CODE] ?? null,
+    selectionChannels: []
+  };
 }
 
 export function toProductCardView(product: PublicProductSummary): ProductCardView {
@@ -51,6 +69,9 @@ export function toProductDetailView(product: PublicProductDetail): ProductDetail
     skuOptions: product.skus.map((sku) => ({
       id: sku.id,
       name: sku.skuName,
+      salePriceCent: sku.salePriceCent,
+      marketPriceCent: sku.marketPriceCent,
+      weightGram: sku.weightGram,
       specsText: sku.specs.map((spec) => `${spec.name}：${spec.value}`).join(' · ')
     }))
   };

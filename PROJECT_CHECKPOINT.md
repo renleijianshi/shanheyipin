@@ -1,6 +1,6 @@
 # 山禾颐品｜代码现状与续开发断点
 
-更新时间：2026-09-23。本文件供下次开发先读，记录的是**正式仓库实际代码**，不是 V1 规划的完成承诺。范围仅为 `C:\Users\19993\Desktop\山禾颐品\daima`。
+更新时间：2026-09-24。本文件保留较早的代码交接记录；当前权威状态、四层验收表和下一步以 [`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md)、[`docs/LAUNCH_READINESS_PLAN.md`](docs/LAUNCH_READINESS_PLAN.md) 与 [`docs/MODULE_INDEX.md`](docs/MODULE_INDEX.md) 为准。范围仅为 `C:\Users\19993\Desktop\山禾颐品\daima`。
 
 ## 1. 下次如何省 Token
 
@@ -8,9 +8,9 @@
 2. 从第 5 节找到目标模块，只读对应 `tasks/Mxx_*.md`、1～3 份业务文档、所列源码与测试。需要改数据库时再读 `apps/api/prisma/schema.prisma` 的相关模型和对应 migration。
 3. 优先 `git grep` / `git diff` 定位。不要每次重扫全部 `apps/`、全部 `docs/` 或重新阅读 V1 全套。
 4. 完成一个模块后运行相关测试及 `npm run check`，检查 diff，再更新本文件中该模块状态、关键文件、缺口、测试结果和下一步。
-5. 本文件与代码冲突时以代码和 Git 为准；旧 `docs/TASKS.md`、`docs/PROJECT_STATE.md`、`docs/PROGRESS.md` 中部分“下一任务/同步”描述未及时更新。
+5. 本文件与当前状态文件冲突时，以当前代码和 `docs/PROJECT_STATE.md` 为准；以下日期在 2026-09-24 前的表格是历史快照。
 
-## 2. 本次核验基线
+## 2. 历史核验基线（2026-09-23）
 
 | 项目 | 2026-09-23 实况 |
 | --- | --- |
@@ -24,7 +24,7 @@
 
 本次参考的 V1 原始资料位于 `C:\Users\19993\Desktop\山禾颐品\小程序文件`：`00_项目总览_README.md`、`AGENTS.md`、`山禾颐品_Work执行总说明_v1.md`。它们定义产品范围和最初路线；其中“业务代码尚未开始”、旧启动包目录、Docker/Nginx 建议均是当时状态。当前有效部署与支付决策见 `docs/DECISIONS.md` 和 `docs/PROJECT_STATE.md`，实际完成度以下表及代码为准。
 
-## 3. 三个应用的真实完成度
+## 3. 历史应用状态快照（2026-09-23，已由当前状态文件覆盖）
 
 | 应用 | 已有 | 尚缺 | 优先读取 |
 | --- | --- | --- | --- |
@@ -95,3 +95,13 @@
 - 真实联调阻塞：当前工作区无 `.env` 且无 `DATABASE_URL`；需安全配置 MySQL 连接并设首位管理员环境变量，然后执行 migration、build、bootstrap、start。不得在聊天中发送数据库密码。
 - 本地查看后台：开发模式使用只读预览登录，账号配置存于 Git 忽略的 `apps/admin/.env.development.local`；页面展示样例数据并标注预览，写操作会被拒绝。已重启 Vite `127.0.0.1:5174` 读取该配置。
 - 下一步：完成 M09 SKU 管理界面/API 验收，再接小程序公共 catalog port；后台依 M13/M16、M17-M20、M23-M32 等服务能力补管理操作。提交与 push 尚未执行。
+
+## 10. 2026-09-24 构建修复与公开商品目录接入（当前）
+
+- 本轮开始：分支 `feature/v13-frontend-fusion`，HEAD `18c9fb4`，远端 `c8e595c`；以最终 Git/远端核对结果为准。保留原有四个未跟踪预览文件，不纳入提交。
+- uni-app 的 H5/微信 CLI 已统一指定输入根目录；添加锁定的 CJS 兼容 `estree-walker@2.0.2`；修复地址页微信 checkbox 编译错误。
+- 管理端已具有会话/RBAC/catalog HTTP；小程序首页、分类和商品详情已接公开目录 HTTP，媒体按配置域名解析对象键。无数据库，因此只验收代码接线，未验收后台发布后跨设备同步。
+- 隐藏消费者侧本机商品/购物车/故事/溯源/地址样例；未接服务的页面展示明确状态；只读运营预览页从发布路由移除。后台预览的身份和页脚现明确标识本机演示。
+- 验证：`npm run check`（33 文件/109 tests）、uni-app 类型检查、H5/微信包/后台构建均通过；浏览器查看手机前台与桌面后台页面。API 3200 / MySQL 3306 不可用，AppID 空，真机未验收。
+- 阻塞：为完成真实联调需安全配置测试 MySQL 与管理员；需授权媒体及 OSS 域名；配置微信 AppID 后再真机验收。真实支付继续 Deferred。
+- 下一步：先 MySQL catalog E2E，再媒体/首页内容服务，然后用户交易、库存履约、售后及剩余模块。支付 Deferred 不阻塞这些工作。

@@ -33,7 +33,7 @@ export interface V19Content {
 }
 const defaults: V19Content = {
   products: V19_STOREFRONT_PREVIEW.map((p, i) => ({
-    id: p.id, name: p.name, subtitle: p.subtitle ?? '', category: p.storefrontCategory,
+    id: p.id, name: p.name, subtitle: p.subtitle ?? '', category: requirePreviewCategory(p.storefrontCategory),
     priceCent: p.minSalePriceCent, spec: i === 0 ? '500g' : i === 1 ? '礼盒装' : '精选装',
     summary: [
       '从鲜柿挑选、削皮、整理，到悬挂风干、回软与自然挂霜。山风和时间留下柔软、甜润与果香。',
@@ -94,7 +94,7 @@ export function saveV19Content(update: (value: V19Content) => void): V19Content 
 }
 export function storefrontProducts(includeHidden = false): StorefrontProductSummary[] {
   return readV19Content().products.filter(p => includeHidden || p.status === '上架').map(p => ({
-    id: p.id, name: p.name, subtitle: p.subtitle, coverObjectKey: p.imageUrl,
+    id: p.id, categoryCode: p.category, name: p.name, subtitle: p.subtitle, coverObjectKey: p.imageUrl,
     tags: [p.category === 'gift' ? '礼盒' : p.category === 'seasonal' ? '应季甄选' : '山野好物', ...p.selection.map(s => s === 'brand' ? '山禾甄选' : '本期甄选')],
     minSalePriceCent: p.priceCent, maxSalePriceCent: p.priceCent, presaleEnabled: false,
     storefrontCategory: p.category, selectionChannels: p.selection
@@ -102,3 +102,7 @@ export function storefrontProducts(includeHidden = false): StorefrontProductSumm
 }
 export function resetV19Content(): void { writeV19Content(copy(defaults)); }
 export function addV19CartItem(id: string): void { saveV19Content(c => { c.cart[id] = (c.cart[id] ?? 0) + 1; }); }
+function requirePreviewCategory(category: StorefrontCategory | null): StorefrontCategory {
+  if (category === null) throw new Error('V19 preview products require a configured storefront category');
+  return category;
+}

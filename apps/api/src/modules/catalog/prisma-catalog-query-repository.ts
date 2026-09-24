@@ -11,6 +11,7 @@ import type {
 import { findVisibleCategoryIds } from './catalog-visibility.js';
 
 const publicProductListInclude = {
+  category: { select: { code: true } },
   media: { orderBy: [{ sortOrder: 'asc' as const }, { id: 'asc' as const }] },
   tags: { orderBy: [{ sortOrder: 'asc' as const }, { id: 'asc' as const }] },
   skus: {
@@ -21,6 +22,7 @@ const publicProductListInclude = {
 } satisfies Prisma.ProductInclude;
 
 const publicProductDetailInclude = {
+  category: { select: { code: true } },
   media: { orderBy: [{ sortOrder: 'asc' as const }, { id: 'asc' as const }] },
   tags: { orderBy: [{ sortOrder: 'asc' as const }, { id: 'asc' as const }] },
   skus: {
@@ -99,6 +101,7 @@ function toSummary(row: PublicProductListRecord | PublicProductDetailRecord): Pu
   if (prices.length === 0) throw new Error('Published product missing on-sale SKU');
   return {
     id: row.publicId,
+    categoryCode: row.category.code,
     name: row.name,
     subtitle: row.subtitle,
     coverObjectKey: cover.objectKey,

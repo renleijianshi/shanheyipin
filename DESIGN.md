@@ -4,7 +4,7 @@
 
 > One-liner: Use the warm canvas and forest-green brand tokens from [`tokens.css`](apps/miniapp/styles/tokens.css), keep product storytelling image-led and typography-led, use persimmon orange only for price or one small emphasis, prefer open editorial layouts over nested cards, and keep purchase actions fixed and unmistakable.
 
-The canonical storefront surface is [`home/index.vue`](apps/miniapp/pages/home/index.vue). Shared product surfaces live in [`ProductTile.vue`](apps/miniapp/components/ProductTile.vue) and [`ProductSheet.vue`](apps/miniapp/components/ProductSheet.vue). The original local operator preview lives in [`admin-preview/index.vue`](apps/miniapp/pages/admin-preview/index.vue). The separate [`apps/admin/web/App.vue`](apps/admin/web/App.vue) now contains a Vue/Vite workbench, product table, category view and product form; authentication and management API implementations are not present yet.
+The canonical storefront surface is [`home/index.vue`](apps/miniapp/pages/home/index.vue). Its published product data comes from the public catalog API; story, trace, selection, user and cart pages show explicit unavailable states until their services are connected. Shared product surfaces live in [`ProductTile.vue`](apps/miniapp/components/ProductTile.vue) and [`ProductSheet.vue`](apps/miniapp/components/ProductSheet.vue). The former miniapp operator preview source remains local-only and is excluded from [`pages.json`](apps/miniapp/pages.json). The separate [`apps/admin/web/App.vue`](apps/admin/web/App.vue) contains a Vue/Vite workbench, product table, category view and product form; admin sessions, RBAC and catalog management APIs exist, while real database login and write acceptance remain pending.
 
 ## 1. Foundations
 
@@ -45,7 +45,7 @@ Prefer a single border or a surface shift. Use `--shadow-soft` only for a raised
 - Product tile: `product-tile` / `product-image` in [`ProductTile.vue`](apps/miniapp/components/ProductTile.vue); media keeps a 4:5 crop and the product copy stays outside the image.
 - Product detail: `product-sheet` / `sheet-content` / `sheet-footer` in [`ProductSheet.vue`](apps/miniapp/components/ProductSheet.vue); the sheet stays at roughly three quarters of the viewport and the purchase footer remains visible while detail content scrolls.
 - Admin preview: `admin-menu`, `admin-main`, and `metric-card` in [`admin-preview/index.vue`](apps/miniapp/pages/admin-preview/index.vue); use borders and alignment to organize operational information.
-- Admin application: `--admin-*` tokens and the sidebar, topbar, metrics, empty states, table and editor in [`tokens.css`](apps/admin/web/tokens.css) and [`App.vue`](apps/admin/web/App.vue); keep navigation limited to modules backed by existing domain services.
+- Admin application: `--admin-*` tokens in [`tokens.css`](apps/admin/web/tokens.css) echo the forest-green and warm-paper storefront palette; the sidebar, topbar, metrics, empty states, table and editor prioritize alignment, readable status and operational density. Keep navigation limited to modules backed by existing domain services.
 
 ## 3. Typography patterns
 
@@ -91,11 +91,12 @@ Keep English uppercase labels short and secondary. Chinese copy should describe 
 - [ ] Page scrolling, bottom navigation, and safe-area padding remain intact.
 - [x] Admin preview content and navigation remain clearly marked as local-only where API data is not connected.
 - [x] The independent admin application has responsive workbench, product, category, table, and product editor surfaces; reads use documented management paths and show API/authorization errors without invented records.
-- [ ] Management authentication and write APIs are implemented and verified before the admin UI is used for real operations.
+- [x] Management authentication and catalog write APIs exist; the UI distinguishes local read-only preview from a real API session.
+- [ ] Real database authentication and catalog create/edit/publish are verified before the admin UI is used for real operations.
 - [ ] No business action, API contract, or data shape changes as part of visual work.
 
 ## Open questions
 
-- Approved production product and origin photography is still needed; current remote demo URLs are not confirmed production assets.
-- `apps/admin` has a rendered Vue/Vite interface but no authenticated HTTP management service or management write endpoints yet. Its content and mutations are not production-operational.
-- The home search affordance is still a preview notice until catalog search is implemented.
+- Approved production product and origin photography is still needed. Product object keys resolve only through configured `VITE_MEDIA_BASE_URL`; external preview URLs are not used as production imagery.
+- The public catalog and admin catalog APIs are connected in code, but MySQL-backed cross-device sync is not runtime-verified. Admin local preview remains read-only and explicitly marked.
+- The catalog search API exists, but the home search affordance remains unavailable until a search page is connected.
