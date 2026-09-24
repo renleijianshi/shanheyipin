@@ -85,7 +85,7 @@
 - 路由在 `apps/miniapp/pages.json`；界面说明见 `apps/miniapp/README.md`。
 - 已在 H5 预览中实际查看“我的”页、收货地址空状态/新增表单、后台工作台与商品编辑勾选项；uni-app 类型检查和 `UNI_INPUT_DIR=.` H5 构建通过，微信端真机仍未验收。
 
-## 9. 2026-09-24 后台 API 与商品目录首批联接
+## 9. 历史快照：2026-09-24 后台 API 与商品目录首批联接（已由第 10 节更新）
 
 - 本轮基线：`feature/v13-frontend-fusion`，起始 HEAD `c8e595c`；已有 4 个无关未跟踪文件，未修改。
 - 新增管理员密码 scrypt 校验、8 小时数据库会话、退出撤销、权限查询；首次 owner 账号只能在管理员表为空时通过 bootstrap CLI 创建。新增 `admin_sessions` migration。
@@ -94,11 +94,11 @@
 - 验证：Prisma client generate、根 `npm run check`（ESLint、TypeScript、30 个测试文件/101 tests、tsc build）、后台 Vue/Vite build、Prisma schema validate（使用非连接用占位 URL）均通过。未连数据库做 E2E。
 - 真实联调阻塞：当前工作区无 `.env` 且无 `DATABASE_URL`；需安全配置 MySQL 连接并设首位管理员环境变量，然后执行 migration、build、bootstrap、start。不得在聊天中发送数据库密码。
 - 本地查看后台：开发模式使用只读预览登录，账号配置存于 Git 忽略的 `apps/admin/.env.development.local`；页面展示样例数据并标注预览，写操作会被拒绝。已重启 Vite `127.0.0.1:5174` 读取该配置。
-- 下一步：完成 M09 SKU 管理界面/API 验收，再接小程序公共 catalog port；后台依 M13/M16、M17-M20、M23-M32 等服务能力补管理操作。提交与 push 尚未执行。
+- 下一步（当时）：完成 M09 SKU 管理界面/API 验收，再接小程序公共 catalog port；该项已由第 10 节推进。
 
 ## 10. 2026-09-24 构建修复与公开商品目录接入（当前）
 
-- 本轮开始：分支 `feature/v13-frontend-fusion`，HEAD `18c9fb4`，远端 `c8e595c`；以最终 Git/远端核对结果为准。保留原有四个未跟踪预览文件，不纳入提交。
+- 本轮基线：分支 `feature/v13-frontend-fusion`，HEAD `18c9fb4`，远端 `c8e595c`。提交 `04c399d`、`cd785fb` 已推送，推送后远端与本地 SHA 核对一致为 `cd785fb`。原有四个无关未跟踪预览文件保留，未纳入提交。
 - uni-app 的 H5/微信 CLI 已统一指定输入根目录；添加锁定的 CJS 兼容 `estree-walker@2.0.2`；修复地址页微信 checkbox 编译错误。
 - 管理端已具有会话/RBAC/catalog HTTP；小程序首页、分类和商品详情已接公开目录 HTTP，媒体按配置域名解析对象键。无数据库，因此只验收代码接线，未验收后台发布后跨设备同步。
 - 隐藏消费者侧本机商品/购物车/故事/溯源/地址样例；未接服务的页面展示明确状态；只读运营预览页从发布路由移除。后台预览的身份和页脚现明确标识本机演示。
