@@ -40,8 +40,8 @@ watch(() => props.product.coverObjectKey, () => { imageFailed.value = false; });
 </template>
 
 <style scoped>
-.sheet-mask { position: fixed; inset: 0; z-index: 30; display: flex; align-items: flex-end; background: rgba(24, 28, 25, .46); }
-.product-sheet { width: 100%; max-width: 750rpx; height: 75vh; max-height: 78%; margin: 0 auto; padding-top: 10rpx; position: relative; display: flex; flex-direction: column; overflow: hidden; border-radius: 32rpx 32rpx 0 0; background: var(--v19-paper-light); box-shadow: 0 -16rpx 48rpx rgba(24, 54, 43, .12); }
+.sheet-mask { position: fixed; inset: 0; z-index: 99999; display: flex; align-items: flex-end; background: rgba(24, 28, 25, .46); }
+.product-sheet { width: 100%; max-width: 750rpx; height: 75%; max-height: 78%; margin: 0 auto; padding-top: 10rpx; position: relative; display: flex; flex-direction: column; overflow: hidden; border-radius: 32rpx 32rpx 0 0; background: var(--v19-paper-light); box-shadow: 0 -16rpx 48rpx rgba(24, 54, 43, .12); }
 .sheet-handle { width: 72rpx; height: 8rpx; margin: 8rpx auto 12rpx; flex: none; border-radius: 8rpx; background: var(--v19-line-strong); }
 .sheet-content { height: 0; min-height: 0; padding: 10rpx 40rpx 16rpx; flex: 1; overflow: hidden; box-sizing: border-box; }
 .sheet-close { width: 64rpx; height: 64rpx; margin: 0; padding: 0; position: absolute; top: 24rpx; right: 24rpx; z-index: 1; border: 0; border-radius: 50%; color: var(--v19-ink); background: rgba(251, 248, 240, .94); font-size: 40rpx; line-height: 1; }
@@ -62,5 +62,5 @@ watch(() => props.product.coverObjectKey, () => { imageFailed.value = false; });
 .sheet-footer view { display: flex; flex-direction: column; gap: 4rpx; }
 .sheet-footer .sheet-price { color: var(--v19-orange); font-size: 44rpx; line-height: 1.2; }
 .sheet-footer button { min-width: 292rpx; min-height: 92rpx; margin: 0; padding: 0 28rpx; border: 0; border-radius: 16rpx; color: white; background: var(--v19-brand-900); font-size: 30rpx; font-weight: 600; }
-@media (max-height: 700px) { .product-sheet { height: 78vh; } .sheet-photo { height: 160rpx; } .sheet-title { font-size: 34rpx; } .sheet-body { -webkit-line-clamp: 2; } }
+@media (max-height: 700px) { .product-sheet { height: 78%; } .sheet-photo { height: 160rpx; } .sheet-title { font-size: 34rpx; } .sheet-body { -webkit-line-clamp: 2; } }
 </style>
