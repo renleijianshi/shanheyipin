@@ -83,12 +83,12 @@ Keep English uppercase labels short and secondary. Chinese copy should describe 
 
 ## 7. Checklist
 
-- [ ] Storefront page and primary surfaces use semantic color/spacing/radius tokens.
+- [x] Primary storefront surfaces (home, category, selection, cart, story, trace, profile, address and product detail) use semantic color/spacing/radius tokens; continue migrating remaining local-admin styles.
 - [ ] Each view uses no more than one small orange/copper emphasis pairing.
 - [ ] Product image fallbacks say photography is pending and do not imply an unavailable asset loaded.
-- [ ] Product detail can reveal its complete descriptive content while the purchase footer stays fixed.
+- [x] Product detail can reveal its complete descriptive content while the purchase footer stays fixed.
 - [ ] Page scrolling, bottom navigation, and safe-area padding remain intact.
-- [ ] Admin preview content and navigation remain clearly marked as local-only where API data is not connected.
+- [x] Admin preview content and navigation remain clearly marked as local-only where API data is not connected.
 - [ ] No business action, API contract, or data shape changes as part of visual work.
 
 ## Open questions
