@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { formatMoney, getAdminData, type AdminProduct, type DashboardData, type PageResult } from './api';
+import { adminRequest, formatMoney, getAdminData, type AdminProduct, type DashboardData, type PageResult } from './api';
 
 type View = 'dashboard' | 'products' | 'categories';
 type LoadState<T> = { status: 'idle' | 'loading' | 'ready' | 'error'; value: T | null; message: string };
@@ -17,9 +17,30 @@ const categories = ref<LoadState<readonly Category[]>>({ status: 'idle', value: 
 const query = ref('');
 const statusFilter = ref('ALL');
 const editorOpen = ref(false);
+const authenticated = ref(false);
+const loginUsername = ref('');
+const loginPassword = ref('');
+const loginError = ref('');
+const loginBusy = ref(false);
+const adminPermissions = ref<ReadonlySet<string>>(new Set());
+const editingProductId = ref<string | null>(null);
+const savingProduct = ref(false);
+const productError = ref('');
+const productDraft = ref({ name: '', subtitle: '', categoryId: '', productType: 'STANDARD' as 'STANDARD' | 'BUNDLE', content: '', origin: '', sortOrder: 0, status: 'DRAFT' as AdminProduct['status'], mediaText: '', tagsText: '' });
+const categoryEditorOpen = ref(false);
+const editingCategoryId = ref<string | null>(null);
+const categoryError = ref('');
+const categoryDraft = ref({ parentId: '', code: '', name: '', sortOrder: 0, status: 'ENABLED' as 'ENABLED' | 'DISABLED' });
+const skuDrawerOpen = ref(false);
+const skuProduct = ref<AdminProduct | null>(null);
+const skuRows = ref<LoadState<PageResult<AdminSku>>>({ status: 'idle', value: null, message: '' });
+const skuEditingId = ref<string | null>(null);
+const skuError = ref('');
+const skuDraft = ref({ skuCode: '', skuName: '', salePriceYuan: '', marketPriceYuan: '', weightGram: 500, barcode: '', saleStatus: 'DRAFT' as AdminSku['saleStatus'], specsText: '' });
 const lastUpdated = ref('尚未读取');
 
-interface Category { readonly id: string; readonly code: string; readonly name: string; readonly status: 'ENABLED' | 'DISABLED'; readonly sortOrder: number }
+interface Category { readonly id: string; readonly parentId: string | null; readonly code: string; readonly name: string; readonly status: 'ENABLED' | 'DISABLED'; readonly sortOrder: number }
+interface AdminSku { readonly id: string; readonly productId: string; readonly skuCode: string; readonly skuName: string; readonly salePriceCent: number; readonly marketPriceCent: number | null; readonly weightGram: number; readonly barcode: string | null; readonly saleStatus: 'DRAFT' | 'ON_SALE' | 'OFF_SALE'; readonly specs: readonly { readonly name: string; readonly value: string }[] }
 const filteredProducts = computed(() => {
   const rows = products.value.value?.items ?? [];
   return rows.filter(product => {
@@ -37,6 +58,8 @@ const metrics = computed(() => {
     { label: '库存提醒', value: data?.inventoryAlerts === undefined ? '—' : data.inventoryAlerts.toLocaleString('zh-CN'), suffix: '低库存或异常' }
   ];
 });
+const canWriteProducts = computed(() => adminPermissions.value.has('*') || adminPermissions.value.has('catalog.product.write'));
+const canWriteCategories = computed(() => adminPermissions.value.has('*') || adminPermissions.value.has('catalog.category.write'));
 
 async function loadDashboard() {
   dashboard.value = { ...dashboard.value, status: 'loading', message: '' };
@@ -56,13 +79,131 @@ async function loadCategories() {
 function reload() { if (view.value === 'dashboard') void loadDashboard(); else if (view.value === 'products') void loadProducts(); else void loadCategories(); }
 function selectView(next: View) { view.value = next; }
 function statusName(status: AdminProduct['status']) { return status === 'ON_SALE' ? '在售' : status === 'OFF_SALE' ? '已下架' : '草稿'; }
-function openEditor() { editorOpen.value = true; }
-onMounted(() => { void loadDashboard(); });
+async function openEditor(product?: AdminProduct) {
+  if (categories.value.status !== 'ready') await loadCategories();
+  editingProductId.value = product?.id ?? null;
+  productError.value = '';
+  productDraft.value = product ? {
+    name: product.name, subtitle: product.subtitle ?? '', categoryId: product.categoryId,
+    productType: product.productType, content: product.content, origin: product.origin ?? '',
+    sortOrder: product.sortOrder, status: product.status,
+    mediaText: product.media.map(item => item.objectKey).join('\n'), tagsText: product.tags.join('、')
+  } : { name: '', subtitle: '', categoryId: categories.value.value?.[0]?.id ?? '', productType: 'STANDARD', content: '', origin: '', sortOrder: 0, status: 'DRAFT', mediaText: '', tagsText: '' };
+  editorOpen.value = true;
+}
+async function saveProduct() {
+  savingProduct.value = true; productError.value = '';
+  const body = {
+    categoryId: productDraft.value.categoryId, name: productDraft.value.name, subtitle: productDraft.value.subtitle || null,
+    productType: productDraft.value.productType, content: productDraft.value.content, origin: productDraft.value.origin || null,
+    sortOrder: Number(productDraft.value.sortOrder), status: productDraft.value.status,
+    media: productDraft.value.mediaText.split(/\n+/).map(key => key.trim()).filter(Boolean).map((objectKey, sortOrder) => ({ type: /\.(?:mp4|webm)$/i.test(objectKey) ? 'VIDEO' : 'IMAGE', objectKey, altText: productDraft.value.name, sortOrder })),
+    tags: productDraft.value.tagsText.split(/[、,，]/).map(tag => tag.trim()).filter(Boolean)
+  };
+  try {
+    await adminRequest(editingProductId.value ? `products/${editingProductId.value}` : 'products', {
+      method: editingProductId.value ? 'PUT' : 'POST', body: JSON.stringify(body)
+    });
+    editorOpen.value = false; await loadProducts();
+  } catch (error) { productError.value = error instanceof Error ? error.message : '商品保存失败'; }
+  finally { savingProduct.value = false; }
+}
+async function toggleProduct(product: AdminProduct) {
+  const nextStatus = product.status === 'ON_SALE' ? 'OFF_SALE' : 'ON_SALE';
+  try {
+    await adminRequest(`products/${product.id}`, { method: 'PUT', body: JSON.stringify({ ...product, status: nextStatus }) });
+    await loadProducts();
+  } catch (error) { window.alert(error instanceof Error ? error.message : '商品状态更新失败'); }
+}
+function openCategoryEditor(category?: Category) {
+  editingCategoryId.value = category?.id ?? null; categoryError.value = '';
+  categoryDraft.value = category ? { parentId: category.parentId ?? '', code: category.code, name: category.name, sortOrder: category.sortOrder, status: category.status }
+    : { parentId: '', code: '', name: '', sortOrder: 0, status: 'ENABLED' };
+  categoryEditorOpen.value = true;
+}
+async function saveCategory() {
+  categoryError.value = '';
+  try {
+    const method = editingCategoryId.value ? 'PUT' : 'POST';
+    const path = editingCategoryId.value ? `categories/${editingCategoryId.value}` : 'categories';
+    await adminRequest(path, { method, body: JSON.stringify({ ...categoryDraft.value, parentId: categoryDraft.value.parentId || null, sortOrder: Number(categoryDraft.value.sortOrder) }) });
+    categoryEditorOpen.value = false; await loadCategories();
+  } catch (error) { categoryError.value = error instanceof Error ? error.message : '分类保存失败'; }
+}
+async function toggleCategory(category: Category) {
+  try { await adminRequest(`categories/${category.id}`, { method: 'PUT', body: JSON.stringify({ ...category, status: category.status === 'ENABLED' ? 'DISABLED' : 'ENABLED' }) }); await loadCategories(); }
+  catch (error) { window.alert(error instanceof Error ? error.message : '分类状态更新失败'); }
+}
+async function deleteCategory(category: Category) {
+  if (!window.confirm(`确定删除分类“${category.name}”吗？`)) return;
+  try { await adminRequest(`categories/${category.id}`, { method: 'DELETE' }); await loadCategories(); }
+  catch (error) { window.alert(error instanceof Error ? error.message : '分类删除失败'); }
+}
+async function openSkuManager(product: AdminProduct) {
+  skuProduct.value = product; skuDrawerOpen.value = true; skuEditingId.value = null; skuError.value = '';
+  await loadSkus();
+}
+async function loadSkus() {
+  if (!skuProduct.value) return;
+  skuRows.value = { ...skuRows.value, status: 'loading', message: '' };
+  try { skuRows.value = { status: 'ready', value: await getAdminData<PageResult<AdminSku>>(`products/${skuProduct.value.id}/skus?page=1&pageSize=100`), message: '' }; }
+  catch (error) { skuRows.value = { status: 'error', value: null, message: error instanceof Error ? error.message : '规格读取失败' }; }
+}
+function editSku(sku?: AdminSku) {
+  skuEditingId.value = sku?.id ?? null; skuError.value = '';
+  skuDraft.value = sku ? {
+    skuCode: sku.skuCode, skuName: sku.skuName, salePriceYuan: (sku.salePriceCent / 100).toFixed(2),
+    marketPriceYuan: sku.marketPriceCent === null ? '' : (sku.marketPriceCent / 100).toFixed(2), weightGram: sku.weightGram,
+    barcode: sku.barcode ?? '', saleStatus: sku.saleStatus, specsText: sku.specs.map(spec => `${spec.name}=${spec.value}`).join('、')
+  } : { skuCode: '', skuName: '', salePriceYuan: '', marketPriceYuan: '', weightGram: 500, barcode: '', saleStatus: 'DRAFT', specsText: '' };
+}
+function toCent(value: string): number {
+  if (!/^\d+(?:\.\d{1,2})?$/.test(value.trim())) throw new Error('请填写有效价格，最多保留两位小数');
+  const [yuan = '', fraction = ''] = value.trim().split('.');
+  const amount = Number(yuan) * 100 + Number(fraction.padEnd(2, '0'));
+  if (!Number.isSafeInteger(amount)) throw new Error('商品价格超出允许范围');
+  return amount;
+}
+async function saveSku() {
+  if (!skuProduct.value) return;
+  skuError.value = '';
+  try {
+    const specs = skuDraft.value.specsText.split(/[、,，]/).map(item => item.trim()).filter(Boolean).map(item => {
+      const [name, ...rest] = item.split('=');
+      if (!name || !rest.length) throw new Error('规格请按“名称=值”填写，例如“净含量=500克”');
+      return { name: name.trim(), value: rest.join('=').trim() };
+    });
+    const body = { productId: skuProduct.value.id, skuCode: skuDraft.value.skuCode, skuName: skuDraft.value.skuName, salePriceCent: toCent(skuDraft.value.salePriceYuan), marketPriceCent: skuDraft.value.marketPriceYuan ? toCent(skuDraft.value.marketPriceYuan) : null, weightGram: Number(skuDraft.value.weightGram), barcode: skuDraft.value.barcode || null, saleStatus: skuDraft.value.saleStatus, presaleEnabled: false, specs };
+    await adminRequest(skuEditingId.value ? `skus/${skuEditingId.value}` : `products/${skuProduct.value.id}/skus`, { method: skuEditingId.value ? 'PUT' : 'POST', body: JSON.stringify(body) });
+    editSku(); await loadSkus();
+  } catch (error) { skuError.value = error instanceof Error ? error.message : '规格保存失败'; }
+}
+async function login() {
+  loginBusy.value = true; loginError.value = '';
+  try {
+    const result = await adminRequest<{ accessToken: string }>('auth/login', { method: 'POST', body: JSON.stringify({ username: loginUsername.value, password: loginPassword.value }) });
+    sessionStorage.setItem('shanhe.admin.accessToken', result.accessToken);
+    const identity = await adminRequest<{ permissions: string[] }>('auth/me', { method: 'GET' });
+    adminPermissions.value = new Set(identity.permissions); loginPassword.value = ''; authenticated.value = true; await loadDashboard();
+  } catch (error) { loginError.value = error instanceof Error ? error.message : '登录失败'; }
+  finally { loginBusy.value = false; }
+}
+async function logout() {
+  try { await adminRequest('auth/logout', { method: 'POST' }); } catch { /* expire the local session even if the API is unavailable */ }
+  sessionStorage.removeItem('shanhe.admin.accessToken'); adminPermissions.value = new Set(); authenticated.value = false;
+}
+onMounted(async () => {
+  const token = sessionStorage.getItem('shanhe.admin.accessToken');
+  if (!token) return;
+  try { const identity = await getAdminData<{ permissions: string[] }>('auth/me'); adminPermissions.value = new Set(identity.permissions); authenticated.value = true; await loadDashboard(); }
+  catch { sessionStorage.removeItem('shanhe.admin.accessToken'); }
+});
 watch(view, reload);
 </script>
 
 <template>
-  <div class="admin-app">
+  <div v-if="!authenticated" class="login-screen"><form class="login-card" @submit.prevent="login"><span class="brand-seal">禾</span><span class="overline">SHANHE · ADMIN</span><h1>运营管理中心</h1><p>使用已开通的管理账号登录</p><label>账号<input v-model="loginUsername" autocomplete="username" required /></label><label>密码<input v-model="loginPassword" type="password" autocomplete="current-password" required /></label><div v-if="loginError" class="form-error" role="alert">{{ loginError }}</div><button class="primary-button" :disabled="loginBusy">{{ loginBusy ? '正在登录…' : '登录管理后台' }}</button></form></div>
+  <div v-else class="admin-app">
     <aside class="sidebar">
       <a class="brand" href="#/" aria-label="山禾颐品运营管理首页">
         <span class="brand-seal">禾</span><span class="brand-copy"><strong>山禾颐品</strong><small>运营管理中心</small></span>
@@ -71,17 +212,17 @@ watch(view, reload);
       <nav class="main-nav" aria-label="主导航">
         <button v-for="item in navigation" :key="item.id" :class="{ active: view === item.id }" :aria-current="view === item.id ? 'page' : false" @click="selectView(item.id)"><span class="nav-mark">{{ item.mark }}</span>{{ item.label }}<span v-if="view === item.id" class="nav-current"></span></button>
       </nav>
-      <div class="sidebar-bottom"><span class="online-dot"></span><span>管理数据源</span><strong>连接待配置</strong></div>
+      <div class="sidebar-bottom"><span class="online-dot"></span><span>管理服务</span><strong>已授权</strong></div>
     </aside>
 
     <main class="workspace">
       <header class="topbar">
         <div class="breadcrumbs"><span>管理后台</span><span class="crumb-sep">/</span><strong>{{ navigation.find(item => item.id === view)?.label }}</strong></div>
-        <div class="top-actions"><span class="refresh-time">更新于 {{ lastUpdated }}</span><button class="icon-action" aria-label="刷新当前页面" @click="reload">↻</button><span class="user-avatar" aria-label="当前用户未登录">管</span></div>
+      <div class="top-actions"><span class="refresh-time">更新于 {{ lastUpdated }}</span><button class="icon-action" aria-label="刷新当前页面" @click="reload">↻</button><button class="user-avatar" aria-label="退出管理后台" title="退出登录" @click="logout">管</button></div>
       </header>
 
       <section class="page-content">
-        <div class="connection-notice" role="status"><span class="notice-icon">i</span><div><strong>后台服务尚未接通</strong><p>当前页面已在正式后台工程中建立。管理 API 与账号认证接入前，不会显示模拟经营数据，也不会保存管理操作。</p></div><button @click="reload">重新检查 <span>↗</span></button></div>
+        <div v-if="dashboard.status === 'error'" class="connection-notice" role="status"><span class="notice-icon">!</span><div><strong>经营概览读取失败</strong><p>{{ dashboard.message }}</p></div><button @click="reload">重新检查 <span>↗</span></button></div>
 
         <template v-if="view === 'dashboard'">
           <div class="page-heading"><div><span class="overline">SHANHE · OPERATIONS</span><h1>经营概览</h1><p>今日需要关注的订单、商品和供应情况。</p></div><span class="date-chip">{{ new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }) }}</span></div>
@@ -100,24 +241,26 @@ watch(view, reload);
         </template>
 
         <template v-else-if="view === 'products'">
-          <div class="page-heading"><div><span class="overline">CATALOG · PRODUCTS</span><h1>商品管理</h1><p>维护商品资料与前台展示状态。</p></div><button class="primary-button" title="查看商品编辑表单" @click="openEditor"><span>＋</span> 新增商品</button></div>
+          <div class="page-heading"><div><span class="overline">CATALOG · PRODUCTS</span><h1>商品管理</h1><p>维护商品资料与前台展示状态。</p></div><button v-if="canWriteProducts" class="primary-button" title="新增商品" @click="() => openEditor()"><span>＋</span> 新增商品</button></div>
           <section class="panel table-panel"><div class="table-toolbar"><div class="table-title"><h2>商品档案</h2><span class="result-count">{{ products.value?.total ?? '—' }} 条</span></div><div class="filters"><label class="search-field"><span>⌕</span><input v-model="query" type="search" placeholder="搜索商品名称或编号" :disabled="products.status !== 'ready'" /></label><select v-model="statusFilter" aria-label="商品状态筛选" :disabled="products.status !== 'ready'"><option value="ALL">全部状态</option><option value="ON_SALE">在售</option><option value="OFF_SALE">已下架</option><option value="DRAFT">草稿</option></select></div></div>
-            <div class="table-scroll"><table><thead><tr><th>商品</th><th>商品编号</th><th>分类编号</th><th>产地</th><th>状态</th><th>类型</th></tr></thead><tbody v-if="products.status === 'ready' && filteredProducts.length"><tr v-for="product in filteredProducts" :key="product.id"><td><span class="product-cell"><span class="product-thumb">{{ product.media.length ? '图' : '禾' }}</span><span><strong>{{ product.name }}</strong><small>{{ product.subtitle || '暂无副标题' }}</small></span></span></td><td class="mono">{{ product.publicId }}</td><td>{{ product.categoryId }}</td><td>{{ product.origin || '—' }}</td><td><span class="status-tag" :class="product.status.toLowerCase()">{{ statusName(product.status) }}</span></td><td>{{ product.productType === 'BUNDLE' ? '组合商品' : '标准商品' }}</td></tr></tbody></table></div>
+            <div class="table-scroll"><table><thead><tr><th>商品</th><th>商品编号</th><th>分类编号</th><th>产地</th><th>状态</th><th>类型</th><th>操作</th></tr></thead><tbody v-if="products.status === 'ready' && filteredProducts.length"><tr v-for="product in filteredProducts" :key="product.id"><td><span class="product-cell"><span class="product-thumb">{{ product.media.length ? '图' : '禾' }}</span><span><strong>{{ product.name }}</strong><small>{{ product.subtitle || '暂无副标题' }}</small></span></span></td><td class="mono">{{ product.publicId }}</td><td>{{ product.categoryId }}</td><td>{{ product.origin || '—' }}</td><td><span class="status-tag" :class="product.status.toLowerCase()">{{ statusName(product.status) }}</span></td><td>{{ product.productType === 'BUNDLE' ? '组合商品' : '标准商品' }}</td><td class="row-actions"><template v-if="canWriteProducts"><button class="text-button" @click="openEditor(product)">编辑</button><button class="text-button" @click="openSkuManager(product)">规格/价格</button><button class="text-button" @click="toggleProduct(product)">{{ product.status === 'ON_SALE' ? '下架' : '上架' }}</button></template><span v-else>只读</span></td></tr></tbody></table></div>
             <div v-if="products.status === 'loading'" class="table-state"><span class="state-spinner"></span><strong>正在读取商品档案</strong><small>连接管理 API…</small></div>
             <div v-else-if="products.status === 'error'" class="table-state error-state"><span class="state-mark">!</span><strong>{{ products.message }}</strong><small>商品数据不会用演示内容代替。</small><button class="text-button" @click="loadProducts">再试一次</button></div>
-            <div v-else-if="products.status === 'ready' && !filteredProducts.length" class="table-state"><span class="state-mark">禾</span><strong>{{ query ? '没有匹配的商品' : '目前没有商品记录' }}</strong><small>{{ query ? '请调整关键词或筛选条件。' : '商品接入管理 API 后会显示在这里。' }}</small></div>
+            <div v-else-if="products.status === 'ready' && !filteredProducts.length" class="table-state"><span class="state-mark">禾</span><strong>{{ query ? '没有匹配的商品' : '目前没有商品记录' }}</strong><small>{{ query ? '请调整关键词或筛选条件。' : '创建商品档案后会显示在这里。' }}</small></div>
             <footer v-if="products.status === 'ready'" class="table-footer"><span>当前显示 {{ filteredProducts.length }} / {{ products.value?.total ?? 0 }} 条</span><button class="pagination-button" disabled>上一页</button><span class="page-number">1</span><button class="pagination-button" disabled>下一页</button></footer>
           </section>
         </template>
 
         <template v-else>
-          <div class="page-heading"><div><span class="overline">CATALOG · STRUCTURE</span><h1>商品分类</h1><p>查看已配置的前台分类。</p></div><button class="primary-button" disabled title="管理写入接口与权限校验尚未实现"><span>＋</span> 新增分类</button></div>
-          <section class="panel table-panel"><div class="table-toolbar"><div class="table-title"><h2>分类目录</h2><span class="result-count">{{ categories.value?.length ?? '—' }} 项</span></div></div><div class="category-list"><div v-for="category in categories.value ?? []" :key="category.id" class="category-row"><span class="category-symbol">禾</span><div><strong>{{ category.name }}</strong><small>{{ category.code }} · 排序 {{ category.sortOrder }}</small></div><span class="status-tag" :class="category.status.toLowerCase()">{{ category.status === 'ENABLED' ? '启用' : '停用' }}</span></div></div><div v-if="categories.status === 'loading'" class="table-state"><span class="state-spinner"></span><strong>正在读取分类</strong></div><div v-else-if="categories.status === 'error'" class="table-state error-state"><span class="state-mark">!</span><strong>{{ categories.message }}</strong><small>分类数据不会用演示内容代替。</small><button class="text-button" @click="loadCategories">再试一次</button></div><div v-else-if="categories.status === 'ready' && !categories.value?.length" class="table-state"><span class="state-mark">禾</span><strong>目前没有分类记录</strong><small>分类接入管理 API 后会显示在这里。</small></div></section>
+          <div class="page-heading"><div><span class="overline">CATALOG · STRUCTURE</span><h1>商品分类</h1><p>维护小程序前台共用的商品分类。</p></div><button v-if="canWriteCategories" class="primary-button" @click="openCategoryEditor()"><span>＋</span> 新增分类</button></div>
+          <section class="panel table-panel"><div class="table-toolbar"><div class="table-title"><h2>分类目录</h2><span class="result-count">{{ categories.value?.length ?? '—' }} 项</span></div></div><div class="category-list"><div v-for="category in categories.value ?? []" :key="category.id" class="category-row"><span class="category-symbol">禾</span><div><strong>{{ category.name }}</strong><small>{{ category.code }} · 排序 {{ category.sortOrder }}</small></div><span class="status-tag" :class="category.status.toLowerCase()">{{ category.status === 'ENABLED' ? '启用' : '停用' }}</span><div v-if="canWriteCategories" class="row-actions"><button class="text-button" @click="openCategoryEditor(category)">编辑</button><button class="text-button" @click="toggleCategory(category)">{{ category.status === 'ENABLED' ? '停用' : '启用' }}</button><button class="text-button danger-text" @click="deleteCategory(category)">删除</button></div><span v-else>只读</span></div></div><div v-if="categories.status === 'loading'" class="table-state"><span class="state-spinner"></span><strong>正在读取分类</strong></div><div v-else-if="categories.status === 'error'" class="table-state error-state"><span class="state-mark">!</span><strong>{{ categories.message }}</strong><small>分类数据不会用演示内容代替。</small><button class="text-button" @click="loadCategories">再试一次</button></div><div v-else-if="categories.status === 'ready' && !categories.value?.length" class="table-state"><span class="state-mark">禾</span><strong>目前没有分类记录</strong><small>新增分类后，小程序会读取启用的分类。</small></div></section>
         </template>
       </section>
-      <footer class="workspace-footer"><span>山禾颐品 · 运营管理</span><span>管理界面建设中 · 数据以后台服务为准</span></footer>
+      <footer class="workspace-footer"><span>山禾颐品 · 运营管理</span><span>数据由管理 API 实时读取</span></footer>
     </main>
 
-    <div v-if="editorOpen" class="drawer-mask" @click.self="editorOpen = false"><section class="editor-drawer" role="dialog" aria-modal="true" aria-labelledby="editor-title"><header><div><span class="overline">PRODUCT INFORMATION</span><h2 id="editor-title">商品编辑</h2></div><button class="icon-action" aria-label="关闭" @click="editorOpen = false">×</button></header><div class="drawer-notice">商品保存接口和权限验证尚未接入，表单内容不会写入系统。</div><div class="form-section"><h3>基础信息</h3><label>商品名称<input placeholder="请输入商品名称" /></label><label>副标题<input placeholder="一句话说明商品特点" /></label><div class="form-columns"><label>商品分类<select><option>等待分类 API</option></select></label><label>商品类型<select><option>标准商品</option><option>组合商品</option></select></label></div></div><div class="form-section"><h3>商品内容</h3><label>产地<input placeholder="如：甘肃舟曲" /></label><label>商品介绍<textarea placeholder="介绍原料、风味与工艺" rows="5"></textarea></label></div><footer><button class="secondary-button" @click="editorOpen = false">返回列表</button><button class="primary-button" disabled>保存商品</button></footer></section></div>
+    <div v-if="editorOpen" class="drawer-mask" @click.self="editorOpen = false"><form class="editor-drawer" @submit.prevent="saveProduct"><header><div><span class="overline">PRODUCT INFORMATION</span><h2 id="editor-title">{{ editingProductId ? '编辑商品' : '新增商品' }}</h2></div><button type="button" class="icon-action" aria-label="关闭" @click="editorOpen = false">×</button></header><div class="form-section"><h3>基础信息</h3><label>商品名称<input v-model="productDraft.name" required maxlength="100" placeholder="请输入商品名称" /></label><label>副标题<input v-model="productDraft.subtitle" maxlength="200" placeholder="一句话说明商品特点" /></label><div class="form-columns"><label>商品分类<select v-model="productDraft.categoryId" required><option value="" disabled>请选择分类</option><option v-for="category in categories.value ?? []" :key="category.id" :value="category.id">{{ category.name }}</option></select></label><label>商品类型<select v-model="productDraft.productType"><option value="STANDARD">标准商品</option><option value="BUNDLE">组合商品</option></select></label></div><label>商品状态<select v-model="productDraft.status"><option value="DRAFT">草稿</option><option value="OFF_SALE">已下架</option><option value="ON_SALE">在售</option></select></label></div><div class="form-section"><h3>商品内容</h3><label>产地<input v-model="productDraft.origin" placeholder="如：甘肃舟曲" /></label><label>素材对象键（每行一项）<textarea v-model="productDraft.mediaText" rows="4" placeholder="products/zhouqu-diaoshi/cover.webp"></textarea><small>媒体上传和素材库尚未接入；编辑时请保留现有对象键，支持图片与视频。</small></label><label>商品介绍<textarea v-model="productDraft.content" required placeholder="介绍原料、风味与工艺" rows="5"></textarea></label><label>标签<input v-model="productDraft.tagsText" placeholder="用顿号分隔，如：柿饼、送礼" /></label><label>排序<input v-model.number="productDraft.sortOrder" type="number" min="0" /></label></div><div v-if="productError" class="form-error" role="alert">{{ productError }}</div><footer><button type="button" class="secondary-button" @click="editorOpen = false">取消</button><button class="primary-button" :disabled="savingProduct">{{ savingProduct ? '保存中…' : '保存商品' }}</button></footer></form></div>
+    <div v-if="categoryEditorOpen" class="drawer-mask" @click.self="categoryEditorOpen = false"><form class="editor-drawer compact-drawer" @submit.prevent="saveCategory"><header><div><span class="overline">CATEGORY STRUCTURE</span><h2>{{ editingCategoryId ? '编辑分类' : '新增分类' }}</h2></div><button type="button" class="icon-action" aria-label="关闭" @click="categoryEditorOpen = false">×</button></header><div class="form-section"><label>分类名称<input v-model="categoryDraft.name" required maxlength="50" /></label><label>分类编码<input v-model="categoryDraft.code" required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" maxlength="64" placeholder="如: dried-fruit" /></label><label>上级分类<select v-model="categoryDraft.parentId"><option value="">顶级分类</option><option v-for="category in categories.value ?? []" :key="category.id" :value="category.id" :disabled="category.id === editingCategoryId">{{ category.name }}</option></select></label><div class="form-columns"><label>排序<input v-model.number="categoryDraft.sortOrder" type="number" min="0" /></label><label>状态<select v-model="categoryDraft.status"><option value="ENABLED">启用</option><option value="DISABLED">停用</option></select></label></div></div><div v-if="categoryError" class="form-error" role="alert">{{ categoryError }}</div><footer><button type="button" class="secondary-button" @click="categoryEditorOpen = false">取消</button><button class="primary-button">保存分类</button></footer></form></div>
+    <div v-if="skuDrawerOpen" class="drawer-mask" @click.self="skuDrawerOpen = false"><section class="editor-drawer compact-drawer"><header><div><span class="overline">SKU · PRICE · SPECIFICATION</span><h2>{{ skuProduct?.name }} · 规格与价格</h2></div><button class="icon-action" aria-label="关闭" @click="skuDrawerOpen = false">×</button></header><div class="sku-list"><div v-for="sku in skuRows.value?.items ?? []" :key="sku.id" class="sku-row"><div><strong>{{ sku.skuName }}</strong><small>{{ sku.skuCode }} · {{ sku.specs.map(spec => `${spec.name} ${spec.value}`).join(' / ') || '无规格' }}</small></div><b>¥{{ (sku.salePriceCent / 100).toFixed(2) }}</b><span class="status-tag" :class="sku.saleStatus.toLowerCase()">{{ sku.saleStatus === 'ON_SALE' ? '在售' : sku.saleStatus === 'OFF_SALE' ? '已下架' : '草稿' }}</span><button class="text-button" @click="editSku(sku)">编辑</button></div><div v-if="skuRows.status === 'loading' || skuRows.status === 'error'" class="table-state"><strong>{{ skuRows.status === 'loading' ? '正在读取规格' : skuRows.message }}</strong><button v-if="skuRows.status === 'error'" class="text-button" @click="loadSkus">重试</button></div><div v-else-if="!skuRows.value?.items.length" class="table-state"><strong>还没有规格</strong><small>添加 SKU 后设置售价与销售状态。</small></div></div><form class="form-section" @submit.prevent="saveSku"><h3>{{ skuEditingId ? '编辑规格' : '新增规格' }}</h3><label>SKU 编码<input v-model="skuDraft.skuCode" required maxlength="64" placeholder="例如 DIAOSHI-500G" /></label><label>规格名称<input v-model="skuDraft.skuName" required maxlength="100" placeholder="例如 500 克装" /></label><div class="form-columns"><label>售价（元）<input v-model="skuDraft.salePriceYuan" required inputmode="decimal" placeholder="如 39.90" /></label><label>市场价（元）<input v-model="skuDraft.marketPriceYuan" inputmode="decimal" placeholder="可不填" /></label></div><div class="form-columns"><label>重量（克）<input v-model.number="skuDraft.weightGram" type="number" min="1" required /></label><label>条码<input v-model="skuDraft.barcode" inputmode="numeric" placeholder="可不填" /></label></div><label>规格项<input v-model="skuDraft.specsText" placeholder="净含量=500克、包装=礼盒" /><small>多项用顿号分隔，每项用等号连接名称和值。</small></label><label>销售状态<select v-model="skuDraft.saleStatus"><option value="DRAFT">草稿</option><option value="OFF_SALE">已下架</option><option value="ON_SALE">在售</option></select></label><div v-if="skuError" class="form-error" role="alert">{{ skuError }}</div><footer><button class="primary-button">{{ skuEditingId ? '保存规格' : '新增 SKU' }}</button></footer></form></section></div>
   </div>
 </template>

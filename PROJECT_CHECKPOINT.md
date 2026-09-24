@@ -84,3 +84,13 @@
 - 后台工作台标题、KPI、快捷入口居中；商品编辑甄选勾选控件改成对齐的选项卡；恢复演示数据改为低权重次要按钮。
 - 路由在 `apps/miniapp/pages.json`；界面说明见 `apps/miniapp/README.md`。
 - 已在 H5 预览中实际查看“我的”页、收货地址空状态/新增表单、后台工作台与商品编辑勾选项；uni-app 类型检查和 `UNI_INPUT_DIR=.` H5 构建通过，微信端真机仍未验收。
+
+## 9. 2026-09-24 后台 API 与商品目录首批联接
+
+- 本轮基线：`feature/v13-frontend-fusion`，起始 HEAD `c8e595c`；已有 4 个无关未跟踪文件，未修改。
+- 新增管理员密码 scrypt 校验、8 小时数据库会话、退出撤销、权限查询；首次 owner 账号只能在管理员表为空时通过 bootstrap CLI 创建。新增 `admin_sessions` migration。
+- API 增加 `127.0.0.1:3200` 启动入口；已挂载管理登录、RBAC 保护的 dashboard 计数、商品 SPU/SKU/分类 CRUD/上下架，以及公开分类/商品/搜索/详情读取接口。
+- 后台现在提供登录、商品新增/编辑/上下架、SKU 规格/价格编辑、分类新增/编辑/启停/删除并调用真实 API；商品素材上传仍缺，其他模块后台尚未接入。小程序还没有切换到这些公开 API。
+- 验证：Prisma client generate、根 `npm run check`（ESLint、TypeScript、30 个测试文件/101 tests、tsc build）、后台 Vue/Vite build、Prisma schema validate（使用非连接用占位 URL）均通过。未连数据库做 E2E。
+- 真实联调阻塞：当前工作区无 `.env` 且无 `DATABASE_URL`；需安全配置 MySQL 连接并设首位管理员环境变量，然后执行 migration、build、bootstrap、start。不得在聊天中发送数据库密码。
+- 下一步：完成 M09 SKU 管理界面/API 验收，再接小程序公共 catalog port；后台依 M13/M16、M17-M20、M23-M32 等服务能力补管理操作。提交与 push 尚未执行。
