@@ -20,6 +20,8 @@ npm run dev --workspace @shanheyipin/admin
 
 后台仅在 API 服务 `127.0.0.1:3200` 和数据库已配置时可登录。此工作区没有已配置的 `DATABASE_URL`，本轮无法用真实数据库账户做完整联调。
 
+为了本机查看页面，开发模式另有只读预览账号。账号配置保存在 Git 忽略的 `apps/admin/.env.development.local`；预览数据会明显标识为演示内容，所有写操作都会拒绝。该入口只在 Vite 开发模式启用，不是正式管理员账号。登录提示会显示本机配置的预览账号。
+
 ## 验证
 
 ```powershell

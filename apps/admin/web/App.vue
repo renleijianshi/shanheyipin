@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { adminRequest, formatMoney, getAdminData, type AdminProduct, type DashboardData, type PageResult } from './api';
+import { adminRequest, formatMoney, getAdminData, isAdminPreviewSession, setAdminPreviewSession, type AdminProduct, type DashboardData, type PageResult } from './api';
 
 type View = 'dashboard' | 'products' | 'categories';
 type LoadState<T> = { status: 'idle' | 'loading' | 'ready' | 'error'; value: T | null; message: string };
+const isDevelopmentPreview = import.meta.env.DEV;
+const previewUsername = import.meta.env.VITE_ADMIN_PREVIEW_USER ?? '';
+const previewPassword = import.meta.env.VITE_ADMIN_PREVIEW_PASSWORD ?? '';
 
 const navigation: { id: View; label: string; mark: string }[] = [
   { id: 'dashboard', label: '经营概览', mark: '◇' },
@@ -18,6 +21,7 @@ const query = ref('');
 const statusFilter = ref('ALL');
 const editorOpen = ref(false);
 const authenticated = ref(false);
+const previewMode = ref(false);
 const loginUsername = ref('');
 const loginPassword = ref('');
 const loginError = ref('');
@@ -181,18 +185,30 @@ async function saveSku() {
 async function login() {
   loginBusy.value = true; loginError.value = '';
   try {
+    if (isDevelopmentPreview && previewUsername && previewPassword && loginUsername.value === previewUsername && loginPassword.value === previewPassword) {
+      setAdminPreviewSession(true);
+      previewMode.value = true;
+      adminPermissions.value = new Set(['dashboard.read', 'catalog.product.read', 'catalog.category.read']);
+      loginPassword.value = ''; authenticated.value = true; await loadDashboard();
+      return;
+    }
     const result = await adminRequest<{ accessToken: string }>('auth/login', { method: 'POST', body: JSON.stringify({ username: loginUsername.value, password: loginPassword.value }) });
     sessionStorage.setItem('shanhe.admin.accessToken', result.accessToken);
     const identity = await adminRequest<{ permissions: string[] }>('auth/me', { method: 'GET' });
-    adminPermissions.value = new Set(identity.permissions); loginPassword.value = ''; authenticated.value = true; await loadDashboard();
+    previewMode.value = false; adminPermissions.value = new Set(identity.permissions); loginPassword.value = ''; authenticated.value = true; await loadDashboard();
   } catch (error) { loginError.value = error instanceof Error ? error.message : '登录失败'; }
   finally { loginBusy.value = false; }
 }
 async function logout() {
-  try { await adminRequest('auth/logout', { method: 'POST' }); } catch { /* expire the local session even if the API is unavailable */ }
-  sessionStorage.removeItem('shanhe.admin.accessToken'); adminPermissions.value = new Set(); authenticated.value = false;
+  if (!previewMode.value) {
+    try { await adminRequest('auth/logout', { method: 'POST' }); } catch { /* expire the local session even if the API is unavailable */ }
+  }
+  setAdminPreviewSession(false); sessionStorage.removeItem('shanhe.admin.accessToken'); adminPermissions.value = new Set(); authenticated.value = false; previewMode.value = false;
 }
 onMounted(async () => {
+  if (isAdminPreviewSession()) {
+    previewMode.value = true; adminPermissions.value = new Set(['dashboard.read', 'catalog.product.read', 'catalog.category.read']); authenticated.value = true; await loadDashboard(); return;
+  }
   const token = sessionStorage.getItem('shanhe.admin.accessToken');
   if (!token) return;
   try { const identity = await getAdminData<{ permissions: string[] }>('auth/me'); adminPermissions.value = new Set(identity.permissions); authenticated.value = true; await loadDashboard(); }
@@ -202,7 +218,7 @@ watch(view, reload);
 </script>
 
 <template>
-  <div v-if="!authenticated" class="login-screen"><form class="login-card" @submit.prevent="login"><span class="brand-seal">禾</span><span class="overline">SHANHE · ADMIN</span><h1>运营管理中心</h1><p>使用已开通的管理账号登录</p><label>账号<input v-model="loginUsername" autocomplete="username" required /></label><label>密码<input v-model="loginPassword" type="password" autocomplete="current-password" required /></label><div v-if="loginError" class="form-error" role="alert">{{ loginError }}</div><button class="primary-button" :disabled="loginBusy">{{ loginBusy ? '正在登录…' : '登录管理后台' }}</button></form></div>
+  <div v-if="!authenticated" class="login-screen"><form class="login-card" @submit.prevent="login"><span class="brand-seal">禾</span><span class="overline">SHANHE · ADMIN</span><h1>运营管理中心</h1><p>使用已开通的管理账号登录</p><div v-if="isDevelopmentPreview && previewUsername && previewPassword" class="preview-login-hint">本机只读预览：<strong>{{ previewUsername }}</strong> / <strong>{{ previewPassword }}</strong></div><label>账号<input v-model="loginUsername" autocomplete="username" required /></label><label>密码<input v-model="loginPassword" type="password" autocomplete="current-password" required /></label><div v-if="loginError" class="form-error" role="alert">{{ loginError }}</div><button class="primary-button" :disabled="loginBusy">{{ loginBusy ? '正在登录…' : '登录管理后台' }}</button></form></div>
   <div v-else class="admin-app">
     <aside class="sidebar">
       <a class="brand" href="#/" aria-label="山禾颐品运营管理首页">
@@ -222,6 +238,7 @@ watch(view, reload);
       </header>
 
       <section class="page-content">
+        <div v-if="previewMode" class="preview-banner" role="status"><span>只读预览</span><p>当前使用演示数据浏览界面，不会读取或更改真实商品、订单或库存。</p><button @click="logout">退出预览</button></div>
         <div v-if="dashboard.status === 'error'" class="connection-notice" role="status"><span class="notice-icon">!</span><div><strong>经营概览读取失败</strong><p>{{ dashboard.message }}</p></div><button @click="reload">重新检查 <span>↗</span></button></div>
 
         <template v-if="view === 'dashboard'">

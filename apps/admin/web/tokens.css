@@ -48,6 +48,12 @@ button:disabled { cursor: not-allowed; }
 .login-card label { display: grid; gap: 6px; color: #667067; font-size: 11px; }
 .login-card input { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid var(--admin-border); border-radius: 5px; color: var(--admin-text); background: white; font-size: 13px; }
 .login-card .primary-button { width: 100%; justify-content: center; margin-top: 4px; }
+.preview-login-hint { padding: 9px 11px; border-left: 2px solid var(--admin-accent); color: #715b3e; background: #faf6ed; font-size: 11px; }
+.preview-login-hint strong { color: var(--admin-brand); font-family: ui-monospace, Consolas, monospace; }
+.preview-banner { margin-bottom: 20px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; border: 1px solid #d9c9a9; border-radius: 6px; background: #fbf7ec; }
+.preview-banner > span { flex: none; padding: 4px 7px; border-radius: 3px; color: #fff; background: #8b6d3c; font-size: 10px; }
+.preview-banner p { flex: 1; margin: 0; color: #74664e; font-size: 11px; line-height: 1.5; }
+.preview-banner button { padding: 6px 9px; border: 1px solid #dfd1b7; border-radius: 4px; color: #69583c; background: #fffdf8; cursor: pointer; font-size: 10px; white-space: nowrap; }
 .form-error { padding: 9px 11px; border-radius: 5px; color: #8d4039; background: #fbf1ee; font-size: 11px; line-height: 1.5; }
 .row-actions { white-space: nowrap; }
 .row-actions .text-button { margin-top: 0; }

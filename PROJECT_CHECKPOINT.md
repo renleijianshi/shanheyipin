@@ -93,4 +93,5 @@
 - 后台现在提供登录、商品新增/编辑/上下架、SKU 规格/价格编辑、分类新增/编辑/启停/删除并调用真实 API；商品素材上传仍缺，其他模块后台尚未接入。小程序还没有切换到这些公开 API。
 - 验证：Prisma client generate、根 `npm run check`（ESLint、TypeScript、30 个测试文件/101 tests、tsc build）、后台 Vue/Vite build、Prisma schema validate（使用非连接用占位 URL）均通过。未连数据库做 E2E。
 - 真实联调阻塞：当前工作区无 `.env` 且无 `DATABASE_URL`；需安全配置 MySQL 连接并设首位管理员环境变量，然后执行 migration、build、bootstrap、start。不得在聊天中发送数据库密码。
+- 本地查看后台：开发模式使用只读预览登录，账号配置存于 Git 忽略的 `apps/admin/.env.development.local`；页面展示样例数据并标注预览，写操作会被拒绝。已重启 Vite `127.0.0.1:5174` 读取该配置。
 - 下一步：完成 M09 SKU 管理界面/API 验收，再接小程序公共 catalog port；后台依 M13/M16、M17-M20、M23-M32 等服务能力补管理操作。提交与 push 尚未执行。
